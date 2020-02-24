@@ -8,22 +8,9 @@ branches:
   only:
     - master
 
-addons:
-  apt:
-    packages:
-      - openjdk-8-jre-headless
-
-before_install:
-  - "sudo apt-get purge openjdk-6*"
-  - "sudo apt-get purge openjdk-7*"
-  - "sudo apt-get purge oracle-java7-*"
-
-env:
-  global:
-    - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
 install:
   - set -e
+  - nohup docker pull localstack/localstack > /dev/null &
   - nohup docker pull lambci/lambda:java8 > /dev/null &
 
 script:

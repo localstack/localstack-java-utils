@@ -155,13 +155,19 @@ public class Container {
         }
         while(attempts < MAX_LOG_COLLECTION_ATTEMPTS);
 
-        throw new IllegalStateException("Could not find token: " + pattern + " in Docker logs.");
+        String logs = getContainerLogs();
+        throw new IllegalStateException("Could not find token: " + pattern + " in Docker logs: " + logs);
     }
 
 
     private boolean logContainsPattern(Pattern pattern) {
-        String logs = new LogCommand(containerId).withNumberOfLines(NUM_LOG_LINES).execute();
+        String logs = getContainerLogs();
         return pattern.matcher(logs).find();
+    }
+
+
+    private String getContainerLogs() {
+        return new LogCommand(containerId).withNumberOfLines(NUM_LOG_LINES).execute();
     }
 
 

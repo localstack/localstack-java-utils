@@ -37,6 +37,7 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 
@@ -57,6 +58,7 @@ import static cloud.localstack.TestUtils.TEST_CREDENTIALS;
  */
 @RunWith(LocalstackOutsideDockerTestRunner.class)
 @ExtendWith(LocalstackExtension.class)
+@Ignore
 public class BasicFunctionalityTest {
 
     static {

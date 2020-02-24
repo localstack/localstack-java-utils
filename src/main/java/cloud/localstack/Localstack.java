@@ -91,7 +91,7 @@ public class Localstack {
     }
 
     public void stop() {
-        if (this.localStackContainer != null) {
+        if (localStackContainer != null) {
             localStackContainer.stop();
         }
         locked = false;

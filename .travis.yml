@@ -15,7 +15,9 @@ install:
 
 script:
   - set -e
+  - mvn -q -DskipTests compile
   - make test
+  - docker ps -a
 
 notifications:
   email: false

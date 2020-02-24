@@ -10,6 +10,6 @@ publish-maven:   ## Publish artifacts to Maven Central
 	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS=" " make build
 
 test:            ## Run tests for Java/JUnit compatibility
-	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,cloudwatch mvn $(MVN_ARGS) -q test
+	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,cloudwatch mvn $(MVN_ARGS) test
 
 .PHONY: usage clean install test

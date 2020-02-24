@@ -191,7 +191,9 @@ public class Localstack {
         return endpointForService(ServiceName.EC2);
     }
 
-    public String getEndpointStepFunctions() { return endpointForService(ServiceName.STEPFUNCTIONS); }
+    public String getEndpointStepFunctions() {
+        return endpointForService(ServiceName.STEPFUNCTIONS);
+    }
 
     public String endpointForService(String serviceName) {
         if (serviceToPortMap == null) {

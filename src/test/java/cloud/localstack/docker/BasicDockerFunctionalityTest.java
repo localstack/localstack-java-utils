@@ -172,6 +172,11 @@ public class BasicDockerFunctionalityTest {
         MessageConsumer consumer = session.createConsumer(queue);
         TextMessage received = (TextMessage) consumer.receive();
         Assertions.assertThat(received.getText()).isEqualTo("Hello World!");
+
+        // clean up
+        consumer.close();
+        producer.close();
+        connection.close();
     }
 
     @org.junit.Test

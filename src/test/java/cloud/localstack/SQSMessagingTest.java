@@ -76,6 +76,11 @@ public class SQSMessagingTest {
         MessageConsumer consumer = session.createConsumer(queue);
         TextMessage received = (TextMessage) consumer.receive();
         Assert.assertNotNull(received);
+
+        // clean up
+        consumer.close();
+        producer.close();
+        connection.close();
     }
 
     @Test

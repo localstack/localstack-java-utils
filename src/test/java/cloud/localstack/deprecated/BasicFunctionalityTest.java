@@ -1,6 +1,6 @@
 package cloud.localstack.deprecated;
 
-import cloud.localstack.LocalTestUtil;
+import cloud.localstack.utils.LocalTestUtil;
 import cloud.localstack.sample.KinesisLambdaHandler;
 import cloud.localstack.sample.S3Sample;
 import cloud.localstack.sample.SQSLambdaHandler;

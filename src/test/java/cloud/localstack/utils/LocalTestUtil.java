@@ -1,4 +1,4 @@
-package cloud.localstack;
+package cloud.localstack.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

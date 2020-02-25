@@ -64,9 +64,7 @@ public class TestContainersSqsTest {
         /*
          * create the SQS client
          */
-        final AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(
-                "http://localhost:" + mappedPort,
-                "us-east-1");
+        final AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration("http://localhost:" + mappedPort, "us-east-1");
 
         final AWSStaticCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(
                 new BasicAWSCredentials("accesskey", "secretkey"));
@@ -116,13 +114,11 @@ public class TestContainersSqsTest {
 
     }
 
-	@SuppressWarnings("resource")
-	private void startDockerImage() {
-
+    @SuppressWarnings("resource")
+    private void startDockerImage() {
         genericContainer = new GenericContainer<>(DOCKER_IMAGE_NAME)
                 .withExposedPorts(SQS_PORT)
                 .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Ready\\.\n"));
-
         genericContainer.start();
     }
 }

@@ -30,7 +30,6 @@ public class DDBEventMappingTest {
 
         DynamodbEvent.DynamodbStreamRecord record = ddbEvent.getRecords().iterator().next();
 
-
         Assert.assertTrue("The map must be empty", record.getDynamodb().getOldImage().isEmpty());
         Assert.assertEquals("The numbers must match",record.getDynamodb().getNewImage().get("number").getN(), "1" );
         Assert.assertArrayEquals("The set must match",

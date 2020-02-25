@@ -70,9 +70,7 @@ public class S3UploadTest {
 		final InputStream inputStream = new ByteArrayInputStream(new byte[0]);
 		objectMetadata.setContentLength(0L);
 		PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
-																 keyName,
-																 inputStream,
-																 objectMetadata);
+																 keyName, inputStream, objectMetadata);
 		client.putObject(putObjectRequest);
 	}
 

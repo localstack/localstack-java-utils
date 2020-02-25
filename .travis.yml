@@ -15,7 +15,7 @@ install:
 
 script:
   - set -e
-  - mvn -q -DskipTests compile
+  - mvn -q -DskipTests test
   - make test
   - docker ps -a
 

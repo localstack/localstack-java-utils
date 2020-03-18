@@ -115,7 +115,7 @@ public class Localstack {
          * which by default would result in <bucket-name>.localhost, but that name cannot be resolved
          * (unless hardcoded in /etc/hosts)
          */
-        s3Endpoint = s3Endpoint.replace("localhost", "test.localhost.atlassian.io");
+        s3Endpoint = s3Endpoint.replace("localhost", "localhost.localstack.cloud");
         return s3Endpoint;
     }
 

@@ -11,7 +11,7 @@ branches:
 install:
   - set -e
   - nohup docker pull localstack/localstack > /dev/null &
-  - nohup docker pull lambci/lambda:java8 > /dev/null &
+  - nohup docker pull lambci/lambda:java11 > /dev/null &
 
 script:
   - set -e

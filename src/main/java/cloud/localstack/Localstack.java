@@ -195,6 +195,10 @@ public class Localstack {
         return endpointForService(ServiceName.STEPFUNCTIONS);
     }
 
+    public String getEndpointIAM() {
+        return endpointForService(ServiceName.IAM);
+    }
+
     public String endpointForService(String serviceName) {
         if (serviceToPortMap == null) {
             throw new IllegalStateException("Service to port mapping has not been determined yet.");

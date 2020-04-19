@@ -22,7 +22,7 @@ public class Container {
     private static final Logger LOG = Logger.getLogger(Container.class.getName());
 
     private static final String LOCALSTACK_NAME = "localstack/localstack";
-    private static final String LOCALSTACK_PORTS = "4567-4584";
+    private static final String LOCALSTACK_PORTS = "4566-4593";
 
     private static final int MAX_PORT_CONNECTION_ATTEMPTS = 10;
 
@@ -92,12 +92,10 @@ public class Container {
         return new Container(containerId, portMappingsList);
     }
 
-
     private Container(String containerId, List<PortMapping> ports) {
         this.containerId = containerId;
         this.ports = Collections.unmodifiableList(ports);
     }
-
 
     /**
      * Given an internal port, retrieve the publicly addressable port that maps to it
@@ -110,11 +108,9 @@ public class Container {
                 .orElseThrow(() -> new IllegalArgumentException("Port: " + internalPort + " does not exist"));
     }
 
-
     public void waitForAllPorts(String ip) {
         ports.forEach(port -> waitForPort(ip, port));
     }
-
 
     private void waitForPort(String ip, PortMapping port) {
         int attempts = 0;
@@ -129,7 +125,6 @@ public class Container {
         throw new IllegalStateException("Could not open port:" + port.getExternalPort() + " on ip:" + port.getIp());
     }
 
-
     private boolean isPortOpen(String ip, PortMapping port) {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(ip, port.getExternalPort()), 1000);
@@ -138,7 +133,6 @@ public class Container {
             return false;
         }
     }
-
 
     /**
      * Poll the docker logs until a specific token appears, then return. Primarily
@@ -159,17 +153,14 @@ public class Container {
         throw new IllegalStateException("Could not find token: " + pattern + " in Docker logs: " + logs);
     }
 
-
     private boolean logContainsPattern(Pattern pattern) {
         String logs = getContainerLogs();
         return pattern.matcher(logs).find();
     }
 
-
     private String getContainerLogs() {
         return new LogCommand(containerId).withNumberOfLines(NUM_LOG_LINES).execute();
     }
-
 
     private void waitForLogs(){
         try {
@@ -179,7 +170,6 @@ public class Container {
             throw new RuntimeException(ex);
         }
     }
-
 
     /**
      * Stop the container
@@ -191,7 +181,6 @@ public class Container {
         new StopCommand(containerId).execute();
         LOG.info("Stopped container: " + containerId);
     }
-
 
     /**
      * Run a command on the container via docker exec

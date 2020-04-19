@@ -9,6 +9,9 @@ import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.cloudwatch.*;
 import com.amazonaws.services.cloudwatch.model.*;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
+import com.amazonaws.services.identitymanagement.model.CreateRoleRequest;
+import com.amazonaws.services.identitymanagement.model.EntityAlreadyExistsException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -201,6 +204,20 @@ public class BasicDockerFunctionalityTest {
         datum.setValue(123.4);
         response = client.putMetricData(request);
         Assert.assertNotNull(response);
+    }
+
+    @org.junit.Test
+    @org.junit.jupiter.api.Test
+    public void testCreateDuplicateRoleException() {
+        AmazonIdentityManagement iamClient = TestUtils.getClientIAM();
+        try {
+            CreateRoleRequest request = new CreateRoleRequest().withRoleName("role1234");
+            iamClient.createRole(request);
+            iamClient.createRole(request);
+            throw new RuntimeException("EntityAlreadyExistsException should be thrown");
+        } catch (EntityAlreadyExistsException e) {
+            // this exception is expected here
+        }
     }
 
     private SQSConnection createSQSConnection() throws Exception {

@@ -12,6 +12,8 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBStreams;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBStreamsClientBuilder;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
 import com.amazonaws.services.kinesis.AmazonKinesisAsyncClientBuilder;
@@ -173,6 +175,16 @@ public class TestUtils {
         return AmazonCloudWatchClientBuilder.standard().
                 withEndpointConfiguration(getEndpointConfigurationCloudWatch()).
                 withCredentials(getCredentialsProvider()).build();
+    }
+
+    public static AmazonIdentityManagement getClientIAM() {
+        return AmazonIdentityManagementClientBuilder.standard().
+                withEndpointConfiguration(getEndpointConfigurationIAM()).
+                withCredentials(getCredentialsProvider()).build();
+    }
+
+    protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationIAM() {
+        return getEndpointConfiguration(Localstack.INSTANCE.getEndpointIAM());
     }
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationLambda() {

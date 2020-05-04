@@ -1,5 +1,6 @@
 package cloud.localstack;
 
+import cloud.localstack.Constants;
 import cloud.localstack.ServiceName;
 import cloud.localstack.docker.*;
 import cloud.localstack.docker.command.*;
@@ -110,12 +111,12 @@ public class Localstack {
     public String getEndpointS3() {
         String s3Endpoint = endpointForService(ServiceName.S3);
         /*
-         * Use the domain name wildcard *.localhost.atlassian.io which maps to 127.0.0.1
+         * Use the domain name wildcard *.localhost.localstack.cloud which maps to 127.0.0.1
          * We need to do this because S3 SDKs attempt to access a domain <bucket-name>.<service-host-name>
          * which by default would result in <bucket-name>.localhost, but that name cannot be resolved
          * (unless hardcoded in /etc/hosts)
          */
-        s3Endpoint = s3Endpoint.replace("localhost", "test.localhost.atlassian.io");
+        s3Endpoint = s3Endpoint.replace("localhost", Constants.LOCALHOST_DOMAIN_NAME);
         return s3Endpoint;
     }
 

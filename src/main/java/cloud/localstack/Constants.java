@@ -6,6 +6,8 @@ import java.util.Map;
 public class Constants {
     public static final Map<String, Integer> DEFAULT_PORTS = new HashMap<>();
 
+    public static final String LOCALHOST_DOMAIN_NAME = "localhost.localstack.cloud";
+
     static {
         DEFAULT_PORTS.put("apigateway", 4567);
         DEFAULT_PORTS.put("kinesis", 4568);

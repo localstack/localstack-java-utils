@@ -174,4 +174,40 @@ public class SQSMessagingTest {
         final ReceiveMessageResult messageResult = clientSQS.receiveMessage(queueUrl);
         Assert.assertNotNull(messageResult);
     }
+
+    /**
+     * java.lang.IllegalArgumentException: Duplicated keys (RedrivePolicy) are provided, when retrieving SQS attributes
+     * https://github.com/localstack/localstack/issues/1992
+     */
+    @Test
+    public void testGetQueueRedrivePolicy() {
+        String srcQueueName = "adapter-queue";
+        String dlQueueName = "adapter-queue-dlq";
+
+        final AmazonSQS clientSQS = TestUtils.getClientSQS();
+        final String srcQueueUrl = clientSQS.createQueue(srcQueueName).getQueueUrl();
+        final String dlQueueUrl = clientSQS.createQueue(dlQueueName).getQueueUrl();
+
+        GetQueueAttributesResult dlQueueAttrs = clientSQS.getQueueAttributes(
+                new GetQueueAttributesRequest(dlQueueUrl).withAttributeNames("QueueArn")
+        );
+        String dlQueueArn = dlQueueAttrs.getAttributes().get("QueueArn");
+
+        final String redrivePolicy = "{\"maxReceiveCount\": 5, \"deadLetterTargetArn\": \"" + dlQueueArn + "\"}";
+
+        SetQueueAttributesRequest request = new SetQueueAttributesRequest()
+                .withQueueUrl(srcQueueUrl)
+                .addAttributesEntry("RedrivePolicy", redrivePolicy)
+                .addAttributesEntry("MessageRetentionPeriod", "345600")
+                .addAttributesEntry("VisibilityTimeout", "30");
+
+        clientSQS.setQueueAttributes(request);
+
+        GetQueueAttributesResult result = clientSQS.getQueueAttributes(new GetQueueAttributesRequest(dlQueueUrl).withAttributeNames("RedrivePolicy"));
+        Assert.assertTrue(result.getAttributes().isEmpty());
+
+        result = clientSQS.getQueueAttributes(new GetQueueAttributesRequest(srcQueueUrl).withAttributeNames("RedrivePolicy"));
+        Assert.assertEquals(result.getAttributes().size(), 1);
+        Assert.assertEquals(result.getAttributes().get("RedrivePolicy"), redrivePolicy);
+    }
 }

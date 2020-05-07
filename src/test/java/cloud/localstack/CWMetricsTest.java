@@ -1,7 +1,11 @@
 package cloud.localstack;
 
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.cloudwatch.model.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Test integration of CloudWatch metrics with LocalStack
@@ -56,5 +61,46 @@ public class CWMetricsTest {
         /* List metric work as expectation */
         ListMetricsResult metrics = cw.listMetrics(new ListMetricsRequest());
         Assert.assertEquals(metrics.getMetrics().size(), 1);
+    }
+
+    @Test
+    public void testCWGetMetricData() {
+        final AmazonCloudWatch cw = AmazonCloudWatchClientBuilder.standard()
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4582", "us-east-1"))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("accesskey", "secretkey")))
+                .build();
+
+        Metric metric = new Metric()
+                .withNamespace("customNamespace")
+                .withMetricName("MaxMemoryUsage")
+                .withDimensions(
+                        new Dimension().withName("id").withValue("specificId"),
+                        new Dimension().withName("class").withValue("customNamespace"),
+                        new Dimension().withName("level").withValue("INFO"),
+                        new Dimension().withName("type").withValue("GAUGE"));
+
+        /* List metric work */
+        cw.listMetrics();
+
+        String metricQueryId = "someName";
+        MetricDataQuery metricDataQuery = new MetricDataQuery()
+                .withId(metricQueryId)
+                .withLabel("someLabel")
+                .withReturnData(true)
+                .withMetricStat(new MetricStat().withMetric(metric)
+                        .withStat("Average")
+                        .withUnit("None")
+                        .withPeriod(5));
+
+        GetMetricDataRequest getMetricDataRequest = new GetMetricDataRequest()
+                .withMetricDataQueries(metricDataQuery)
+                .withStartTime(new Date(System.currentTimeMillis() - 3600 * 1000))
+                .withEndTime(new Date(System.currentTimeMillis()))
+                .withMaxDatapoints(100);
+
+        /* Get metricData work */
+        GetMetricDataResult getMetricDataResult = cw.getMetricData(getMetricDataRequest);
+        Assert.assertEquals(getMetricDataResult.getMetricDataResults().size(), 1);
+        Assert.assertEquals(getMetricDataResult.getMetricDataResults().get(0).getId(), metricQueryId);
     }
 }

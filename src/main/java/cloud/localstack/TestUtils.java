@@ -33,8 +33,11 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import software.amazon.awssdk.services.sns.SnsClient;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -92,6 +95,10 @@ public class TestUtils {
         return AmazonSNSClientBuilder.standard().
                 withEndpointConfiguration(getEndpointConfigurationSNS()).
                 withCredentials(getCredentialsProvider()).build();
+    }
+
+    public static SnsClient getSNSClientV2() {
+        return SnsClient.builder().endpointOverride(URI.create(Localstack.INSTANCE.getEndpointSNS())).build();
     }
 
     public static AmazonSNSAsync getClientSNSAsync() {

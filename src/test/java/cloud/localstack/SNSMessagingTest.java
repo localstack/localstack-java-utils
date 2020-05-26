@@ -10,6 +10,9 @@ import com.amazonaws.services.sns.model.PublishResult;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 import javax.jms.JMSException;
 import java.util.concurrent.CompletableFuture;
@@ -23,11 +26,25 @@ public class SNSMessagingTest {
     private static final String TOPIC = "topic";
 
     @Test
-    public void testSendMessage() throws JMSException {
+    public void testSendMessage() {
         final AmazonSNS clientSNS = TestUtils.getClientSNS();
         final CreateTopicResult createTopicResult = clientSNS.createTopic(TOPIC);
         final PublishResult publishResult = clientSNS.publish(createTopicResult.getTopicArn(), "message");
         Assert.assertNotNull(publishResult);
+    }
+
+    @Test
+    public void testSendMessageV2() {
+        final SnsClient clientSNS = TestUtils.getSNSClientV2();
+        CreateTopicResponse rs = clientSNS.createTopic(software.amazon.awssdk.services.sns.model.CreateTopicRequest.builder().name("topic1").build());
+        String topicArn = rs.topicArn();
+        PublishResponse publishResponse = clientSNS.publish(software.amazon.awssdk.services.sns.model.PublishRequest.builder()
+                .topicArn(topicArn)
+                .subject("Test Subject")
+                .message("Hello world.")
+                .build());
+
+        Assert.assertNotNull(publishResponse);
     }
 
     @Test
@@ -45,5 +62,4 @@ public class SNSMessagingTest {
         final PublishResult result = publishResult.get(3, TimeUnit.SECONDS);
         Assert.assertNotNull(result);
     }
-
 }

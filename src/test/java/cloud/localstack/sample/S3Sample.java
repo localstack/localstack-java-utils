@@ -15,6 +15,7 @@ package cloud.localstack.sample;
  */
 
 import cloud.localstack.Localstack;
+import cloud.localstack.docker.annotation.LocalstackDockerConfiguration;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
@@ -65,7 +66,14 @@ public class S3Sample {
                             "location (~/.aws/credentials), and is in valid format.",
                     e);
         }
-        String s3Endpoint = Localstack.INSTANCE.getEndpointS3();
+
+        Localstack instance = Localstack.INSTANCE;
+
+        LocalstackDockerConfiguration config = LocalstackDockerConfiguration.DEFAULT;
+        instance.startup(config);
+
+        String s3Endpoint = instance.getEndpointS3();
+
         runTest(credentials, s3Endpoint);
     }
 

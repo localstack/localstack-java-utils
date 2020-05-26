@@ -33,6 +33,7 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sns.SnsClient;
 
 import java.io.IOException;
@@ -98,7 +99,10 @@ public class TestUtils {
     }
 
     public static SnsClient getSNSClientV2() {
-        return SnsClient.builder().endpointOverride(URI.create(Localstack.INSTANCE.getEndpointSNS())).build();
+        return SnsClient.builder()
+                .endpointOverride(URI.create(Localstack.INSTANCE.getEndpointSNS()))
+                .region(Region.of(DEFAULT_REGION))
+                .build();
     }
 
     public static AmazonSNSAsync getClientSNSAsync() {

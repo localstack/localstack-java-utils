@@ -33,6 +33,8 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sns.SnsClient;
 
@@ -100,6 +102,7 @@ public class TestUtils {
 
     public static SnsClient getSNSClientV2() {
         return SnsClient.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(TEST_ACCESS_KEY, TEST_SECRET_KEY)))
                 .endpointOverride(URI.create(Localstack.INSTANCE.getEndpointSNS()))
                 .region(Region.of(DEFAULT_REGION))
                 .build();

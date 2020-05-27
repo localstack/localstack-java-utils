@@ -65,10 +65,7 @@ public class CWMetricsTest {
 
     @Test
     public void testCWGetMetricData() {
-        final AmazonCloudWatch cw = AmazonCloudWatchClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4582", "us-east-1"))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("accesskey", "secretkey")))
-                .build();
+        final AmazonCloudWatch cw = TestUtils.getClientCloudWatch();
 
         Metric metric = new Metric()
                 .withNamespace("customNamespace")

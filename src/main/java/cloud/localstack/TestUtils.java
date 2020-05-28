@@ -24,19 +24,23 @@ import com.amazonaws.services.lambda.AWSLambdaAsyncClientBuilder;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
-import com.amazonaws.services.sqs.*;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.internal.http.loader.DefaultSdkHttpClientBuilder;
+import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.utils.AttributeMap;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -51,6 +55,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import static software.amazon.awssdk.http.SdkHttpConfigurationOption.TRUST_ALL_CERTIFICATES;
 
 @SuppressWarnings("all")
 public class TestUtils {
@@ -101,7 +107,15 @@ public class TestUtils {
     }
 
     public static SnsClient getSNSClientV2() {
+        SdkHttpClient.Builder builder = new DefaultSdkHttpClientBuilder();
+        AttributeMap attributeMap = AttributeMap.builder()
+                .put(TRUST_ALL_CERTIFICATES, Boolean.TRUE)
+                .build();
+
+        builder.buildWithDefaults(attributeMap);
+
         return SnsClient.builder()
+                .httpClientBuilder(builder)
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(TEST_ACCESS_KEY, TEST_SECRET_KEY)))
                 .endpointOverride(URI.create(Localstack.INSTANCE.getEndpointSNS()))
                 .region(Region.of(DEFAULT_REGION))

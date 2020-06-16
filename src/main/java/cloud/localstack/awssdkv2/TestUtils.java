@@ -4,6 +4,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.utils.*;
 import software.amazon.awssdk.http.*;
 import software.amazon.awssdk.services.kinesis.*;
+import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 
@@ -26,8 +27,11 @@ public class TestUtils {
         return wrapApiClientV2(SqsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSQS()).build();
     }
 
-    public static <T extends software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder> T wrapApiClientV2(
-            T builder, String endpointURL) {
+    public static SnsAsyncClient getClientSNSAsyncV2() {
+        return wrapApiClientV2(SnsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSNS()).build();
+    }
+
+    public static <T extends software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {
         try {
             return (T) ((software.amazon.awssdk.awscore.client.builder.AwsClientBuilder)builder
                 .httpClient(NettyNioAsyncHttpClient.builder().buildWithDefaults(

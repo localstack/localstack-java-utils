@@ -1,7 +1,10 @@
 package cloud.localstack;
 
+import cloud.localstack.CommonUtils;
 import cloud.localstack.utils.PromiseAsyncHandler;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import cloud.localstack.awssdkv1.TestUtils;
+
 import com.amazon.sqs.javamessaging.SQSConnection;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -51,7 +54,7 @@ public class SQSMessagingTest {
 
         /* Disable SSL certificate checks for local testing */
         if (Localstack.useSSL()) {
-            TestUtils.disableSslCertChecking();
+            CommonUtils.disableSslCertChecking();
         }
     }
 

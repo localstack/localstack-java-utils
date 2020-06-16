@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import cloud.localstack.Constants;
 import cloud.localstack.ServiceName;
+import cloud.localstack.CommonUtils;
 
 /**
  * Singleton class that automatically downloads, installs, starts,
@@ -385,7 +386,7 @@ public class Localstack {
             ensureInstallation(true);
 
             // make sure we avoid any errors related to locally generated SSL certificates
-            TestUtils.disableSslCertChecking();
+            CommonUtils.disableSslCertChecking();
 
             if (INFRA_STARTED.get() != null) return;
             String[] cmd = new String[]{"make", "-C", TMP_INSTALL_DIR, "infra"};

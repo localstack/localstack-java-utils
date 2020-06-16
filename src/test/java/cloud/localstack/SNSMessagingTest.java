@@ -1,6 +1,8 @@
 package cloud.localstack;
 
 import cloud.localstack.utils.PromiseAsyncHandler;
+import cloud.localstack.awssdkv1.TestUtils;
+
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.model.CreateTopicRequest;

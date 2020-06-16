@@ -1,7 +1,7 @@
 package cloud.localstack.docker;
 
 import cloud.localstack.Localstack;
-import cloud.localstack.TestUtils;
+import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerConfiguration;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.sqs.AmazonSQS;

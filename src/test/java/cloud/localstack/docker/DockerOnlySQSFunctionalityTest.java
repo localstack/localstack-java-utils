@@ -1,7 +1,8 @@
 package cloud.localstack.docker;
 
-import cloud.localstack.TestUtils;
 import cloud.localstack.Localstack;
+import cloud.localstack.CommonUtils;
+import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
@@ -30,7 +31,7 @@ import java.util.Map;
 public class DockerOnlySQSFunctionalityTest {
 
     static {
-        TestUtils.setEnv("AWS_CBOR_DISABLE", "1");
+        CommonUtils.setEnv("AWS_CBOR_DISABLE", "1");
     }
 
     @org.junit.Test

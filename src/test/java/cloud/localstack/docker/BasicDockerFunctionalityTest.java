@@ -2,8 +2,10 @@ package cloud.localstack.docker;
 
 import cloud.localstack.Localstack;
 import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import cloud.localstack.CommonUtils;
+import cloud.localstack.awssdkv1.TestUtils;
+
 import com.amazon.sqs.javamessaging.SQSConnection;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -57,7 +59,7 @@ import java.util.Map;
 public class BasicDockerFunctionalityTest {
 
     static {
-        TestUtils.setEnv("AWS_CBOR_DISABLE", "1");
+        CommonUtils.setEnv("AWS_CBOR_DISABLE", "1");
     }
 
     @org.junit.Test

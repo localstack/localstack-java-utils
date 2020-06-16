@@ -1,6 +1,6 @@
 package cloud.localstack.sample;
 
-import cloud.localstack.TestUtils;
+import cloud.localstack.awssdkv1.TestUtils;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;

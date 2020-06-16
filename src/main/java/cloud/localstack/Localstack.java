@@ -2,6 +2,7 @@ package cloud.localstack;
 
 import cloud.localstack.Constants;
 import cloud.localstack.ServiceName;
+import cloud.localstack.CommonUtils;
 import cloud.localstack.docker.*;
 import cloud.localstack.docker.command.*;
 import cloud.localstack.docker.annotation.LocalstackDockerConfiguration;
@@ -54,7 +55,7 @@ public class Localstack {
 
     static {
         // make sure we avoid any errors related to locally generated SSL certificates
-        TestUtils.disableSslCertChecking();
+        CommonUtils.disableSslCertChecking();
     }
 
     private Localstack() { }
@@ -237,6 +238,6 @@ public class Localstack {
     }
 
     public static String getDefaultRegion() {
-        return TestUtils.DEFAULT_REGION;
+        return Constants.DEFAULT_REGION;
     }
 }

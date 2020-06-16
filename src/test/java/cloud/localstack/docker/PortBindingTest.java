@@ -2,7 +2,7 @@ package cloud.localstack.docker;
 
 import cloud.localstack.Localstack;
 import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.TestUtils;
+import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 import org.junit.jupiter.api.extension.ExtendWith;

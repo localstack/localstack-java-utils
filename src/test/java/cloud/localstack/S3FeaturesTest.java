@@ -3,6 +3,9 @@ package cloud.localstack;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import cloud.localstack.awssdkv1.TestUtils;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -26,8 +29,6 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.model.lifecycle.*;
-
-import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 @RunWith(LocalstackTestRunner.class)
 @LocalstackDockerProperties(services = {"s3"}, ignoreDockerRunErrors=true)
@@ -71,7 +72,7 @@ public class S3FeaturesTest {
 			return;
 		}
 
-		TestUtils.disableSslCertChecking();
+		CommonUtils.disableSslCertChecking();
 
 		String bucketName = "test-bucket-https";
 

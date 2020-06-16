@@ -8,6 +8,10 @@ public class Constants {
 
     public static final String LOCALHOST_DOMAIN_NAME = "localhost.localstack.cloud";
 
+    public static final String DEFAULT_REGION = "us-east-1";
+    public static final String TEST_ACCESS_KEY = "test";
+    public static final String TEST_SECRET_KEY = "test";
+
     static {
         DEFAULT_PORTS.put("apigateway", 4567);
         DEFAULT_PORTS.put("kinesis", 4568);
@@ -34,4 +38,5 @@ public class Constants {
         DEFAULT_PORTS.put("ec2", 4597);
         DEFAULT_PORTS.put("kms", 4599);
     }
+
 }

@@ -1,5 +1,7 @@
 package cloud.localstack.deprecated;
 
+import cloud.localstack.CommonUtils;
+import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.utils.LocalTestUtil;
 import cloud.localstack.sample.KinesisLambdaHandler;
 import cloud.localstack.sample.S3Sample;
@@ -48,7 +50,7 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static cloud.localstack.TestUtils.TEST_CREDENTIALS;
+import static cloud.localstack.awssdkv1.TestUtils.TEST_CREDENTIALS;
 
 /**
  * Simple class to test basic functionality and interaction with LocalStack.
@@ -66,10 +68,10 @@ public class BasicFunctionalityTest {
          * Need to disable CBOR protocol, see:
          * https://github.com/mhart/kinesalite/blob/master/README.md#cbor-protocol-issues-with-the-java-sdk
          */
-        TestUtils.setEnv("AWS_CBOR_DISABLE", "1");
+        CommonUtils.setEnv("AWS_CBOR_DISABLE", "1");
         /* Disable SSL certificate checks for local testing */
         if (Localstack.useSSL()) {
-            TestUtils.disableSslCertChecking();
+            CommonUtils.disableSslCertChecking();
         }
     }
 
@@ -195,16 +197,7 @@ public class BasicFunctionalityTest {
     public void testSQSQueueAttributes() {
         // Based on https://github.com/localstack/localstack/issues/1551
 
-        AwsClientBuilder.EndpointConfiguration endpoint = TestUtils.getEndpointConfigurationSQS();
-
-        ClientConfiguration cc = new ClientConfiguration();
-        cc.setProtocol(Protocol.HTTP);
-
-        AmazonSQSAsync sqsAsync = AmazonSQSAsyncClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("foo", "foo")))
-                .withEndpointConfiguration(endpoint)
-                .withClientConfiguration(cc)
-                .build();
+        AmazonSQSAsync sqsAsync = TestUtils.getClientSQSAsync();
 
         CreateQueueResult result1 = sqsAsync.createQueue("1551-test");
         CreateQueueResult result2 = sqsAsync.createQueue("1551-test-dlq");

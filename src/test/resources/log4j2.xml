@@ -1,0 +1,14 @@
+<Configuration status="DEBUG">
+  <Appenders>
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} [%t] %-5p %c:%L - %m%n" />
+    </Console>
+  </Appenders>
+
+  <Loggers>
+    <Root level="DEBUG">
+      <AppenderRef ref="ConsoleAppender"/>
+    </Root>
+    <Logger name="software.amazon.awssdk" level="DEBUG" />
+  </Loggers>
+</Configuration>

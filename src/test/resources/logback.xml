@@ -2,4 +2,5 @@
 <configuration>
   <logger name="org.testcontainers" level="INFO"/>
   <logger name="com.github.dockerjava" level="INFO"/>
+  <logger name="software.amazon.awssdk" level="DEBUG"/>
 </configuration>

@@ -1,5 +1,7 @@
 package cloud.localstack;
 
+import cloud.localstack.awssdkv1.TestUtils;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;

@@ -7,17 +7,21 @@ import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
+import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 
 import cloud.localstack.Localstack;
 
 import java.net.*;
 
+/**
+ * Utility methods for AWS SDK v2
+ */
 @SuppressWarnings("all")
 public class TestUtils {
-
-    /**
-     * AWS SDK V2 METHODS
-     */
 
     public static KinesisAsyncClient getClientKinesisAsyncV2() {
         return wrapApiClientV2(KinesisAsyncClient.builder(), Localstack.INSTANCE.getEndpointKinesis()).build();
@@ -31,9 +35,9 @@ public class TestUtils {
         return wrapApiClientV2(SnsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSNS()).build();
     }
 
-    public static <T extends software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {
+    public static <T extends SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {
         try {
-            return (T) ((software.amazon.awssdk.awscore.client.builder.AwsClientBuilder)builder
+            return (T) ((AwsClientBuilder)builder
                 .httpClient(NettyNioAsyncHttpClient.builder().buildWithDefaults(
                     AttributeMap.builder().put(
                         SdkHttpConfigurationOption.TRUST_ALL_CERTIFICATES, java.lang.Boolean.TRUE).build())))
@@ -45,9 +49,8 @@ public class TestUtils {
         }
     }
 
-    private static software.amazon.awssdk.auth.credentials.AwsCredentialsProvider getCredentialsV2() throws Exception {
-        return software.amazon.awssdk.auth.credentials.StaticCredentialsProvider.create(
-            software.amazon.awssdk.auth.credentials.AwsBasicCredentials.create("access", "secret"));
+    private static AwsCredentialsProvider getCredentialsV2() throws Exception {
+        return StaticCredentialsProvider.create(AwsBasicCredentials.create("access", "secret"));
     }
 
 }

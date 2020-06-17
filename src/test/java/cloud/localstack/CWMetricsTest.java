@@ -1,6 +1,8 @@
 package cloud.localstack;
 
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import cloud.localstack.awssdkv1.TestUtils;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;

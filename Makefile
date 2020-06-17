@@ -9,7 +9,10 @@ build:           ## Build the code using Maven
 publish-maven:   ## Publish artifacts to Maven Central
 	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS=" " make build
 
-test:            ## Run tests for Java/JUnit compatibility
-	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn $(MVN_ARGS) test
+test:            ## Run Java/JUnit tests for AWS SDK v1 and v2
+	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv2 \
+		-Dtest="cloud.localstack.awssdkv2.*Test" test
+	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv1 \
+		-Dtest="!cloud.localstack.awssdkv2.*Test" test
 
 .PHONY: usage clean install test

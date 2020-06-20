@@ -6,11 +6,10 @@ import software.amazon.awssdk.http.*;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sqs.*;
+import software.amazon.awssdk.services.s3.*;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 
 import cloud.localstack.Localstack;
@@ -33,6 +32,10 @@ public class TestUtils {
 
     public static SnsAsyncClient getClientSNSAsyncV2() {
         return wrapApiClientV2(SnsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSNS()).build();
+    }
+
+    public static S3AsyncClient getClientS3AsyncV2() {
+        return wrapApiClientV2(S3AsyncClient.builder(), Localstack.INSTANCE.getEndpointS3()).build();
     }
 
     public static <T extends SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {

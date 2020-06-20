@@ -32,7 +32,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <aws.sdk.version>1.11.642</aws.sdk.version>
-        <aws.sdkv2.version>2.13.36</aws.sdkv2.version>
+        <aws.sdkv2.version>2.13.39</aws.sdkv2.version>
     </properties>
 
     <dependencies>
@@ -148,6 +148,12 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>kinesis</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
             <version>${aws.sdkv2.version}</version>
             <scope>provided</scope>
         </dependency>

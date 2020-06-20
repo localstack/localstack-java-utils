@@ -4,10 +4,14 @@ import cloud.localstack.awssdkv2.TestUtils;
 import cloud.localstack.LocalstackTestRunner;
 
 import software.amazon.awssdk.core.SdkSystemSetting;
-import software.amazon.awssdk.services.sqs.*;
-import software.amazon.awssdk.services.sqs.model.*;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.kinesis.model.*;
+import software.amazon.awssdk.services.s3.*;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.sns.*;
+import software.amazon.awssdk.services.sns.model.*;
+import software.amazon.awssdk.services.sqs.*;
+import software.amazon.awssdk.services.sqs.model.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.utils.Logger;
@@ -32,8 +36,7 @@ public class BasicFeaturesSDKV2Test {
         CreateQueueRequest request = CreateQueueRequest.builder().queueName(queueName).build();
         SqsAsyncClient sqsClient = TestUtils.getClientSQSAsyncV2();
         CreateQueueResponse queue = sqsClient.createQueue(request).get();
-        // TODO fix classpath for v2 and finalize test
-        System.out.println(queue);
+        Assert.assertTrue(queue.queueUrl().contains("queue/" + queueName));
     }
 
     @Test
@@ -43,8 +46,36 @@ public class BasicFeaturesSDKV2Test {
         CreateStreamRequest request = CreateStreamRequest.builder()
             .streamName(streamName).shardCount(1).build();
         CreateStreamResponse response = kinesisClient.createStream(request).get();
-        // TODO fix classpath for v2 and finalize test
-        System.out.println(response);
+        Assert.assertNotNull(response);
     }
 
+    @Test
+    public void testS3CreateListBuckets() throws Exception {
+        String bucketName = "test-b-9716";
+        S3AsyncClient s3Client = TestUtils.getClientS3AsyncV2();
+        CreateBucketRequest request = CreateBucketRequest.builder().bucket(bucketName).build();
+        CreateBucketResponse response = s3Client.createBucket(request).get();
+        Assert.assertNotNull(response);
+        ListBucketsRequest listRequest = ListBucketsRequest.builder().build();
+        ListBucketsResponse buckets = s3Client.listBuckets(listRequest).get();
+        Bucket bucket = buckets.buckets().stream().filter(b -> b.name().equals(bucketName)).findFirst().get();
+        Assert.assertNotNull(bucket);
+    }
+
+    @Test
+    public void testSendSNSMessage() throws Exception {
+        // Test integration of SNS messaging with LocalStack using SDK v2
+
+        final String topicName = "test-t-6210";
+        final SnsAsyncClient clientSNS = TestUtils.getClientSNSAsyncV2();
+        CreateTopicResponse createTopicResponse = clientSNS.createTopic(
+            CreateTopicRequest.builder().name(topicName).build()).get();
+
+        String topicArn = createTopicResponse.topicArn();
+        Assert.assertNotNull(topicArn);
+        PublishRequest publishRequest = PublishRequest.builder().topicArn(topicArn).subject("test subject").message("message test.").build();
+
+        PublishResponse publishResponse = clientSNS.publish(publishRequest).get();
+        Assert.assertNotNull(publishResponse.messageId());
+    }
 }

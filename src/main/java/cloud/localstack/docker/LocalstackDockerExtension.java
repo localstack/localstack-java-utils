@@ -37,7 +37,10 @@ public class LocalstackDockerExtension implements BeforeAllCallback {
         } else {
             store = context.getStore(NAMESPACE);
         }
-        store.getOrComputeIfAbsent("localstack", key -> new LocalstackDockerExtension.StartedLocalStack(context));
+        if (store.get("localstack") == null) {
+            final StartedLocalStack startedStack = new LocalstackDockerExtension.StartedLocalStack(context);
+            store.getOrComputeIfAbsent("localstack", key -> startedStack);
+        }
     }
 
     private boolean isUseSingleDockerContainer(final ExtensionContext context) {

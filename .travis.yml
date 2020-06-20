@@ -10,12 +10,14 @@ branches:
 
 install:
   - set -e
-  - nohup docker pull localstack/localstack > /dev/null &
+  - nohup docker pull localstack/localstack-light > /dev/null &
   - nohup docker pull lambci/lambda:java8 > /dev/null &
 
 script:
   - set -e
   - mvn -q -DskipTests test
+  - docker pull localstack/localstack-light > /dev/null
+  - docker tag localstack/localstack-light localstack/localstack
   - make test
   - docker ps -a
 

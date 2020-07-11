@@ -169,6 +169,10 @@ public class Localstack {
         return endpointForService(ServiceName.CLOUDWATCH);
     }
 
+    public String getEndpointCloudWatchLogs() {
+        return endpointForService(ServiceName.CLOUDWATCH_LOGS);
+    }
+    
     public String getEndpointSES() {
         return endpointForService(ServiceName.SES);
     }

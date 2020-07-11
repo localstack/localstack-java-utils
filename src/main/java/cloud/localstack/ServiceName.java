@@ -17,6 +17,7 @@ public class ServiceName {
     public static final String ROUTE53 = "route53";
     public static final String CLOUDFORMATION = "cloudformation";
     public static final String CLOUDWATCH = "cloudwatch";
+    public static final String CLOUDWATCH_LOGS = "logs";
     public static final String SSM = "ssm";
     public static final String SECRETSMANAGER = "secretsmanager";
     public static final String STEPFUNCTIONS = "stepfunctions";

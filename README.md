@@ -89,6 +89,7 @@ make build
 
 ## Change Log
 
+* v0.2.2: Addition of CloudWatch Logs endpoint configuration
 * v0.2.1: Move Java sources into separate project; mark non-Docker Java `LocalstackExtension` as deprecated; update paths for Python code lookup in Docker container
 
 ## License

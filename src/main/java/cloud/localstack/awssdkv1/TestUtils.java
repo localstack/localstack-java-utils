@@ -22,6 +22,8 @@ import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaAsync;
 import com.amazonaws.services.lambda.AWSLambdaAsyncClientBuilder;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
+import com.amazonaws.services.logs.AWSLogs;
+import com.amazonaws.services.logs.AWSLogsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
@@ -156,6 +158,12 @@ public class TestUtils {
                 withEndpointConfiguration(getEndpointConfigurationCloudWatch()).
                 withCredentials(getCredentialsProvider()).build();
     }
+    
+    public static AWSLogs getClientCloudWatchLogs() {
+        return AWSLogsClientBuilder.standard().
+                withEndpointConfiguration(getEndpointConfigurationCloudWatchLogs()).
+                withCredentials(getCredentialsProvider()).build();
+    }
 
     public static AmazonIdentityManagement getClientIAM() {
         return AmazonIdentityManagementClientBuilder.standard().
@@ -198,6 +206,10 @@ public class TestUtils {
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationCloudWatch() {
         return getEndpointConfiguration(Localstack.INSTANCE.getEndpointCloudWatch());
     }
+    
+    private static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationCloudWatchLogs() {
+        return getEndpointConfiguration(Localstack.INSTANCE.getEndpointCloudWatchLogs());
+	}
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationSecretsManager() {
         return getEndpointConfiguration(Localstack.INSTANCE.getEndpointSecretsmanager());

@@ -46,7 +46,6 @@ public class DockerOnlySQSFunctionalityTest {
     @org.junit.Test
     @org.junit.jupiter.api.Test
     public void testDynamoNotRunning() {
-
         final Throwable throwable = Assertions.catchThrowable(() -> TestUtils.getClientDynamoDB().listTables());
 
         Assertions.assertThat(throwable).isInstanceOf(SdkClientException.class);

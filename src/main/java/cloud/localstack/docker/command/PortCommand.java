@@ -30,6 +30,7 @@ public class PortCommand extends Command {
                 .collect(Collectors.toList());
     }
 
-    private Function<MatchResult, PortMapping> matchToPortMapping = m -> new PortMapping(m.group(IP_GROUP), m.group(EXTERNAL_PORT_GROUP), m.group(INTERNAL_PORT_GROUP));
+    private Function<MatchResult, PortMapping> matchToPortMapping = m ->
+        new PortMapping(m.group(IP_GROUP), m.group(EXTERNAL_PORT_GROUP), m.group(INTERNAL_PORT_GROUP));
 
 }

@@ -37,9 +37,10 @@ public class LocalstackDockerExtension implements BeforeAllCallback {
         } else {
             store = context.getStore(NAMESPACE);
         }
-        if (store.get("localstack") == null) {
-            final StartedLocalStack startedStack = new LocalstackDockerExtension.StartedLocalStack(context);
-            store.getOrComputeIfAbsent("localstack", key -> startedStack);
+        StartedLocalStack startedStack = (StartedLocalStack)store.get("localstack");
+        if (startedStack == null || !startedStack.isRunning()) {
+            final StartedLocalStack newStartedStack = new LocalstackDockerExtension.StartedLocalStack(context);
+            store.put("localstack", newStartedStack);
         }
     }
 
@@ -54,6 +55,10 @@ public class LocalstackDockerExtension implements BeforeAllCallback {
         StartedLocalStack(ExtensionContext context) {
             final LocalstackDockerConfiguration dockerConfig = PROCESSOR.process(context.getRequiredTestClass());
             localstackDocker.startup(dockerConfig);
+        }
+
+        public boolean isRunning() {
+            return localstackDocker.isRunning();
         }
 
         @Override

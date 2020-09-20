@@ -75,7 +75,7 @@ public class LocalstackDockerAnnotationProcessor {
 
             final String externalHostName = StringUtils.defaultIfBlank(resolvedName, "localhost");
 
-            LOG.info("External host name is set to: " + externalHostName);
+            LOG.fine("External host name is set to: " + externalHostName);
             return externalHostName;
         } catch (InstantiationException | IllegalAccessException ex) {
             throw new IllegalStateException("Unable to resolve hostname", ex);

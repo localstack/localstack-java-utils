@@ -10,11 +10,11 @@ import static org.junit.Assert.assertNotEquals;
 
 public class ContainerTest {
 
-    private static final String EXTERNAL_HOST_NAME = "localhost";
-    private static final String MY_PROPERTY = "MY_PROPERTY";
-    private static final String MY_VALUE = "MyValue";
+    public static final String EXTERNAL_HOST_NAME = "localhost";
+    public static final String MY_PROPERTY = "MY_PROPERTY";
+    public static final String MY_VALUE = "MyValue";
 
-    private boolean pullNewImage = false;
+    public static final boolean pullNewImage = false;
 
     @Test
     public void createLocalstackContainer() throws Exception {
@@ -45,44 +45,6 @@ public class ContainerTest {
         args.add("-c");
         args.add(String.format("echo $%s", valueToEcho));
         return args;
-    }
-
-
-    @Test
-    public void createLocalstackContainerWithRandomPorts() throws Exception {
-        Container container = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, true, null, null, null);
-
-        try {
-            container.waitForAllPorts(EXTERNAL_HOST_NAME);
-
-            assertNotEquals(4567, container.getExternalPortFor(4567));
-            assertNotEquals(4575, container.getExternalPortFor(4575));
-            assertNotEquals(4583, container.getExternalPortFor(4583));
-            assertNotEquals(4584, container.getExternalPortFor(4584));
-        }
-        finally {
-            container.stop();
-        }
-    }
-
-
-    @Test
-    public void createLocalstackContainerWithStaticPorts() throws Exception {
-        Container container = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null);
-
-        try {
-            container.waitForAllPorts(EXTERNAL_HOST_NAME);
-
-            assertEquals(4567, container.getExternalPortFor(4567));
-            assertEquals(4575, container.getExternalPortFor(4575));
-            assertEquals(4583, container.getExternalPortFor(4583));
-            assertEquals(4584, container.getExternalPortFor(4584));
-        }
-        finally {
-            container.stop();
-        }
     }
 
 }

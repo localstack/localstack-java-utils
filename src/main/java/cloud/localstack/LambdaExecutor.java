@@ -1,13 +1,11 @@
 package cloud.localstack;
 
 import cloud.localstack.lambda.DDBEventParser;
+import cloud.localstack.lambda.KinesisEventParser;
 import cloud.localstack.lambda.S3EventParser;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent.Record;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.util.StringInputStream;
@@ -23,13 +21,10 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,21 +64,7 @@ public class LambdaExecutor {
 			}
 		} else {
 			if (records.stream().anyMatch(record -> record.containsKey("kinesis") || record.containsKey("Kinesis"))) {
-				KinesisEvent kinesisEvent = new KinesisEvent();
-				inputObject = kinesisEvent;
-				kinesisEvent.setRecords(new LinkedList<>());
-				for (Map<String, Object> record : records) {
-					KinesisEventRecord r = new KinesisEventRecord();
-					kinesisEvent.getRecords().add(r);
-					Record kinesisRecord = new Record();
-					Map<String, Object> kinesis = (Map<String, Object>) get(record, "Kinesis");
-					String dataString = new String(get(kinesis, "Data").toString().getBytes());
-					byte[] decodedData = Base64.getDecoder().decode(dataString);
-					kinesisRecord.setData(ByteBuffer.wrap(decodedData));
-					kinesisRecord.setPartitionKey((String) get(kinesis, "PartitionKey"));
-					kinesisRecord.setApproximateArrivalTimestamp(new Date());
-					r.setKinesis(kinesisRecord);
-				}
+				inputObject = KinesisEventParser.parse(records);
 			} else if (records.stream().anyMatch(record -> record.containsKey("Sns"))) {
 				SNSEvent snsEvent = new SNSEvent();
 				inputObject = snsEvent;

@@ -22,10 +22,10 @@ public class Container {
     private static final Logger LOG = Logger.getLogger(Container.class.getName());
 
     private static final String LOCALSTACK_NAME = "localstack/localstack";
-    private static final String LOCALSTACK_PORTS = "4566-4593";
+    private static final String LOCALSTACK_PORT_EDGE = "4566";
+    private static final String LOCALSTACK_PORT_ELASTICSEARCH = "4571";
 
     private static final int MAX_PORT_CONNECTION_ATTEMPTS = 10;
-
     private static final int MAX_LOG_COLLECTION_ATTEMPTS = 120;
     private static final long POLL_INTERVAL = 1000;
     private static final int NUM_LOG_LINES = 10;
@@ -66,7 +66,8 @@ public class Container {
         }
 
         RunCommand runCommand = new RunCommand(LOCALSTACK_NAME, imageTag)
-            .withExposedPorts(LOCALSTACK_PORTS, randomizePorts)
+            .withExposedPorts(LOCALSTACK_PORT_EDGE, randomizePorts)
+            .withExposedPorts(LOCALSTACK_PORT_ELASTICSEARCH, randomizePorts)
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
             .withEnvironmentVariable(ENV_DEBUG, ENV_DEBUG_DEFAULT)
             .withEnvironmentVariable(ENV_USE_SSL, Localstack.INSTANCE.useSSL() ? "1" : "0")
@@ -81,7 +82,6 @@ public class Container {
         result.startedByUs = true;
         return result;
     }
-
 
     public static Container getRunningLocalstackContainer() {
         return getRunningLocalstackContainer(DEFAULT_CONTAINER_ID);
@@ -130,6 +130,15 @@ public class Container {
             socket.connect(new InetSocketAddress(ip, port.getExternalPort()), 1000);
             return true;
         } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public boolean isRunning() {
+        try {
+            new PortCommand(containerId).execute();
+            return true;
+        } catch(Exception e) {
             return false;
         }
     }

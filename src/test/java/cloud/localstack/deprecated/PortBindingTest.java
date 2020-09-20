@@ -16,6 +16,8 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest;
 @RunWith(LocalstackTestRunner.class)
 @ExtendWith(LocalstackDockerExtension.class)
 @LocalstackDockerProperties(randomizePorts = false, services = { "sqs:12345" })
+@org.junit.Ignore
+@org.junit.jupiter.api.Disabled
 public class PortBindingTest {
 
     @Test

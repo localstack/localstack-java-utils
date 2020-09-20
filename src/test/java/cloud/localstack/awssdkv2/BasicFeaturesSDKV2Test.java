@@ -1,5 +1,6 @@
 package cloud.localstack.awssdkv2;
 
+import cloud.localstack.Constants;
 import cloud.localstack.awssdkv2.TestUtils;
 import cloud.localstack.LocalstackTestRunner;
 
@@ -36,7 +37,7 @@ public class BasicFeaturesSDKV2Test {
         CreateQueueRequest request = CreateQueueRequest.builder().queueName(queueName).build();
         SqsAsyncClient sqsClient = TestUtils.getClientSQSAsyncV2();
         CreateQueueResponse queue = sqsClient.createQueue(request).get();
-        Assert.assertTrue(queue.queueUrl().contains("queue/" + queueName));
+        Assert.assertTrue(queue.queueUrl().contains(Constants.DEFAULT_AWS_ACCOUNT_ID + "/" + queueName));
     }
 
     @Test

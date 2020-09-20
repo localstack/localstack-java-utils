@@ -23,21 +23,20 @@ import java.util.stream.Collectors;
  */
 public class Localstack {
 
+    public static final String ENV_CONFIG_USE_SSL = "USE_SSL";
+    public static final String ENV_CONFIG_EDGE_PORT = "EDGE_PORT";
+
     private static final Logger LOG = Logger.getLogger(Localstack.class.getName());
+
+    private static final Pattern READY_TOKEN = Pattern.compile("Ready\\.");
+
+    private static final int DEFAULT_EDGE_PORT = 4566;
 
     private static final String PORT_CONFIG_FILENAME = "/opt/code/localstack/" +
             ".venv/lib/python3.8/site-packages/localstack_client/config.py";
 
-    private static final Pattern READY_TOKEN = Pattern.compile("Ready\\.");
-
     //Regular expression used to parse localstack config to determine default ports for services
     private static final Pattern DEFAULT_PORT_PATTERN = Pattern.compile("'(\\w+)'\\Q: '{proto}://{host}:\\E(\\d+)'");
-
-    private static final int SERVICE_NAME_GROUP = 1;
-
-    private static final int PORT_GROUP = 2;
-
-    public static final String ENV_CONFIG_USE_SSL = "USE_SSL";
 
     private Container localStackContainer;
 
@@ -99,12 +98,16 @@ public class Localstack {
         locked = false;
     }
 
+    public boolean isRunning() {
+        return localStackContainer == null ? false : localStackContainer.isRunning();
+    }
+
     private void loadServiceToPortMap() {
         String localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", PORT_CONFIG_FILENAME));
 
+        int edgePort = getEdgePort();
         Map<String, Integer> ports = new RegexStream(DEFAULT_PORT_PATTERN.matcher(localStackPortConfig)).stream()
-                .collect(Collectors.toMap(match -> match.group(SERVICE_NAME_GROUP),
-                        match -> Integer.parseInt(match.group(PORT_GROUP))));
+                .collect(Collectors.toMap(match -> match.group(1), match -> edgePort));
 
         serviceToPortMap = Collections.unmodifiableMap(ports);
     }
@@ -119,6 +122,11 @@ public class Localstack {
          */
         s3Endpoint = s3Endpoint.replace("localhost", Constants.LOCALHOST_DOMAIN_NAME);
         return s3Endpoint;
+    }
+
+    public int getEdgePort() {
+        String envEdgePort = System.getenv(ENV_CONFIG_EDGE_PORT);
+        return envEdgePort == null ? DEFAULT_EDGE_PORT : Integer.parseInt(envEdgePort);
     }
 
     public String getEndpointKinesis() {
@@ -172,7 +180,7 @@ public class Localstack {
     public String getEndpointCloudWatchLogs() {
         return endpointForService(ServiceName.CLOUDWATCH_LOGS);
     }
-    
+
     public String getEndpointSES() {
         return endpointForService(ServiceName.SES);
     }

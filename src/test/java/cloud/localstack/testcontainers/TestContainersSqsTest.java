@@ -1,7 +1,8 @@
 package cloud.localstack.testcontainers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import cloud.localstack.Localstack;
+
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -37,8 +38,6 @@ public class TestContainersSqsTest {
 
     private static final String DOCKER_IMAGE_NAME = "localstack/localstack:latest";
 
-    private static final int SQS_PORT = 4576;
-
     private AmazonSQS amazonSQS;
 
     private GenericContainer<?> genericContainer;
@@ -59,7 +58,8 @@ public class TestContainersSqsTest {
         /*
          * get the randomly generated SQS port
          */
-        final Integer mappedPort = genericContainer.getMappedPort(SQS_PORT);
+        final int sqsPort = Localstack.INSTANCE.getServicePort("sqs");
+        final Integer mappedPort = genericContainer.getMappedPort(sqsPort);
 
         /*
          * create the SQS client
@@ -116,8 +116,9 @@ public class TestContainersSqsTest {
 
     @SuppressWarnings("resource")
     private void startDockerImage() {
+        final int sqsPort = Localstack.INSTANCE.getServicePort("sqs");
         genericContainer = new GenericContainer<>(DOCKER_IMAGE_NAME)
-                .withExposedPorts(SQS_PORT)
+                .withExposedPorts(sqsPort)
                 .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Ready\\.\n"));
         genericContainer.start();
     }

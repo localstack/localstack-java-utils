@@ -214,6 +214,10 @@ public class Localstack {
     }
 
     public String endpointForService(String serviceName) {
+        return endpointForPort(getServicePort(serviceName));
+    }
+
+    public int getServicePort(String serviceName) {
         if (serviceToPortMap == null) {
             throw new IllegalStateException("Service to port mapping has not been determined yet.");
         }
@@ -222,8 +226,7 @@ public class Localstack {
             throw new IllegalArgumentException("Unknown port mapping for service: " + serviceName);
         }
 
-        int internalPort = serviceToPortMap.get(serviceName);
-        return endpointForPort(internalPort);
+        return serviceToPortMap.get(serviceName);
     }
 
     public String endpointForPort(int port) {

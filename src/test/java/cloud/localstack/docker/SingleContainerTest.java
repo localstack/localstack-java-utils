@@ -5,12 +5,11 @@ import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.Assert;
+import org.junit.AfterClass;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
@@ -41,6 +40,13 @@ public class SingleContainerTest {
     @ExtendWith(LocalstackDockerExtension.class)
     @LocalstackDockerProperties(randomizePorts=true, services={"sns"}, useSingleDockerContainer=true)
     public static class ContainerTest2 {
+
+        @AfterClass
+        @AfterAll
+        public static void tearDown() {
+            Localstack.INSTANCE.stop();
+        }
+
         @org.junit.jupiter.api.Test
         @Order(2)
         public void testCheckPort() {

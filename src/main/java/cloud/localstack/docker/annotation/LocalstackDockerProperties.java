@@ -33,8 +33,11 @@ public @interface LocalstackDockerProperties {
 
     /**
      * Determines if the container should expose the default local stack ports (4567-4583) or if it should expose randomized ports
-     *  in order to prevent conflicts with other localstack containers running on the same machine
+     *  in order to prevent conflicts with other localstack containers running on the same machine.
+     *
+     * Deprecated, since latest LocalStack is using a single entry point (edge service)
      */
+    @Deprecated
     boolean randomizePorts() default false;
 
     /**

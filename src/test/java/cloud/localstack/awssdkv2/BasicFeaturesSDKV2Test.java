@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 
 import java.util.*;
 import java.net.*;
+import java.nio.ByteBuffer;
+import software.amazon.awssdk.core.SdkBytes;
 
 @RunWith(LocalstackTestRunner.class)
 public class BasicFeaturesSDKV2Test {
@@ -48,6 +50,23 @@ public class BasicFeaturesSDKV2Test {
             .streamName(streamName).shardCount(1).build();
         CreateStreamResponse response = kinesisClient.createStream(request).get();
         Assert.assertNotNull(response);
+    }
+    
+    @Test
+    public void testCreateKinesisRecordV2() throws Exception {
+        String streamName = "test-s-3198";
+        KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
+        CreateStreamRequest request = CreateStreamRequest.builder()
+            .streamName(streamName).shardCount(1).build();
+        CreateStreamResponse response = kinesisClient.createStream(request).get();
+        Assert.assertNotNull(response);
+        
+        SdkBytes payload = SdkBytes.fromByteBuffer(ByteBuffer.wrap(String.format("testData-%d", 1).getBytes()));
+        PutRecordRequest.Builder putRecordRequest = PutRecordRequest.builder();
+        putRecordRequest.streamName(streamName);
+        putRecordRequest.data(payload);
+        putRecordRequest.partitionKey(String.format("partitionKey-%d", 1));
+        Assert.assertNotNull(kinesisClient.putRecord(putRecordRequest.build()));
     }
 
     @Test

@@ -35,7 +35,7 @@ public class BasicFeaturesSDKV2Test {
 
     @Test
     public void testCreateSqsQueueV2() throws Exception {
-        String queueName = "test-q-2159";
+        String queueName = "test-q-"+ UUID.randomUUID().toString();
         CreateQueueRequest request = CreateQueueRequest.builder().queueName(queueName).build();
         SqsAsyncClient sqsClient = TestUtils.getClientSQSAsyncV2();
         CreateQueueResponse queue = sqsClient.createQueue(request).get();
@@ -44,7 +44,7 @@ public class BasicFeaturesSDKV2Test {
 
     @Test
     public void testCreateKinesisStreamV2() throws Exception {
-        String streamName = "test-s-3198";
+        String streamName = "test-s-"+ UUID.randomUUID().toString();
         KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
         CreateStreamRequest request = CreateStreamRequest.builder()
             .streamName(streamName).shardCount(1).build();
@@ -54,7 +54,7 @@ public class BasicFeaturesSDKV2Test {
     
     @Test
     public void testCreateKinesisRecordV2() throws Exception {
-        String streamName = "test-s-3198";
+        String streamName = "test-s-"+UUID.randomUUID().toString();
         KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
         CreateStreamRequest request = CreateStreamRequest.builder()
             .streamName(streamName).shardCount(1).build();
@@ -71,7 +71,7 @@ public class BasicFeaturesSDKV2Test {
 
     @Test
     public void testS3CreateListBuckets() throws Exception {
-        String bucketName = "test-b-9716";
+        String bucketName = "test-b-"+UUID.randomUUID().toString();
         S3AsyncClient s3Client = TestUtils.getClientS3AsyncV2();
         CreateBucketRequest request = CreateBucketRequest.builder().bucket(bucketName).build();
         CreateBucketResponse response = s3Client.createBucket(request).get();
@@ -86,7 +86,7 @@ public class BasicFeaturesSDKV2Test {
     public void testSendSNSMessage() throws Exception {
         // Test integration of SNS messaging with LocalStack using SDK v2
 
-        final String topicName = "test-t-6210";
+        final String topicName = "test-t-"+UUID.randomUUID().toString();
         final SnsAsyncClient clientSNS = TestUtils.getClientSNSAsyncV2();
         CreateTopicResponse createTopicResponse = clientSNS.createTopic(
             CreateTopicRequest.builder().name(topicName).build()).get();

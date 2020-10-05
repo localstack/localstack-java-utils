@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 
 import java.util.*;
 import java.net.*;
+import java.nio.ByteBuffer;
+import software.amazon.awssdk.core.SdkBytes;
 
 @RunWith(LocalstackTestRunner.class)
 public class BasicFeaturesSDKV2Test {
@@ -33,7 +35,7 @@ public class BasicFeaturesSDKV2Test {
 
     @Test
     public void testCreateSqsQueueV2() throws Exception {
-        String queueName = "test-q-2159";
+        String queueName = "test-q-"+ UUID.randomUUID().toString();
         CreateQueueRequest request = CreateQueueRequest.builder().queueName(queueName).build();
         SqsAsyncClient sqsClient = TestUtils.getClientSQSAsyncV2();
         CreateQueueResponse queue = sqsClient.createQueue(request).get();
@@ -42,17 +44,34 @@ public class BasicFeaturesSDKV2Test {
 
     @Test
     public void testCreateKinesisStreamV2() throws Exception {
-        String streamName = "test-s-3198";
+        String streamName = "test-s-"+ UUID.randomUUID().toString();
         KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
         CreateStreamRequest request = CreateStreamRequest.builder()
             .streamName(streamName).shardCount(1).build();
         CreateStreamResponse response = kinesisClient.createStream(request).get();
         Assert.assertNotNull(response);
     }
+    
+    @Test
+    public void testCreateKinesisRecordV2() throws Exception {
+        String streamName = "test-s-"+UUID.randomUUID().toString();
+        KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
+        CreateStreamRequest request = CreateStreamRequest.builder()
+            .streamName(streamName).shardCount(1).build();
+        CreateStreamResponse response = kinesisClient.createStream(request).get();
+        Assert.assertNotNull(response);
+        
+        SdkBytes payload = SdkBytes.fromByteBuffer(ByteBuffer.wrap(String.format("testData-%d", 1).getBytes()));
+        PutRecordRequest.Builder putRecordRequest = PutRecordRequest.builder();
+        putRecordRequest.streamName(streamName);
+        putRecordRequest.data(payload);
+        putRecordRequest.partitionKey(String.format("partitionKey-%d", 1));
+        Assert.assertNotNull(kinesisClient.putRecord(putRecordRequest.build()));
+    }
 
     @Test
     public void testS3CreateListBuckets() throws Exception {
-        String bucketName = "test-b-9716";
+        String bucketName = "test-b-"+UUID.randomUUID().toString();
         S3AsyncClient s3Client = TestUtils.getClientS3AsyncV2();
         CreateBucketRequest request = CreateBucketRequest.builder().bucket(bucketName).build();
         CreateBucketResponse response = s3Client.createBucket(request).get();
@@ -67,7 +86,7 @@ public class BasicFeaturesSDKV2Test {
     public void testSendSNSMessage() throws Exception {
         // Test integration of SNS messaging with LocalStack using SDK v2
 
-        final String topicName = "test-t-6210";
+        final String topicName = "test-t-"+UUID.randomUUID().toString();
         final SnsAsyncClient clientSNS = TestUtils.getClientSNSAsyncV2();
         CreateTopicResponse createTopicResponse = clientSNS.createTopic(
             CreateTopicRequest.builder().name(topicName).build()).get();

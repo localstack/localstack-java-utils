@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.services.s3.*;
+import software.amazon.awssdk.services.ssm.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
@@ -32,6 +33,10 @@ public class TestUtils {
 
     public static SnsAsyncClient getClientSNSAsyncV2() {
         return wrapApiClientV2(SnsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSNS()).build();
+    }
+
+    public static SsmAsyncClient getClientSSMAsyncV2() {
+        return wrapApiClientV2(SsmAsyncClient.builder(), Localstack.INSTANCE.getEndpointSSM()).build();
     }
 
     public static S3AsyncClient getClientS3AsyncV2() {

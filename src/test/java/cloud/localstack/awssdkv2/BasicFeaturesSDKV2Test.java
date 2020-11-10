@@ -13,6 +13,8 @@ import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sns.model.*;
 import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.services.sqs.model.*;
+import software.amazon.awssdk.services.ssm.*;
+import software.amazon.awssdk.services.ssm.model.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.utils.Logger;
@@ -25,6 +27,7 @@ import java.util.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 import software.amazon.awssdk.core.SdkBytes;
+import java.util.concurrent.CompletableFuture;
 
 @RunWith(LocalstackTestRunner.class)
 public class BasicFeaturesSDKV2Test {
@@ -97,5 +100,18 @@ public class BasicFeaturesSDKV2Test {
 
         PublishResponse publishResponse = clientSNS.publish(publishRequest).get();
         Assert.assertNotNull(publishResponse.messageId());
+    }
+
+    @Test
+    public void testGetSsmParameter() throws Exception {
+        // Test integration of ssm parameter with LocalStack using SDK v2
+
+        final String topicName = "test-t-"+UUID.randomUUID().toString();
+        final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
+        CompletableFuture<PutParameterResponse> putParameterReponse = clientSsm.putParameter(PutParameterRequest.builder().name("testparameter").value("testvalue").build());
+        CompletableFuture<GetParameterResponse>  getParameterResponse = clientSsm.getParameter(GetParameterRequest.builder().name("testparameter").build());
+        String parameterValue = getParameterResponse.get().parameter().value();
+        Assert.assertNotNull(parameterValue);
+        Assert.assertEquals("testvalue", parameterValue);
     }
 }

@@ -11,8 +11,8 @@ import org.junit.runners.model.InitializationError;
  * and then terminates when tests are complete.
  *
  * Having docker installed is a prerequisite for this test runner to execute.  If docker
- * is not installed in one of the default locations (C:\program files\docker\docker\resources\bin\, usr/local/bin or
- * usr/bin)
+ * is not installed in one of the default locations (C:\program files\docker\docker\resources\bin\docker.exe,
+ * C:\program files\docker\docker\resources\docker.exe, usr/local/bin/docker or usr/bin/docker)
  * then use the DOCKER_LOCATION environment variable to specify the location.
  *
  * Since ports are dynamically allocated, the external port needs to be resolved based on the default localstack port.

@@ -1,6 +1,5 @@
 package cloud.localstack;
 
-import cloud.localstack.CommonUtils;
 import cloud.localstack.utils.PromiseAsyncHandler;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.awssdkv1.TestUtils;

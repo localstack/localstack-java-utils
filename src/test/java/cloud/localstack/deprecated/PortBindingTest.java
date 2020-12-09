@@ -1,8 +1,10 @@
-package cloud.localstack.docker;
+package cloud.localstack.deprecated;
 
 import cloud.localstack.Localstack;
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.awssdkv1.TestUtils;
+import cloud.localstack.docker.Container;
+import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +14,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
 
 import static cloud.localstack.docker.ContainerTest.*;
 

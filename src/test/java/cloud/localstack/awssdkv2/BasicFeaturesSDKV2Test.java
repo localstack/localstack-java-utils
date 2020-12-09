@@ -1,7 +1,6 @@
 package cloud.localstack.awssdkv2;
 
 import cloud.localstack.Constants;
-import cloud.localstack.awssdkv2.TestUtils;
 import cloud.localstack.LocalstackTestRunner;
 
 import software.amazon.awssdk.core.SdkSystemSetting;
@@ -15,16 +14,12 @@ import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.services.sqs.model.*;
 import software.amazon.awssdk.services.ssm.*;
 import software.amazon.awssdk.services.ssm.model.*;
-import software.amazon.awssdk.auth.credentials.*;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.utils.Logger;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.*;
-import java.net.*;
 import java.nio.ByteBuffer;
 import software.amazon.awssdk.core.SdkBytes;
 import java.util.concurrent.CompletableFuture;

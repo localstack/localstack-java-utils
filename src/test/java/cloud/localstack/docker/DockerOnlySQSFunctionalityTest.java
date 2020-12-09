@@ -3,7 +3,6 @@ package cloud.localstack.docker;
 import cloud.localstack.Localstack;
 import cloud.localstack.CommonUtils;
 import cloud.localstack.awssdkv1.TestUtils;
-import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import com.amazon.sqs.javamessaging.SQSConnection;

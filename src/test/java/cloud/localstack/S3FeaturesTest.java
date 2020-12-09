@@ -17,9 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
 import org.apache.http.conn.ssl.*;
-import org.apache.http.client.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.*;
 import org.apache.http.impl.client.*;

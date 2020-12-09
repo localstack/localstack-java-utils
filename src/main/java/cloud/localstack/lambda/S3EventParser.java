@@ -2,7 +2,6 @@ package cloud.localstack.lambda;
 import static cloud.localstack.LambdaExecutor.get;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.event.S3EventNotification;
-import org.joda.time.DateTime;
 
 import java.util.*;
 

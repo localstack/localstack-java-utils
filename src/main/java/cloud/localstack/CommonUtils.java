@@ -1,8 +1,5 @@
 package cloud.localstack;
 
-import cloud.localstack.Constants;
-import cloud.localstack.Localstack;
-
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;

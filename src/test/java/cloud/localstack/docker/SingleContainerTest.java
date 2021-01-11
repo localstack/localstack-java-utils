@@ -1,8 +1,6 @@
 package cloud.localstack.docker;
 
 import cloud.localstack.Localstack;
-import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 import org.junit.jupiter.api.*;
@@ -10,9 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.Assert;
 import org.junit.AfterClass;
-
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
 
 @TestMethodOrder(OrderAnnotation.class)
 public class SingleContainerTest {

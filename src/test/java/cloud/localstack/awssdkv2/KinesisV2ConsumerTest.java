@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(LocalstackTestRunner.class)
-public class KinesisConsumerTest {
+public class KinesisV2ConsumerTest {
 
     @Test
     public void testGetRecord() throws Exception{
@@ -61,24 +61,25 @@ public class KinesisConsumerTest {
         .shardIterator();
 
       GetRecordsRequest getRecordRequest = GetRecordsRequest.builder().shardIterator(shardIterator).build();
-      Integer limit = 10;
+      Integer limit = 100;
       Integer counter = 0;
+      Boolean recordFound = false;
       
       while (true) {
         GetRecordsResponse recordsResponse = kinesisClient.getRecords(getRecordRequest).get();
         
         if (recordsResponse.hasRecords()) {
+          recordFound = true;
           break;
         }
 
         if(counter >= limit){
-          throw new Exception("No Records found");
+          break;
         }
 
         counter += 1;
         shardIterator = recordsResponse.nextShardIterator();
-
       }
-
+      Assert.assertTrue(recordFound);
     }
 }

@@ -25,6 +25,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 /**
  * Test integration of SQS/JMS messaging with LocalStack
  * Based on: https://bitbucket.org/atlassian/localstack/issues/24/not-support-sqs-in-jms
@@ -193,9 +197,10 @@ public class SQSMessagingTest {
         GetQueueAttributesResult dlQueueAttrs = clientSQS.getQueueAttributes(
                 new GetQueueAttributesRequest(dlQueueUrl).withAttributeNames("QueueArn")
         );
-        String dlQueueArn = dlQueueAttrs.getAttributes().get("QueueArn");
 
-        final String redrivePolicy = "{\"maxReceiveCount\": 5, \"deadLetterTargetArn\": \"" + dlQueueArn + "\"}";
+        String dlQueueArn = dlQueueAttrs.getAttributes().get("QueueArn");
+        int maxReceiveCount = 5;
+        final String redrivePolicy = "{\"maxReceiveCount\":"+maxReceiveCount+", \"deadLetterTargetArn\": \"" + dlQueueArn + "\"}";
 
         SetQueueAttributesRequest request = new SetQueueAttributesRequest()
                 .withQueueUrl(srcQueueUrl)
@@ -210,6 +215,17 @@ public class SQSMessagingTest {
 
         result = clientSQS.getQueueAttributes(new GetQueueAttributesRequest(srcQueueUrl).withAttributeNames("RedrivePolicy"));
         Assert.assertEquals(result.getAttributes().size(), 1);
-        Assert.assertEquals(result.getAttributes().get("RedrivePolicy"), redrivePolicy);
+
+        String resultPolicy = result.getAttributes().get("RedrivePolicy");
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+        try {
+            map = mapper.readValue(resultPolicy, new TypeReference<Map<String, Object>>(){});
+            Assert.assertEquals( map.get("maxReceiveCount"), maxReceiveCount);
+            Assert.assertEquals( map.get("deadLetterTargetArn"), dlQueueArn);
+        } catch (Exception e) {
+            throw new RuntimeException("No RedrivePolicy found");
+        }
     }
 }

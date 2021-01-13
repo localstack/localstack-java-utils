@@ -136,6 +136,12 @@
         <!-- AWS SDK version 2 libs -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
+            <artifactId>cloudwatch</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
             <artifactId>sns</artifactId>
             <version>${aws.sdkv2.version}</version>
             <scope>provided</scope>

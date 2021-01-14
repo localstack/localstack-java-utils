@@ -77,6 +77,10 @@ You can configure the Docker behaviour using the `@LocalstackDockerProperties` a
 
 For more details, please refer to the README of the main LocalStack repo: https://github.com/localstack/localstack
 
+> **_NOTE:_** These utilities assume docker is installed in one of the default locations (`C:\program files\docker\docker\resources\bin\docker.exe`,
+`C:\program files\docker\docker\resources\docker.exe`, `usr/local/bin/docker` or `usr/bin/docker`). If your docker executable is in a
+different location, then use the `DOCKER_LOCATION` environment variable to specify it.
+
 ### Deprecated Configurations
 
 Due to recent changes in LocalStack (e.g., exposing all services via a single edge port, `4566`), the following configuration parameters are now deprecated in the latest version:

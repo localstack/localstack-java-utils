@@ -26,6 +26,7 @@ public class DockerExe {
     private static final List<String> POSSIBLE_EXE_LOCATIONS = Arrays.asList(
             System.getenv("DOCKER_LOCATION"),
             "C:/program files/docker/docker/resources/bin/docker.exe",
+            "C:/program files/docker/docker/resources/docker.exe",
             "/usr/local/bin/docker",
             "/usr/bin/docker");
 

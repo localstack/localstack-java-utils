@@ -53,7 +53,7 @@ public class BasicFeaturesSDKV2Test {
         CreateStreamResponse response = kinesisClient.createStream(request).get();
         Assert.assertNotNull(response);
     }
-    
+
     @Test
     public void testCreateKinesisRecordV2() throws Exception {
         String streamName = "test-s-"+UUID.randomUUID().toString();
@@ -62,7 +62,7 @@ public class BasicFeaturesSDKV2Test {
             .streamName(streamName).shardCount(1).build();
         CreateStreamResponse response = kinesisClient.createStream(request).get();
         Assert.assertNotNull(response);
-        
+
         SdkBytes payload = SdkBytes.fromByteBuffer(ByteBuffer.wrap(String.format("testData-%d", 1).getBytes()));
         PutRecordRequest.Builder putRecordRequest = PutRecordRequest.builder();
         putRecordRequest.streamName(streamName);
@@ -117,7 +117,8 @@ public class BasicFeaturesSDKV2Test {
     public void testGetSecretsManagerSecret() throws Exception {
         final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
         clientSecretsManager.createSecret(CreateSecretRequest.builder().name("testsecret").secretString("secretcontent").build());
-        CompletableFuture<GetSecretValueResponse> getSecretResponse = clientSecretsManager.getSecretValue(GetSecretValueRequest.builder().secretId("testsecret").build());
+        CompletableFuture<GetSecretValueResponse> getSecretResponse = clientSecretsManager.getSecretValue(
+            GetSecretValueRequest.builder().secretId("testsecret").build());
         String secretValue = getSecretResponse.get().secretString();
 
         Assert.assertNotNull(secretValue);
@@ -128,8 +129,11 @@ public class BasicFeaturesSDKV2Test {
     public void testGetSecretAsParam() throws Exception {
         final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
         final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
-        clientSecretsManager.createSecret(CreateSecretRequest.builder().name("testsecret").secretString("secretcontent").build());
-        CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(GetParameterRequest.builder().name("/aws/reference/secretsmanager/testsecret").build());
+        clientSecretsManager.createSecret(CreateSecretRequest.builder()
+            .name("testsecret").secretString("secretcontent").build()).join();
+
+        CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(
+            GetParameterRequest.builder().name("/aws/reference/secretsmanager/testsecret").build());
         String parameterValue = getParameterResponse.get().parameter().value();
 
         Assert.assertNotNull(parameterValue);

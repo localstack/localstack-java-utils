@@ -83,7 +83,7 @@ different location, then use the `DOCKER_LOCATION` environment variable to speci
 
 ### Deprecated Configurations
 
-Due to recent changes in LocalStack (e.g., exposing all services via a single edge port, `4566`), the following configuration parameters are now deprecated in the latest version:
+Due to recent changes in LocalStack (exposing all services via a single edge port, `4566`), the following configuration parameters are now deprecated in the latest version:
 
 | property                    | usage                                                                                                                        | type                         | default value |
 |-----------------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------|---------------|
@@ -106,6 +106,4 @@ make build
 
 ## License
 
-Copyright (c) LocalStack maintainers and contributors.
-
-This version of LocalStack is released under the Apache License, Version 2.0 (see LICENSE.txt).
+This code is released under the Apache License, Version 2.0 (see LICENSE.txt).

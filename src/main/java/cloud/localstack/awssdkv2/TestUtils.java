@@ -3,6 +3,7 @@ package cloud.localstack.awssdkv2;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.utils.*;
 import software.amazon.awssdk.http.*;
+import software.amazon.awssdk.services.cloudwatch.*;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sqs.*;
@@ -46,6 +47,10 @@ public class TestUtils {
 
     public static S3AsyncClient getClientS3AsyncV2() {
         return wrapApiClientV2(S3AsyncClient.builder(), Localstack.INSTANCE.getEndpointS3()).build();
+    }
+    
+    public static CloudWatchAsyncClient getClientCloudWatchAsyncV2() {
+        return wrapApiClientV2(CloudWatchAsyncClient.builder(), Localstack.INSTANCE.getEndpointCloudWatch()).build();
     }
 
     public static <T extends SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {

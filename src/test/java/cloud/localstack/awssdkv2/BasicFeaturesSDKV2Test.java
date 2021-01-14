@@ -4,6 +4,8 @@ import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
 
 import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.services.cloudwatch.*;
+import software.amazon.awssdk.services.cloudwatch.model.*;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.kinesis.model.*;
 import software.amazon.awssdk.services.s3.*;
@@ -25,6 +27,11 @@ import org.junit.runner.RunWith;
 
 import java.util.*;
 import java.nio.ByteBuffer;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
+import java.time.Instant;
+
 import software.amazon.awssdk.core.SdkBytes;
 import java.util.concurrent.CompletableFuture;
 
@@ -138,5 +145,33 @@ public class BasicFeaturesSDKV2Test {
 
         Assert.assertNotNull(parameterValue);
         Assert.assertEquals("secretcontent", parameterValue);
+    }
+    @Test
+    public void testCWPutMetrics() throws Exception {
+        final CloudWatchAsyncClient clientCW = TestUtils.getClientCloudWatchAsyncV2();
+        Dimension dimension = Dimension.builder()
+                    .name("UNIQUE_PAGES")
+                    .value("URLS")
+                    .build();
+
+            // Set an Instant object
+        String time = ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT );
+        Instant instant = Instant.parse(time);
+
+        double dataPoint = 1.23423;
+
+        MetricDatum datum = MetricDatum.builder()
+            .metricName("PAGES_VISITED")
+            .unit(StandardUnit.NONE)
+            .value(dataPoint)
+            .timestamp(instant)
+            .dimensions(dimension).build();
+
+        PutMetricDataRequest request = PutMetricDataRequest.builder()
+             .namespace("SITE/TRAFFIC")
+             .metricData(datum).build();
+
+        PutMetricDataResponse response = clientCW.putMetricData(request).get();
+        Assert.assertNotNull(response);
     }
 }

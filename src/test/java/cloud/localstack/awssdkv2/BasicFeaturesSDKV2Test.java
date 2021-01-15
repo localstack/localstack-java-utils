@@ -179,35 +179,28 @@ public class BasicFeaturesSDKV2Test {
     public void testCWMultipleDimentionsAndMetrics() throws Exception {
         final CloudWatchAsyncClient clientCW = TestUtils.getClientCloudWatchAsyncV2();
         
-        Dimension dimension = Dimension.builder()
-                    .name("UNIQUE_PAGES")
-                    .value("URLS")
-                    .build();
-        
-        Dimension dimension2 = Dimension.builder()
-                    .name("UNIQUE_PAGES2")
-                    .value("URLS2")
-                    .build();
         List<Dimension> awsDimensionList = new ArrayList<>();
-        awsDimensionList.add(dimension);
-        awsDimensionList.add(dimension2);
+        for (int i = 0; i < 10; i++) {
+            awsDimensionList.add(Dimension.builder()
+                    .name("UNIQUE_PAGES"+i)
+                    .value("URLS"+i)
+                    .build());
+        };
 
-            // Set an Instant object
+        // Set an Instant object
         String time = ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT );
         Instant instant = Instant.parse(time);
-
         double dataPoint = 1.23423;
-
-        MetricDatum.Builder datum = MetricDatum.builder()
+        
+        List<MetricDatum> metrics = new ArrayList();
+        for (int i = 0; i < 20; i++) {
+            metrics.add(MetricDatum.builder()
             .metricName("PAGES_VISITED")
             .unit(StandardUnit.NONE)
             .value(dataPoint)
             .timestamp(instant)
-            .dimensions(awsDimensionList);
-        
-        List<MetricDatum> metrics = new ArrayList();
-        metrics.add(datum.build());
-        metrics.add(datum.build());
+            .dimensions(awsDimensionList).build());
+        };
 
         PutMetricDataRequest request = PutMetricDataRequest.builder()
              .namespace("SITE/TRAFFIC")

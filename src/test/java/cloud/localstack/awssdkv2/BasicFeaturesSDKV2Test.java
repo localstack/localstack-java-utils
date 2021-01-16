@@ -174,4 +174,39 @@ public class BasicFeaturesSDKV2Test {
         PutMetricDataResponse response = clientCW.putMetricData(request).get();
         Assert.assertNotNull(response);
     }
+    
+    @Test
+    public void testCWMultipleDimentionsAndMetrics() throws Exception {
+        final CloudWatchAsyncClient clientCW = TestUtils.getClientCloudWatchAsyncV2();
+        
+        List<Dimension> awsDimensionList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            awsDimensionList.add(Dimension.builder()
+                    .name("UNIQUE_PAGES"+i)
+                    .value("URLS"+i)
+                    .build());
+        };
+
+        // Set an Instant object
+        String time = ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT );
+        Instant instant = Instant.parse(time);
+        double dataPoint = 1.23423;
+        
+        List<MetricDatum> metrics = new ArrayList();
+        for (int i = 0; i < 20; i++) {
+            metrics.add(MetricDatum.builder()
+            .metricName("PAGES_VISITED")
+            .unit(StandardUnit.NONE)
+            .value(dataPoint)
+            .timestamp(instant)
+            .dimensions(awsDimensionList).build());
+        };
+
+        PutMetricDataRequest request = PutMetricDataRequest.builder()
+             .namespace("SITE/TRAFFIC")
+             .metricData(metrics).build();
+
+        PutMetricDataResponse response = clientCW.putMetricData(request).get();
+        Assert.assertNotNull(response);
+    }
 }

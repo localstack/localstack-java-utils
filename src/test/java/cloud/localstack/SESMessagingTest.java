@@ -1,6 +1,5 @@
 package cloud.localstack;
 
-import cloud.localstack.utils.PromiseAsyncHandler;
 import cloud.localstack.awssdkv1.TestUtils;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
@@ -10,10 +9,6 @@ import com.amazonaws.services.simpleemail.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.jms.JMSException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Test integration of SES messaging with LocalStack
@@ -42,11 +37,12 @@ public class SESMessagingTest {
         verifyEmailAddressRequest.setEmailAddress(FROM);
         client.verifyEmailAddress(verifyEmailAddressRequest);
 
-        SendEmailRequest request = new SendEmailRequest().withDestination(new Destination().withToAddresses(TO))
+        SendEmailRequest request = new SendEmailRequest()
+                .withDestination(new Destination().withToAddresses(TO))
                 .withMessage(new Message()
-                        .withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(HTMLBODY))
-                                .withText(new Content().withCharset("UTF-8").withData(TEXTBODY)))
-                        .withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
+                .withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(HTMLBODY))
+                .withText(new Content().withCharset("UTF-8").withData(TEXTBODY)))
+                .withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
                 .withSource(FROM).withConfigurationSetName(CONFIGSET);
                 
         SendEmailResult result = client.sendEmail(request);
@@ -63,11 +59,12 @@ public class SESMessagingTest {
         verifyEmailAddressRequest.setEmailAddress(FROM);
         client.verifyEmailAddress(verifyEmailAddressRequest);
 
-        SendEmailRequest request = new SendEmailRequest().withDestination(new Destination().withToAddresses(TO))
+        SendEmailRequest request = new SendEmailRequest()
+                .withDestination(new Destination().withToAddresses(TO))
                 .withMessage(new Message()
-                        .withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(HTMLBODY))
-                                .withText(new Content().withCharset("UTF-8").withData(TEXTBODY)))
-                        .withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
+                .withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(HTMLBODY))
+                .withText(new Content().withCharset("UTF-8").withData(TEXTBODY)))
+                .withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
                 .withSource(FROM).withConfigurationSetName(CONFIGSET);
                 
         SendEmailResult result = client.sendEmail(request);

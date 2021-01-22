@@ -26,6 +26,10 @@ import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClientBuilder;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
@@ -69,7 +73,19 @@ public class TestUtils {
                 withExecutorFactory(executorFactory).
                 withCredentials(getCredentialsProvider()).build();
     }
-
+    
+    public static AmazonSimpleEmailService getClientSES() {
+        return AmazonSimpleEmailServiceClientBuilder.standard().
+                withEndpointConfiguration(getEndpointConfigurationSNS()).
+                withCredentials(getCredentialsProvider()).build();
+    }
+    
+    public static AmazonSimpleEmailServiceAsync getClientSESAsync() {
+        return AmazonSimpleEmailServiceAsyncClientBuilder.standard().
+                withEndpointConfiguration(getEndpointConfigurationSNS()).
+                withCredentials(getCredentialsProvider()).build();
+    }
+    
     public static AmazonSNS getClientSNS() {
         return AmazonSNSClientBuilder.standard().
                 withEndpointConfiguration(getEndpointConfigurationSNS()).

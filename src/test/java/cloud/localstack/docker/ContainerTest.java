@@ -21,7 +21,7 @@ public class ContainerTest {
         HashMap<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put(MY_PROPERTY, MY_VALUE);
         Container localStackContainer = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, true, null, environmentVariables, null);
+            EXTERNAL_HOST_NAME, pullNewImage, true, null, null, null, environmentVariables, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);

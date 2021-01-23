@@ -50,8 +50,8 @@ public class Container {
      * @param environmentVariables map of environment variables to be passed to the docker container
      */
     public static Container createLocalstackContainer(
-        String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageTag,
-        Map<String, String> environmentVariables, Map<Integer, Integer> portMappings) {
+        String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageTag, String portEdge,
+        String portElasticSearch,  Map<String, String> environmentVariables, Map<Integer, Integer> portMappings) {
 
         environmentVariables = environmentVariables == null ? Collections.emptyMap() : environmentVariables;
         portMappings = portMappings == null ? Collections.emptyMap() : portMappings;
@@ -59,14 +59,18 @@ public class Container {
         String fullImageName = LOCALSTACK_NAME + ":" + (imageTag == null ? "latest" : imageTag);
         boolean imageExists = new ListImagesCommand().execute().contains(fullImageName);
 
+        String fullPortEdge = (portEdge == null ? LOCALSTACK_PORT_EDGE : portEdge) + ":" + LOCALSTACK_PORT_EDGE;
+        String fullPortElasticSearch = (portElasticSearch == null ? LOCALSTACK_PORT_ELASTICSEARCH : portElasticSearch)
+            + ":" + LOCALSTACK_PORT_ELASTICSEARCH;
+
         if(pullNewImage || !imageExists) {
             LOG.info("Pulling latest image...");
             new PullCommand(LOCALSTACK_NAME, imageTag).execute();
         }
 
         RunCommand runCommand = new RunCommand(LOCALSTACK_NAME, imageTag)
-            .withExposedPorts(LOCALSTACK_PORT_EDGE, randomizePorts)
-            .withExposedPorts(LOCALSTACK_PORT_ELASTICSEARCH, randomizePorts)
+            .withExposedPorts(fullPortEdge, randomizePorts)
+            .withExposedPorts(fullPortElasticSearch, randomizePorts)
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
             .withEnvironmentVariable(ENV_DEBUG, ENV_DEBUG_DEFAULT)
             .withEnvironmentVariable(ENV_USE_SSL, Localstack.INSTANCE.useSSL() ? "1" : "0")

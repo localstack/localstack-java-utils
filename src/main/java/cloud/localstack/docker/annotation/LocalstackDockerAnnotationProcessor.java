@@ -36,6 +36,8 @@ public class LocalstackDockerAnnotationProcessor {
             .ignoreDockerRunErrors(properties.ignoreDockerRunErrors())
             .randomizePorts(properties.randomizePorts())
             .imageTag(StringUtils.isEmpty(properties.imageTag()) ? null : properties.imageTag())
+            .portEdge(properties.portEdge())
+            .portElasticSearch(properties.portElasticSearch())
             .useSingleDockerContainer(properties.useSingleDockerContainer())
             .build();
     }

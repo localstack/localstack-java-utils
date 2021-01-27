@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class ContainerTest {
 
@@ -21,7 +22,7 @@ public class ContainerTest {
         HashMap<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put(MY_PROPERTY, MY_VALUE);
         Container localStackContainer = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, true, null, environmentVariables, null);
+            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, environmentVariables, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -32,6 +33,43 @@ public class ContainerTest {
             ArrayList<String> echoExternalEnv = buildEchoStatement(MY_PROPERTY);
             assertEquals(EXTERNAL_HOST_NAME, localStackContainer.executeCommand(echoDefaultEnv));
             assertEquals(MY_VALUE, localStackContainer.executeCommand(echoExternalEnv));
+
+            // Test Edge and ElasticSearch ports
+
+            assertEquals(4566, localStackContainer.getExternalPortFor(4566));
+            assertEquals(4571, localStackContainer.getExternalPortFor(4571));
+        }
+        finally {
+            localStackContainer.stop();
+        }
+    }
+
+    @Test
+    public void createLocalstackContainerWithCustomPorts() throws Exception {
+        Container localStackContainer = Container.createLocalstackContainer(
+            EXTERNAL_HOST_NAME, pullNewImage, false, null, "45660", "45710", null, null);
+
+        try {
+            localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
+
+            assertEquals(45660, localStackContainer.getExternalPortFor(4566));
+            assertEquals(45710, localStackContainer.getExternalPortFor(4571));
+        }
+        finally {
+            localStackContainer.stop();
+        }
+    }
+
+    @Test
+    public void createLocalstackContainerWithRandomPorts() throws Exception {
+        Container localStackContainer = Container.createLocalstackContainer(
+            EXTERNAL_HOST_NAME, pullNewImage, false, null, ":4566", ":4571", null, null);
+
+        try {
+            localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
+
+            assertNotEquals(4566, localStackContainer.getExternalPortFor(4566));
+            assertNotEquals(4571, localStackContainer.getExternalPortFor(4571));
         }
         finally {
             localStackContainer.stop();

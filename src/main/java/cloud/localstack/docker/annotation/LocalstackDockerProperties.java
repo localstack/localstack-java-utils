@@ -52,6 +52,16 @@ public @interface LocalstackDockerProperties {
     String imageTag() default "";
 
     /**
+     * Port number for the edge service, the main entry point for all API invocations
+     */
+    String portEdge() default "4566";
+
+    /**
+     * Port number for the elasticsearch service
+     */
+    String portElasticSearch() default "4571";
+
+    /**
      * Determines if the singleton container should be used by all test classes
      */
     boolean useSingleDockerContainer() default false;

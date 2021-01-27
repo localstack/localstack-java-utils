@@ -71,6 +71,8 @@ You can configure the Docker behaviour using the `@LocalstackDockerProperties` a
 | `pullNewImage`              | Determines if a new image is pulled from the docker repo before the tests are run.                                           | boolean                      | `false`         |
 | `services`                  | Determines which services should be run when the localstack starts.                                                          | String[]                     | All           |
 | `imageTag`                  | Use a specific image tag for docker container                                                                                | String                       | `latest`        |
+| `portEdge`                  | Port number for the edge service, the main entry point for all API invocations                                               | String                       | `4566`        |
+| `portElasticSearch`         | Port number for the elasticsearch service                                                                                    | String                       | `4571`        |
 | `hostNameResolver`          | Used for determining the host name of the machine running the docker containers so that the containers can be addressed.     | IHostNameResolver            | `localhost`     |
 | `environmentVariableProvider` | Used for injecting environment variables into the container.                                                                 | IEnvironmentVariableProvider | Empty Map     |
 | `useSingleDockerContainer`  | Whether a singleton container should be used by all test classes.                     | boolean | `false`     |

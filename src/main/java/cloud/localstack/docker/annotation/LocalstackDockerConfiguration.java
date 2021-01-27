@@ -26,6 +26,12 @@ public class LocalstackDockerConfiguration {
     private final String imageTag;
 
     @Builder.Default
+    private final String portEdge = "4566";
+
+    @Builder.Default
+    private final String portElasticSearch = "4571";
+
+    @Builder.Default
     private final String externalHostName = "localhost";
 
     @Builder.Default

@@ -36,7 +36,10 @@ public class RunCommand extends Command {
     }
 
     public RunCommand withExposedPorts(String portsToExpose, boolean randomize) {
-        String portsOption = String.format("%s:%s", randomize ? "" : portsToExpose, portsToExpose );
+        String[] parts = portsToExpose.split(":");
+        String hostPort = randomize ? "" : parts.length > 1 ? parts[0] : portsToExpose;
+        String containerPort = parts.length > 1 ? parts[1] : portsToExpose;
+        String portsOption = String.format("%s:%s", hostPort, containerPort);
         addOptions("-p", portsOption);
         return this;
     }

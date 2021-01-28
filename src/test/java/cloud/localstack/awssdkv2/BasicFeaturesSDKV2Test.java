@@ -3,9 +3,13 @@ package cloud.localstack.awssdkv2;
 import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
 
+import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
+import org.assertj.core.api.Assertions;
 import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.services.cloudwatch.*;
 import software.amazon.awssdk.services.cloudwatch.model.*;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.kinesis.model.*;
 import software.amazon.awssdk.services.s3.*;
@@ -76,6 +80,31 @@ public class BasicFeaturesSDKV2Test {
         putRecordRequest.data(payload);
         putRecordRequest.partitionKey(String.format("partitionKey-%d", 1));
         Assert.assertNotNull(kinesisClient.putRecord(putRecordRequest.build()));
+    }
+
+    @Test
+    public void testCreateDynamoDBTable() throws Exception {
+        DynamoDbAsyncClient dynamoDbAsyncClient = TestUtils.getClientDyanamoAsyncV2();
+        CreateTableRequest createTableRequest = CreateTableRequest.builder()
+                .keySchema(
+                        KeySchemaElement.builder()
+                                .keyType(KeyType.HASH)
+                                .attributeName("test")
+                                .build()
+                )
+                .attributeDefinitions(AttributeDefinition.builder()
+                        .attributeName("test")
+                        .attributeType(ScalarAttributeType.S)
+                        .build())
+                .provisionedThroughput(
+                        ProvisionedThroughput.builder()
+                                .readCapacityUnits(5L)
+                                .writeCapacityUnits(5L)
+                                .build())
+                .tableName("test")
+                .build();
+        CreateTableResponse response = dynamoDbAsyncClient.createTable(createTableRequest).get();
+        Assert.assertNotNull(response);
     }
 
     @Test

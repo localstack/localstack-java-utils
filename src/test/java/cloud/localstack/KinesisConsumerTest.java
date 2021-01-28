@@ -1,83 +1,71 @@
-package cloud.localstack.awssdkv1;
+package cloud.localstack;
 
 import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.awssdkv1.TestUtils;
 
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
 import com.amazonaws.services.kinesis.model.CreateStreamRequest;
 import com.amazonaws.services.kinesis.model.PutRecordRequest;
-import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.GetRecordsRequest;
 import com.amazonaws.services.kinesis.model.GetRecordsResult;
 import com.amazonaws.services.kinesis.model.GetShardIteratorRequest;
-import com.amazonaws.services.kinesis.model.Record;
-import com.amazonaws.internal.SdkInternalList;
+import com.amazonaws.SDKGlobalConfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static java.lang.System.out;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.nio.ByteBuffer;
 
 @RunWith(LocalstackTestRunner.class)
 public class KinesisConsumerTest {
 
-    @Test
-    public void testGetRecord() throws Exception{
-      String streamName = "test-s-"+UUID.randomUUID().toString();
-      AmazonKinesisAsync kinesisClient = TestUtils.getClientKinesisAsync();
+  @Test
+  public void testGetRecordCBOR() throws Exception {
+    String streamName = "test-s-" + UUID.randomUUID().toString();
+    AmazonKinesisAsync kinesisClient = TestUtils.getClientKinesisAsync();
 
-      CreateStreamRequest createStreamRequest = new CreateStreamRequest();
-      createStreamRequest.setStreamName(streamName);
-      createStreamRequest.setShardCount(1);
+    CreateStreamRequest createStreamRequest = new CreateStreamRequest();
+    createStreamRequest.setStreamName(streamName);
+    createStreamRequest.setShardCount(1);
 
-      kinesisClient.createStream(createStreamRequest);
-      TimeUnit.SECONDS.sleep(2);
+    kinesisClient.createStream(createStreamRequest);
+    TimeUnit.SECONDS.sleep(2);
 
-      PutRecordRequest putRecordRequest = new PutRecordRequest();
-      putRecordRequest.setPartitionKey("partitionkey");
-      putRecordRequest.setStreamName(streamName);
-      putRecordRequest.setData(ByteBuffer.wrap("hello, world!".getBytes()));
+    PutRecordRequest putRecordRequest = new PutRecordRequest();
+    putRecordRequest.setPartitionKey("partitionkey");
+    putRecordRequest.setStreamName(streamName);
 
-      String shardId = kinesisClient.putRecord(putRecordRequest).getShardId();
+    String message = "Hello world!";
+    putRecordRequest.setData(ByteBuffer.wrap(message.getBytes()));
 
-      GetShardIteratorRequest getShardIteratorRequest = new GetShardIteratorRequest();
-      getShardIteratorRequest.setShardId(shardId);
-      getShardIteratorRequest.setShardIteratorType("TRIM_HORIZON");
-      getShardIteratorRequest.setStreamName(streamName);
+    String shardId = kinesisClient.putRecord(putRecordRequest).getShardId();
 
-      String shardIterator = kinesisClient
-        .getShardIterator(getShardIteratorRequest)
-        .getShardIterator();
+    GetShardIteratorRequest getShardIteratorRequest = new GetShardIteratorRequest();
+    getShardIteratorRequest.setShardId(shardId);
+    getShardIteratorRequest.setShardIteratorType("TRIM_HORIZON");
+    getShardIteratorRequest.setStreamName(streamName);
 
-      GetRecordsRequest getRecordRequest = new GetRecordsRequest() ;
-      getRecordRequest.setShardIterator(shardIterator);
+    String shardIterator = kinesisClient.getShardIterator(getShardIteratorRequest).getShardIterator();
 
-      Integer limit = 100;
-      Integer counter = 0;
-      Boolean recordFound = false; 
-      
-      while (true) {
-        getRecordRequest.setShardIterator(shardIterator);
-        GetRecordsResult recordsResponse = kinesisClient.getRecords(getRecordRequest);
-        
-        List records = recordsResponse.getRecords();
-        if (records.isEmpty()) {
-          recordFound = true; 
-          break;
-        }
+    GetRecordsRequest getRecordRequest = new GetRecordsRequest();
+    getRecordRequest.setShardIterator(shardIterator);
 
-        if(counter >= limit){
-          break;
-        }
+    getRecordRequest.setShardIterator(shardIterator);
+    GetRecordsResult recordsResponse = kinesisClient.getRecords(getRecordRequest);
 
-        counter += 1;
-        shardIterator = recordsResponse.getNextShardIterator();
-      }
-      Assert.assertTrue(recordFound);
-    }
+    List<String> records = recordsResponse.getRecords().stream().map(r -> new String(r.getData().array()))
+        .collect(Collectors.toList());
+    Assert.assertEquals(message, records.get(0));
+  }
+
+  @Test
+  public void testGetRecordJSON() throws Exception {
+    System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "true");
+    this.testGetRecordCBOR();
+    System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "false");
+  }
 }

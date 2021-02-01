@@ -58,7 +58,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.7</version>
 </dependency>
 ```
 
@@ -102,6 +102,9 @@ make build
 
 ## Change Log
 
+* v0.2.7: Extend `@LocalstackDockerProperties` to include port binding
+* v0.2.6: Add new path to possible docker exe locations in Windows; add various additional tests for v1 and v2 SDKs (Kinesis, SQS, SSM & SecretsManager, ...)
+* v0.2.5: Refactor code to accommodate edge port config for all services; add CloudWatch Logs endpoint configuration
 * v0.2.2: Addition of CloudWatch Logs endpoint configuration; adjust tests to use central edge service endpoint
 * v0.2.1: Move Java sources into separate project; mark non-Docker Java `LocalstackExtension` as deprecated; update paths for Python code lookup in Docker container
 * v0.2.0: Last version still maintained in LocalStack main repo

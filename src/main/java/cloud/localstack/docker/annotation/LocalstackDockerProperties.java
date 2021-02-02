@@ -52,12 +52,14 @@ public @interface LocalstackDockerProperties {
     String imageTag() default "";
 
     /**
-     * Port number for the edge service, the main entry point for all API invocations
+     * Port number for the edge service, the main entry point for all API invocations. Alternatively, use the
+     * LOCALSTACK_EDGE_PORT environment variable.
      */
     String portEdge() default "4566";
 
     /**
-     * Port number for the elasticsearch service
+     * Port number for the elasticsearch service. Alternatively, use the LOCALSTACK_ELASTICSEARCH_PORT environment
+     * variable.
      */
     String portElasticSearch() default "4571";
 

@@ -36,10 +36,14 @@ public class LocalstackDockerAnnotationProcessor {
             .ignoreDockerRunErrors(properties.ignoreDockerRunErrors())
             .randomizePorts(properties.randomizePorts())
             .imageTag(StringUtils.isEmpty(properties.imageTag()) ? null : properties.imageTag())
-            .portEdge(properties.portEdge())
-            .portElasticSearch(properties.portElasticSearch())
+            .portEdge(getEnvOrDefault("LOCALSTACK_EDGE_PORT", properties.portEdge()))
+            .portElasticSearch(getEnvOrDefault("LOCALSTACK_ELASTICSEARCH_PORT", properties.portElasticSearch()))
             .useSingleDockerContainer(properties.useSingleDockerContainer())
             .build();
+    }
+
+    private String getEnvOrDefault(final String environmentVariable, final String defaultValue) {
+        return System.getenv().getOrDefault(environmentVariable, defaultValue);
     }
 
     private Map<Integer, Integer> getCustomPortMappings(final LocalstackDockerProperties properties) {

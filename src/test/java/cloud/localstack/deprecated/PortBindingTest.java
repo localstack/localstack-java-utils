@@ -35,7 +35,7 @@ public class PortBindingTest {
     @Test
     public void createLocalstackContainerWithRandomPorts() throws Exception {
         Container container = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, true, null, null, null, null, null);
+            EXTERNAL_HOST_NAME, pullNewImage, true, null, null, null, null, null, null);
 
         try {
             container.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -53,7 +53,7 @@ public class PortBindingTest {
     @Test
     public void createLocalstackContainerWithStaticPorts() throws Exception {
         Container container = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, null);
+            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, null, null);
 
         try {
             container.waitForAllPorts(EXTERNAL_HOST_NAME);

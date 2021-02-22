@@ -47,6 +47,11 @@ public @interface LocalstackDockerProperties {
     String[] services() default {};
 
     /**
+     * Use a specific image name (consisting of organisation and repository, e.g. localstack/localstack-full for docker container
+     */
+    String imageName() default "";
+
+    /**
      * Use a specific image tag for docker container
      */
     String imageTag() default "";

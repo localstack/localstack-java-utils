@@ -23,6 +23,7 @@ public class LocalstackDockerConfiguration {
 
     private final boolean randomizePorts;
 
+    private final String imageName;
     private final String imageTag;
 
     @Builder.Default

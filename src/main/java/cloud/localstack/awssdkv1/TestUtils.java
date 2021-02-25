@@ -13,6 +13,8 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBStreams;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBStreamsClientBuilder;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementAsync;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementAsyncClientBuilder;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
@@ -23,6 +25,8 @@ import com.amazonaws.services.lambda.AWSLambdaAsync;
 import com.amazonaws.services.lambda.AWSLambdaAsyncClientBuilder;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.logs.AWSLogs;
+import com.amazonaws.services.logs.AWSLogsAsync;
+import com.amazonaws.services.logs.AWSLogsAsyncClientBuilder;
 import com.amazonaws.services.logs.AWSLogsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -76,7 +80,7 @@ public class TestUtils {
     
     public static AmazonSimpleEmailService getClientSES() {
         return AmazonSimpleEmailServiceClientBuilder.standard().
-                withEndpointConfiguration(getEndpointConfigurationSNS()).
+                withEndpointConfiguration(getEndpointConfigurationSES()).
                 withCredentials(getCredentialsProvider()).build();
     }
     
@@ -180,12 +184,25 @@ public class TestUtils {
                 withEndpointConfiguration(getEndpointConfigurationCloudWatchLogs()).
                 withCredentials(getCredentialsProvider()).build();
     }
+    
+    public static AWSLogsAsync getClientCloudWatchLogsAsync() {
+        return AWSLogsAsyncClientBuilder.standard().
+                withEndpointConfiguration(getEndpointConfigurationCloudWatchLogs()).
+                withCredentials(getCredentialsProvider()).build();
+    }
 
     public static AmazonIdentityManagement getClientIAM() {
         return AmazonIdentityManagementClientBuilder.standard().
                 withEndpointConfiguration(getEndpointConfigurationIAM()).
                 withCredentials(getCredentialsProvider()).build();
     }
+    
+    public static AmazonIdentityManagementAsync getClientIAMAsync() {
+        return AmazonIdentityManagementAsyncClientBuilder.standard().
+                withEndpointConfiguration(getEndpointConfigurationIAM()).
+                withCredentials(getCredentialsProvider()).build();
+    }
+
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationIAM() {
         return getEndpointConfiguration(Localstack.INSTANCE.getEndpointIAM());
@@ -213,6 +230,10 @@ public class TestUtils {
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationS3() {
         return getEndpointConfiguration(Localstack.INSTANCE.getEndpointS3());
+    }
+    
+    public static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationSES() {
+        return getEndpointConfiguration(Localstack.INSTANCE.getEndpointSES());
     }
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationSNS() {

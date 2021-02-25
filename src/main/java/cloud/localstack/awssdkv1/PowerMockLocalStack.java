@@ -63,140 +63,146 @@ import cloud.localstack.LocalstackTestRunner;
 public abstract class PowerMockLocalStack {
 
     public static void mockCloudWatch() {
-        AmazonCloudWatch mockService = cloud.localstack.awssdkv1.TestUtils.getClientCloudWatch();
+        AmazonCloudWatch mockService = TestUtils.getClientCloudWatch();
         PowerMockito.mockStatic(AmazonCloudWatchClientBuilder.class);
         when(AmazonCloudWatchClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockDynamoDB() {
-        AmazonDynamoDB mockService = cloud.localstack.awssdkv1.TestUtils.getClientDynamoDB();
+        AmazonDynamoDB mockService = TestUtils.getClientDynamoDB();
         PowerMockito.mockStatic(AmazonDynamoDBClientBuilder.class);
         when(AmazonDynamoDBClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockDynamoDBStreams() {
-        AmazonDynamoDBStreams mockService = cloud.localstack.awssdkv1.TestUtils.getClientDynamoDBStreams();
+        AmazonDynamoDBStreams mockService = TestUtils.getClientDynamoDBStreams();
         PowerMockito.mockStatic(AmazonDynamoDBStreamsClientBuilder.class);
         when(AmazonDynamoDBStreamsClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockIdentityManager() {
-        AmazonIdentityManagement mockService = cloud.localstack.awssdkv1.TestUtils.getClientIAM();
+        AmazonIdentityManagement mockService = TestUtils.getClientIAM();
         PowerMockito.mockStatic(AmazonIdentityManagementClientBuilder.class);
         when(AmazonIdentityManagementClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockIdentityManagerAsync() {
-        AmazonIdentityManagementAsync mockServiceAsync = cloud.localstack.awssdkv1.TestUtils.getClientIAMAsync();
+        AmazonIdentityManagementAsync mockServiceAsync = TestUtils.getClientIAMAsync();
         PowerMockito.mockStatic(AmazonIdentityManagementAsyncClientBuilder.class);
         when(AmazonIdentityManagementAsyncClientBuilder.defaultClient()).thenReturn(mockServiceAsync);
     }
 
     public static void mockKinesis() {
-        AmazonKinesis mockService = cloud.localstack.awssdkv1.TestUtils.getClientKinesis();
+        AmazonKinesis mockService = TestUtils.getClientKinesis();
         PowerMockito.mockStatic(AmazonKinesisClientBuilder.class);
         when(AmazonKinesisClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockKinesisAsync() {
-        AmazonKinesisAsync mockServiceAsync = cloud.localstack.awssdkv1.TestUtils.getClientKinesisAsync();
+        AmazonKinesisAsync mockServiceAsync = TestUtils.getClientKinesisAsync();
         PowerMockito.mockStatic(AmazonKinesisAsyncClientBuilder.class);
         when(AmazonKinesisAsyncClientBuilder.defaultClient()).thenReturn(mockServiceAsync);
     }
 
     public static void mockKinesisAsync(final ExecutorFactory executorFactory) {
-        AmazonKinesisAsync mockServiceAsync = cloud.localstack.awssdkv1.TestUtils
+        AmazonKinesisAsync mockServiceAsync = TestUtils
                 .getClientKinesisAsync(executorFactory);
         PowerMockito.mockStatic(AmazonKinesisAsyncClientBuilder.class);
         when(AmazonKinesisAsyncClientBuilder.defaultClient()).thenReturn(mockServiceAsync);
     }
 
     public static void mockLambda() {
-        AWSLambda mockService = cloud.localstack.awssdkv1.TestUtils.getClientLambda();
+        AWSLambda mockService = TestUtils.getClientLambda();
         PowerMockito.mockStatic(AWSLambdaClientBuilder.class);
         when(AWSLambdaClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockLambdaAsync() {
-        AWSLambdaAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientLambdaAsync();
+        AWSLambdaAsync mockService = TestUtils.getClientLambdaAsync();
         PowerMockito.mockStatic(AWSLambdaAsyncClientBuilder.class);
         when(AWSLambdaAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockLambdaAsync(final ExecutorFactory executorFactory) {
-        AWSLambdaAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientLambdaAsync(executorFactory);
+        AWSLambdaAsync mockService = TestUtils.getClientLambdaAsync(executorFactory);
         PowerMockito.mockStatic(AWSLambdaAsyncClientBuilder.class);
         when(AWSLambdaAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockLogs() {
-        AWSLogs mockService = cloud.localstack.awssdkv1.TestUtils.getClientCloudWatchLogs();
+        AWSLogs mockService = TestUtils.getClientCloudWatchLogs();
         PowerMockito.mockStatic(AWSLogsClientBuilder.class);
         when(AWSLogsClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockLogsAsync() {
-        AWSLogsAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientCloudWatchLogsAsync();
+        AWSLogsAsync mockService = TestUtils.getClientCloudWatchLogsAsync();
         PowerMockito.mockStatic(AWSLogsAsyncClientBuilder.class);
         when(AWSLogsAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockS3() {
-        AmazonS3 mockS3 = cloud.localstack.awssdkv1.TestUtils.getClientS3();
+        AmazonS3 mockS3 = TestUtils.getClientS3();
         PowerMockito.mockStatic(AmazonS3ClientBuilder.class);
         when(AmazonS3ClientBuilder.defaultClient()).thenReturn(mockS3);
     }
+    
+    public static void mockSecretsManager() {
+        AWSSecretsManager mock = TestUtils.getClientSecretsManager();
+        PowerMockito.mockStatic(AmazonS3ClientBuilder.class);
+        when(AmazonS3ClientBuilder.defaultClient()).thenReturn(mock);
+    }
 
     public static void mockSES() {
-        AmazonSimpleEmailService mockSes = cloud.localstack.awssdkv1.TestUtils.getClientSES();
+        AmazonSimpleEmailService mockSes = TestUtils.getClientSES();
         PowerMockito.mockStatic(AmazonSimpleEmailServiceClientBuilder.class);
         when(AmazonSimpleEmailServiceClientBuilder.defaultClient()).thenReturn(mockSes);
     }
 
     public static void mockSESAsync() {
-        AmazonSimpleEmailServiceAsync mockSesAsync = cloud.localstack.awssdkv1.TestUtils.getClientSESAsync();
+        AmazonSimpleEmailServiceAsync mockSesAsync = TestUtils.getClientSESAsync();
         PowerMockito.mockStatic(AmazonSimpleEmailServiceAsyncClientBuilder.class);
         when(AmazonSimpleEmailServiceAsyncClientBuilder.defaultClient()).thenReturn(mockSesAsync);
     }
 
     public static void mockSNS() {
-        AmazonSNS mockService = cloud.localstack.awssdkv1.TestUtils.getClientSNS();
+        AmazonSNS mockService = TestUtils.getClientSNS();
         PowerMockito.mockStatic(AmazonSNSClientBuilder.class);
         when(AmazonSNSClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockSNSAsync() {
-        AmazonSNSAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientSNSAsync();
+        AmazonSNSAsync mockService = TestUtils.getClientSNSAsync();
         PowerMockito.mockStatic(AmazonSNSAsyncClientBuilder.class);
         when(AmazonSNSAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockSNSAsync(final ExecutorFactory executorFactory) {
-        AmazonSNSAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientSNSAsync(executorFactory);
+        AmazonSNSAsync mockService = TestUtils.getClientSNSAsync(executorFactory);
         PowerMockito.mockStatic(AmazonSNSAsyncClientBuilder.class);
         when(AmazonSNSAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockSQS() {
-        AmazonSQS mockService = cloud.localstack.awssdkv1.TestUtils.getClientSQS();
+        AmazonSQS mockService = TestUtils.getClientSQS();
         PowerMockito.mockStatic(AmazonSQSClientBuilder.class);
         when(AmazonSQSClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockSQS(String endpoint) {
-        AmazonSQS mockService = cloud.localstack.awssdkv1.TestUtils.getClientSQS(endpoint);
+        AmazonSQS mockService = TestUtils.getClientSQS(endpoint);
         PowerMockito.mockStatic(AmazonSQSClientBuilder.class);
         when(AmazonSQSClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockSQSAsync() {
-        AmazonSQSAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientSQSAsync();
+        AmazonSQSAsync mockService = TestUtils.getClientSQSAsync();
         PowerMockito.mockStatic(AmazonSQSAsyncClientBuilder.class);
         when(AmazonSQSAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockSQSAsync(final ExecutorFactory executorFactory) {
-        AmazonSQSAsync mockService = cloud.localstack.awssdkv1.TestUtils.getClientSQSAsync(executorFactory);
+        AmazonSQSAsync mockService = TestUtils.getClientSQSAsync(executorFactory);
         PowerMockito.mockStatic(AmazonSQSAsyncClientBuilder.class);
         when(AmazonSQSAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }

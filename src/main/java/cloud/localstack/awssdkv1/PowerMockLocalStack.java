@@ -149,8 +149,8 @@ public abstract class PowerMockLocalStack {
     
     public static void mockSecretsManager() {
         AWSSecretsManager mock = TestUtils.getClientSecretsManager();
-        PowerMockito.mockStatic(AmazonS3ClientBuilder.class);
-        when(AmazonS3ClientBuilder.defaultClient()).thenReturn(mock);
+        PowerMockito.mockStatic(AWSSecretsManagerClientBuilder.class);
+        when(AWSSecretsManagerClientBuilder.defaultClient()).thenReturn(mock);
     }
 
     public static void mockSES() {

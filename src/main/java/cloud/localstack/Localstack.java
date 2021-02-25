@@ -66,6 +66,7 @@ public class Localstack {
                 dockerConfiguration.getExternalHostName(),
                 dockerConfiguration.isPullNewImage(),
                 dockerConfiguration.isRandomizePorts(),
+                dockerConfiguration.getImageName(),
                 dockerConfiguration.getImageTag(),
                 dockerConfiguration.getPortEdge(),
                 dockerConfiguration.getPortElasticSearch(),

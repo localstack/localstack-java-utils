@@ -35,6 +35,7 @@ public class LocalstackDockerAnnotationProcessor {
             .pullNewImage(properties.pullNewImage())
             .ignoreDockerRunErrors(properties.ignoreDockerRunErrors())
             .randomizePorts(properties.randomizePorts())
+            .imageName(StringUtils.isEmpty(properties.imageName()) ? null : properties.imageName())
             .imageTag(StringUtils.isEmpty(properties.imageTag()) ? null : properties.imageTag())
             .portEdge(getEnvOrDefault("LOCALSTACK_EDGE_PORT", properties.portEdge()))
             .portElasticSearch(getEnvOrDefault("LOCALSTACK_ELASTICSEARCH_PORT", properties.portElasticSearch()))

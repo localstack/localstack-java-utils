@@ -21,6 +21,7 @@ public class Container {
     private static final Logger LOG = Logger.getLogger(Container.class.getName());
 
     private static final String LOCALSTACK_NAME = "localstack/localstack";
+    private static final String LOCALSTACK_TAG = "latest";
     private static final String LOCALSTACK_PORT_EDGE = "4566";
     private static final String LOCALSTACK_PORT_ELASTICSEARCH = "4571";
 
@@ -47,16 +48,19 @@ public class Container {
      * @param pullNewImage determines if docker pull should be run to update to the latest image of the container
      * @param randomizePorts determines if the container should expose the default local stack ports or if it should expose randomized ports
      *                       in order to prevent conflicts with other localstack containers running on the same machine
+     * @param imageName the name of the image defaults to {@value LOCALSTACK_NAME} if null
+     * @param imageTag the tag of the image to pull, defaults to {@value LOCALSTACK_TAG} if null
      * @param environmentVariables map of environment variables to be passed to the docker container
      */
     public static Container createLocalstackContainer(
-        String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageTag, String portEdge,
+        String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageName, String imageTag, String portEdge,
         String portElasticSearch,  Map<String, String> environmentVariables, Map<Integer, Integer> portMappings) {
 
         environmentVariables = environmentVariables == null ? Collections.emptyMap() : environmentVariables;
         portMappings = portMappings == null ? Collections.emptyMap() : portMappings;
 
-        String fullImageName = LOCALSTACK_NAME + ":" + (imageTag == null ? "latest" : imageTag);
+        String imageNameOrDefault = (imageName == null ? LOCALSTACK_NAME : imageName);
+        String fullImageName = imageNameOrDefault + ":" + (imageTag == null ? LOCALSTACK_TAG : imageTag);
         boolean imageExists = new ListImagesCommand().execute().contains(fullImageName);
 
         String fullPortEdge = (portEdge == null ? LOCALSTACK_PORT_EDGE : portEdge) + ":" + LOCALSTACK_PORT_EDGE;
@@ -65,10 +69,10 @@ public class Container {
 
         if(pullNewImage || !imageExists) {
             LOG.info("Pulling latest image...");
-            new PullCommand(LOCALSTACK_NAME, imageTag).execute();
+            new PullCommand(imageNameOrDefault, imageTag).execute();
         }
 
-        RunCommand runCommand = new RunCommand(LOCALSTACK_NAME, imageTag)
+        RunCommand runCommand = new RunCommand(imageNameOrDefault, imageTag)
             .withExposedPorts(fullPortEdge, randomizePorts)
             .withExposedPorts(fullPortElasticSearch, randomizePorts)
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
@@ -199,5 +203,12 @@ public class Container {
      */
     public String executeCommand(List<String> command) {
         return new ExecCommand(containerId).execute(command);
+    }
+
+    /**
+     * Returns the container ID which can be used to execute Docker CLI / API level commands on the container.
+     */
+    String getContainerId() {
+        return containerId;
     }
 }

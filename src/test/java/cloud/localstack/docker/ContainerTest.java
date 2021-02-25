@@ -1,8 +1,12 @@
 package cloud.localstack.docker;
 
+import cloud.localstack.Localstack;
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +26,7 @@ public class ContainerTest {
         HashMap<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put(MY_PROPERTY, MY_VALUE);
         Container localStackContainer = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, environmentVariables, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, environmentVariables, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -45,9 +49,42 @@ public class ContainerTest {
     }
 
     @Test
+    public void createLocalstackContainerWithFullImage() {
+
+        String customImageName = "localstack/localstack-full";
+        Container localStackContainer = Container.createLocalstackContainer(
+                EXTERNAL_HOST_NAME, pullNewImage, false, customImageName, null, null, null, null, null);
+
+        try {
+            localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
+
+            String imageName = new DockerExe()
+                    .execute(Arrays.asList("container", "inspect",
+                            localStackContainer.getContainerId(), "--format", "{{.Config.Image}}"));
+            assertEquals(customImageName, imageName);
+        }
+        finally {
+            localStackContainer.stop();
+        }
+    }
+
+    @ExtendWith(LocalstackDockerExtension.class)
+    @LocalstackDockerProperties(imageName = "localstack/localstack-full")
+    public static class ContainerTest1 {
+        @org.junit.jupiter.api.Test
+        public void imageName() {
+            String imageName = new DockerExe()
+                    .execute(Arrays.asList("container", "inspect",
+                            Localstack.INSTANCE.getLocalStackContainer().getContainerId(),
+                            "--format", "{{.Config.Image}}"));
+            assertEquals("localstack/localstack-full", imageName);
+        }
+    }
+
+    @Test
     public void createLocalstackContainerWithCustomPorts() throws Exception {
         Container localStackContainer = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, false, null, "45660", "45710", null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, "45660", "45710", null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -63,7 +100,7 @@ public class ContainerTest {
     @Test
     public void createLocalstackContainerWithRandomPorts() throws Exception {
         Container localStackContainer = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, false, null, ":4566", ":4571", null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, ":4566", ":4571", null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);

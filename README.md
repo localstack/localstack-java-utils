@@ -22,11 +22,12 @@ The container can be configured by using the `@LocalstackDockerProperties` annot
 ```
 ...
 import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.ServiceName;
 import cloud.localstack.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 @RunWith(LocalstackTestRunner.class)
-@LocalstackDockerProperties(services = { "s3", "sqs", "kinesis" })
+@LocalstackDockerProperties(services = { ServiceName.S3, "sqs", "kinesis" })
 public class MyCloudAppTest {
 
   @Test
@@ -70,6 +71,7 @@ You can configure the Docker behaviour using the `@LocalstackDockerProperties` a
 |-----------------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------|---------------|
 | `pullNewImage`              | Determines if a new image is pulled from the docker repo before the tests are run.                                           | boolean                      | `false`         |
 | `services`                  | Determines which services should be run when the localstack starts.                                                          | String[]                     | All           |
+| `imageName`                 | Use a specific image name (organisation/repo) for docker container                                                           | String                       | `localstack/localstack`  |
 | `imageTag`                  | Use a specific image tag for docker container                                                                                | String                       | `latest`        |
 | `portEdge`                  | Port number for the edge service, the main entry point for all API invocations                                               | String                       | `4566`        |
 | `portElasticSearch`         | Port number for the elasticsearch service                                                                                    | String                       | `4571`        |

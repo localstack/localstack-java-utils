@@ -2,6 +2,7 @@ package cloud.localstack.awssdkv2;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
 import software.amazon.awssdk.utils.*;
 import software.amazon.awssdk.http.*;
 import software.amazon.awssdk.services.cloudwatch.*;
@@ -56,6 +57,10 @@ public class TestUtils {
     
     public static CloudWatchAsyncClient getClientCloudWatchAsyncV2() {
         return wrapApiClientV2(CloudWatchAsyncClient.builder(), Localstack.INSTANCE.getEndpointCloudWatch()).build();
+    }
+
+    public static LambdaAsyncClient getClientLambdaAsyncV2() {
+        return wrapApiClientV2(LambdaAsyncClient.builder(), Localstack.INSTANCE.getEndpointCloudWatch()).build();
     }
 
     public static <T extends SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {

@@ -2,9 +2,11 @@ package cloud.localstack.awssdkv2;
 
 import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.sample.LambdaHandler;
+import cloud.localstack.utils.LocalTestUtil;
 
-import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
-import org.assertj.core.api.Assertions;
+import lombok.val;
+
 import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.services.cloudwatch.*;
 import software.amazon.awssdk.services.cloudwatch.model.*;
@@ -12,6 +14,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.kinesis.model.*;
+import software.amazon.awssdk.services.lambda.model.CreateFunctionRequest;
+import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.s3.*;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
@@ -214,7 +218,7 @@ public class BasicFeaturesSDKV2Test {
                     .name("UNIQUE_PAGES"+i)
                     .value("URLS"+i)
                     .build());
-        };
+        }
 
         // Set an Instant object
         String time = ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT );
@@ -229,7 +233,7 @@ public class BasicFeaturesSDKV2Test {
             .value(dataPoint)
             .timestamp(instant)
             .dimensions(awsDimensionList).build());
-        };
+        }
 
         PutMetricDataRequest request = PutMetricDataRequest.builder()
              .namespace("SITE/TRAFFIC")
@@ -237,5 +241,21 @@ public class BasicFeaturesSDKV2Test {
 
         PutMetricDataResponse response = clientCW.putMetricData(request).get();
         Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void testLambdaCreateListFunctions() throws Exception {
+        val functionName = "test-f-"+UUID.randomUUID().toString();
+        val lambdaClient = TestUtils.getClientLambdaAsyncV2();
+        val createFunctionRequest = CreateFunctionRequest.builder().functionName(functionName)
+                .runtime(Runtime.JAVA8)
+                .role("r1")
+                .code(LocalTestUtil.createFunctionCodeSDKV2(LambdaHandler.class))
+                .handler(LambdaHandler.class.getName()).build();
+        val response = lambdaClient.createFunction(createFunctionRequest).get();
+        Assert.assertNotNull(response);
+        val functions = lambdaClient.listFunctions().get();
+        val function = functions.functions().stream().filter(f -> f.functionName().equals(functionName)).findFirst().get();
+        Assert.assertNotNull(function);
     }
 }

@@ -10,10 +10,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import lombok.val;
 import org.apache.commons.io.IOUtils;
 
 import com.amazonaws.services.kinesis.model.Record;
 import com.amazonaws.services.lambda.model.FunctionCode;
+import software.amazon.awssdk.core.SdkBytes;
 
 /**
  * Utility methods used for the LocalStack unit and integration tests.
@@ -23,7 +25,18 @@ import com.amazonaws.services.lambda.model.FunctionCode;
 public class LocalTestUtil {
 
 	public static FunctionCode createFunctionCode(Class<?> clazz) throws Exception {
-		FunctionCode code = new FunctionCode();
+		val code = new FunctionCode();
+		code.setZipFile(createFunctionByteBuffer(clazz));
+		return code;
+	}
+
+	public static software.amazon.awssdk.services.lambda.model.FunctionCode createFunctionCodeSDKV2(Class<?> clazz) throws Exception{
+		val codeBuilder = software.amazon.awssdk.services.lambda.model.FunctionCode.builder();
+		codeBuilder.zipFile(SdkBytes.fromByteBuffer(createFunctionByteBuffer(clazz)));
+		return codeBuilder.build();
+	}
+
+	private static ByteBuffer createFunctionByteBuffer(Class<?> clazz) throws Exception{
 		ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream jarOut = new ByteArrayOutputStream();
 		// create zip file
@@ -48,9 +61,7 @@ public class LocalTestUtil {
 		zipStream.closeEntry();
 
 		zipStream.close();
-		code.setZipFile(ByteBuffer.wrap(zipOut.toByteArray()));
-
-		return code;
+		return ByteBuffer.wrap(zipOut.toByteArray());
 	}
 
 	private static void addClassToJar(Class<?> clazz, JarOutputStream jarStream) throws IOException {

@@ -44,6 +44,11 @@ public class RunCommand extends Command {
         return this;
     }
 
+    public RunCommand withBindMountedVolumes(Map<String, String> hostToContainerMappings) {
+        hostToContainerMappings.forEach((host, container) -> addOptions("-v", String.format("%s:%s", host, container)));
+        return this;
+    }
+
     public RunCommand withEnvironmentVariable(String name, String value) {
         addEnvOption(name, value);
         return this;

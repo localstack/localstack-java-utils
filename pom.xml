@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.8-SNAPSHOT</version>
+    <version>0.2.10</version>
     <name>localstack-utils</name>
 
     <description>Java utilities for the LocalStack platform.</description>
@@ -75,6 +75,19 @@
             <version>1.18.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>2.0.9</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.9</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- required to build on java 9+ -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -96,10 +109,10 @@
             <version>${aws.sdk.version}</version>
             <scope>provided</scope>
             <exclusions>
-              <exclusion>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-kinesisvideo</artifactId>
-              </exclusion>
+                <exclusion>
+                    <groupId>com.amazonaws</groupId>
+                    <artifactId>aws-java-sdk-kinesisvideo</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -157,7 +170,7 @@
             <version>${aws.sdkv2.version}</version>
             <scope>provided</scope>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>ssm</artifactId>
             <version>${aws.sdkv2.version}</version>

@@ -51,12 +51,17 @@ public class Container {
      * @param imageName the name of the image defaults to {@value LOCALSTACK_NAME} if null
      * @param imageTag the tag of the image to pull, defaults to {@value LOCALSTACK_TAG} if null
      * @param environmentVariables map of environment variables to be passed to the docker container
+     * @param portMappings
+     * @param bindMounts  Docker host to container volume mapping like /host/dir:/container/dir, be aware that the host
+     * directory must be an absolute path
      */
     public static Container createLocalstackContainer(
-        String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageName, String imageTag, String portEdge,
-        String portElasticSearch,  Map<String, String> environmentVariables, Map<Integer, Integer> portMappings) {
+            String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageName, String imageTag, String portEdge,
+            String portElasticSearch, Map<String, String> environmentVariables, Map<Integer, Integer> portMappings,
+            Map<String, String> bindMounts) {
 
         environmentVariables = environmentVariables == null ? Collections.emptyMap() : environmentVariables;
+        bindMounts = bindMounts == null ? Collections.emptyMap() : bindMounts;
         portMappings = portMappings == null ? Collections.emptyMap() : portMappings;
 
         String imageNameOrDefault = (imageName == null ? LOCALSTACK_NAME : imageName);
@@ -78,7 +83,9 @@ public class Container {
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
             .withEnvironmentVariable(ENV_DEBUG, ENV_DEBUG_DEFAULT)
             .withEnvironmentVariable(ENV_USE_SSL, Localstack.INSTANCE.useSSL() ? "1" : "0")
-            .withEnvironmentVariables(environmentVariables);
+            .withEnvironmentVariables(environmentVariables)
+            .withBindMountedVolumes(bindMounts);
+
         for (Integer port : portMappings.keySet()) {
             runCommand = runCommand.withExposedPorts("" + port, false);
         }

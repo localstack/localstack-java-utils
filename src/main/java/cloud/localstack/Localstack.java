@@ -20,6 +20,8 @@ public class Localstack {
 
     public static final String ENV_CONFIG_USE_SSL = "USE_SSL";
     public static final String ENV_CONFIG_EDGE_PORT = "EDGE_PORT";
+    public static final String INIT_SCRIPTS_PATH = "/docker-entrypoint-initaws.d";
+    public static final String TMP_PATH = "/tmp/localstack";
 
     private static final Logger LOG = Logger.getLogger(Localstack.class.getName());
 
@@ -71,12 +73,18 @@ public class Localstack {
                 dockerConfiguration.getPortEdge(),
                 dockerConfiguration.getPortElasticSearch(),
                 dockerConfiguration.getEnvironmentVariables(),
-                dockerConfiguration.getPortMappings()
+                dockerConfiguration.getPortMappings(),
+                dockerConfiguration.getBindMounts()
             );
             loadServiceToPortMap();
 
             LOG.info("Waiting for LocalStack container to be ready...");
             localStackContainer.waitForLogToken(READY_TOKEN);
+            if (dockerConfiguration.getInitializationToken() != null) {
+                LOG.info("Waiting for LocalStack container to emit your initialization token '"
+                        + dockerConfiguration.getInitializationToken().toString() + "'...");
+                localStackContainer.waitForLogToken(dockerConfiguration.getInitializationToken());
+            }
         } catch (Exception t) {
             if (t.toString().contains("port is already allocated") && dockerConfiguration.isIgnoreDockerRunErrors()) {
                 LOG.info("Ignoring port conflict when starting Docker container, due to ignoreDockerRunErrors=true");

@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/localstack/localstack-java-utils.svg)](https://travis-ci.org/localstack/localstack-java-utils)
+[![Maven Central](https://img.shields.io/maven-central/v/cloud.localstack/localstack-utils)](https://mvnrepository.com/artifact/cloud.localstack/localstack-utils)
 
 # LocalStack Java Utils
 
@@ -59,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.7</version>
+    <version>0.2.9</version>
 </dependency>
 ```
 
@@ -107,6 +108,8 @@ make build
 
 ## Change Log
 
+* v0.2.10: Add Lambda async utils for AWS SDK v2; add support for specifying bind mounts and init scripts via `@LocalstackDockerProperties`; add PowerMock integration for easy patching of AWS SDK to use local endpoints; add support for configuring the Docker image name via `@LocalstackDockerProperties`; add tests for templated emails
+* v0.2.8: Allow overwriting the port binding via environment variables
 * v0.2.7: Extend `@LocalstackDockerProperties` to include port binding
 * v0.2.6: Add new path to possible docker exe locations in Windows; add various additional tests for v1 and v2 SDKs (Kinesis, SQS, SSM & SecretsManager, ...)
 * v0.2.5: Refactor code to accommodate edge port config for all services; add CloudWatch Logs endpoint configuration
@@ -151,7 +154,7 @@ public class PowerMockLocalStackExampleTest extends PowerMockLocalStack{
     public void mock() {
         PowerMockLocalStack.mockSNS();
     }
-    
+
     @Test
     public void testSendMessage() throws JMSException {
         final AmazonSNS clientSNS = AmazonSNSClientBuilder.defaultClient();

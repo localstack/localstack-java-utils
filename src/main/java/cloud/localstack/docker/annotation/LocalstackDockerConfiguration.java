@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.regex.Pattern;
+
 
 /**
  * Bean to specify the docker configuration.
@@ -40,6 +42,11 @@ public class LocalstackDockerConfiguration {
 
     @Builder.Default
     private final Map<Integer, Integer> portMappings = Collections.emptyMap();
+
+    @Builder.Default
+    private final Map<String, String> bindMounts = Collections.emptyMap();
+
+    private final Pattern initializationToken;
 
     @Builder.Default
     private final boolean useSingleDockerContainer = false;

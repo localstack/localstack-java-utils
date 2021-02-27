@@ -1,13 +1,18 @@
 package cloud.localstack.docker;
 
 import cloud.localstack.Localstack;
-import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -20,13 +25,14 @@ public class ContainerTest {
 
     public static final boolean pullNewImage = false;
 
+    @org.junit.jupiter.api.Test
     @Test
     public void createLocalstackContainer() throws Exception {
 
         HashMap<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put(MY_PROPERTY, MY_VALUE);
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, environmentVariables, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, environmentVariables, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -48,12 +54,13 @@ public class ContainerTest {
         }
     }
 
+    @org.junit.jupiter.api.Test
     @Test
     public void createLocalstackContainerWithFullImage() {
 
         String customImageName = "localstack/localstack-full";
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, customImageName, null, null, null, null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, customImageName, null, null, null, null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -68,23 +75,41 @@ public class ContainerTest {
         }
     }
 
-    @ExtendWith(LocalstackDockerExtension.class)
-    @LocalstackDockerProperties(imageName = "localstack/localstack-full")
-    public static class ContainerTest1 {
-        @org.junit.jupiter.api.Test
-        public void imageName() {
-            String imageName = new DockerExe()
-                    .execute(Arrays.asList("container", "inspect",
-                            Localstack.INSTANCE.getLocalStackContainer().getContainerId(),
-                            "--format", "{{.Config.Image}}"));
-            assertEquals("localstack/localstack-full", imageName);
+    @org.junit.jupiter.api.Test
+    @Test
+    public void createLocalstackContainerWithScriptMounted() {
+
+        Container localStackContainer = Container.createLocalstackContainer(
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, null, null,
+                Collections.singletonMap(testFile("echo testmarker"), Localstack.INIT_SCRIPTS_PATH + "/test.sh"));
+
+        try {
+            localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
+            localStackContainer.waitForLogToken(Pattern.compile("testmarker"));
+            assertEquals("echo testmarker", localStackContainer.executeCommand(Arrays.asList("cat", Localstack.INIT_SCRIPTS_PATH + "/test.sh")));
+
+        }
+        finally {
+            localStackContainer.stop();
         }
     }
 
+    static String testFile(String content) {
+        try {
+            File testFile = File.createTempFile("localstack", ".sh");
+            FileUtils.writeStringToFile(testFile, content, StandardCharsets.UTF_8);
+            testFile.deleteOnExit();
+            return testFile.getAbsolutePath();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
     @Test
     public void createLocalstackContainerWithCustomPorts() throws Exception {
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, "45660", "45710", null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, "45660", "45710", null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -97,10 +122,11 @@ public class ContainerTest {
         }
     }
 
+    @org.junit.jupiter.api.Test
     @Test
     public void createLocalstackContainerWithRandomPorts() throws Exception {
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, ":4566", ":4571", null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, ":4566", ":4571", null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);

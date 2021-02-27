@@ -19,7 +19,7 @@ extension. Take a look at the example JUnit tests in `src/test/java`.
 By default, the JUnit Test Runner starts LocalStack in a Docker container, for the duration of the test.
 The container can be configured by using the `@LocalstackDockerProperties` annotation.
 
-```
+```java
 ...
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.ServiceName;
@@ -42,7 +42,7 @@ public class MyCloudAppTest {
 
 Or with JUnit 5:
 
-```
+```java
 @ExtendWith(LocalstackDockerExtension.class)
 @LocalstackDockerProperties(...)
 public class MyCloudAppTest {
@@ -55,7 +55,7 @@ public class MyCloudAppTest {
 The LocalStack JUnit test runner is published as an artifact in Maven Central.
 Simply add the following dependency to your `pom.xml` file:
 
-```
+```xml
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
@@ -98,7 +98,8 @@ _Note: When specifying the port in the `services` property, you cannot use `rand
 ## Building
 
 To build the latest version of the code via Maven:
-```
+
+```sh
 make build
 ```
 
@@ -110,6 +111,55 @@ make build
 * v0.2.2: Addition of CloudWatch Logs endpoint configuration; adjust tests to use central edge service endpoint
 * v0.2.1: Move Java sources into separate project; mark non-Docker Java `LocalstackExtension` as deprecated; update paths for Python code lookup in Docker container
 * v0.2.0: Last version still maintained in LocalStack main repo
+
+## PowerMock
+
+You can use the PowerMock Library to call the builders default method and still get LocalStack version of the AWS clients.
+
+```java
+...
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(LocalstackTestRunner.class)
+@LocalstackDockerProperties(services = { "ses" })
+@PrepareForTest({ AmazonSimpleEmailServiceClientBuilder.class, AmazonSimpleEmailServiceAsyncClientBuilder.class })
+@PowerMockIgnore({"javax.crypto.*", "org.hamcrest.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "javax.security.*", "org.w3c.*"})
+public class SESMessagingTest {
+....
+    @Before
+    public void mockSES() {
+        AmazonSimpleEmailService mockSes = TestUtils.getClientSES();
+        PowerMockito.mockStatic(AmazonSimpleEmailServiceClientBuilder.class);
+        when(AmazonSimpleEmailServiceClientBuilder.defaultClient()).thenReturn(mockSes);
+    }
+    @Test
+    public void testSendEmail() throws Exception {
+        AmazonSimpleEmailService client = amazonSimpleEmailServiceClientBuilder.defaultClient();
+    ....
+```
+
+## PowerMockLocalStack Utility
+
+This utility makes easier to use PowerMock with Localstack.
+
+```java
+...
+public class PowerMockLocalStackExampleTest extends PowerMockLocalStack{
+    private static final String TOPIC = "topic";
+    @Before
+    public void mock() {
+        PowerMockLocalStack.mockSNS();
+    }
+    
+    @Test
+    public void testSendMessage() throws JMSException {
+        final AmazonSNS clientSNS = AmazonSNSClientBuilder.defaultClient();
+        ...
+    }
+}
+```
+
+## Acknowledgements
+I thank you [Keith Humphreys](https://gitlab.com/keithh), for showing us how to empower LocalStack with PowerMock to write tests even easier.
 
 ## License
 

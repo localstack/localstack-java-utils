@@ -49,6 +49,6 @@ public class KinesisV2ConsumerTest {
   public void testGetRecordJSON() throws Exception {
     System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
     this.testGetRecordCBOR();
-    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
+    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "true");
   }
 }

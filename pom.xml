@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cloud.localstack</groupId>
@@ -207,6 +206,26 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>software.amazon.kinesis</groupId>
+            <artifactId>amazon-kinesis-client</artifactId>
+            <version>2.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.14.1</version>
+        </dependency>
 
         <!-- test dependencies -->
         <dependency>
@@ -287,8 +306,7 @@
         </profile>
         <profile>
             <id>awssdkv1</id>
-            <dependencies>
-            </dependencies>
+            <dependencies></dependencies>
         </profile>
         <profile>
             <id>awssdkv2</id>
@@ -307,6 +325,11 @@
                     <groupId>software.amazon.awssdk</groupId>
                     <artifactId>kinesis</artifactId>
                     <version>${aws.sdkv2.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>software.amazon.kinesis</groupId>
+                    <artifactId>amazon-kinesis-client</artifactId>
+                    <version>2.2.9</version>
                 </dependency>
             </dependencies>
         </profile>

@@ -1,6 +1,5 @@
 package cloud.localstack.awssdkv2;
 
-import cloud.localstack.Localstack;
 import cloud.localstack.awssdkv2.consumer.DeliveryStatusRecordProcessorFactory;
 import cloud.localstack.awssdkv2.consumer.EventProcessor;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
@@ -45,7 +44,7 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
     CloudWatchAsyncClient cloudWatchAsyncClient = CloudWatchAsyncClient.create();
 
     createStream(kinesisAsyncClient);
-    TimeUnit.SECONDS.sleep(5);
+    TimeUnit.SECONDS.sleep(2);
 
     EventProcessor eventProcessor = new EventProcessor();
     DeliveryStatusRecordProcessorFactory processorFactory = new DeliveryStatusRecordProcessorFactory(eventProcessor);
@@ -55,10 +54,10 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
     Scheduler scheduler = createScheduler(configsBuilder);
 
     new Thread(scheduler).start();
-    TimeUnit.SECONDS.sleep(50);
+    TimeUnit.SECONDS.sleep(7);
 
     putRecord(kinesisAsyncClient);
-    TimeUnit.SECONDS.sleep(5);
+    TimeUnit.SECONDS.sleep(10);
 
     scheduler.shutdown();
     Assert.assertTrue(eventProcessor.CONSUMER_CREATED);
@@ -73,7 +72,6 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
   }
 
   public void createStream(KinesisAsyncClient kinesisClient) throws Exception {
-
     CreateStreamRequest request = CreateStreamRequest.builder().streamName(streamName).shardCount(1).build();
     CreateStreamResponse response = kinesisClient.createStream(request).get();
 
@@ -81,7 +79,6 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
   }
 
   public void putRecord(KinesisAsyncClient kinesisClient) throws Exception {
-
     String message = "hello, world!";
     PutRecordRequest request = PutRecordRequest.builder().partitionKey("partitionkey").streamName(streamName)
         .data(SdkBytes.fromUtf8String(message)).build();

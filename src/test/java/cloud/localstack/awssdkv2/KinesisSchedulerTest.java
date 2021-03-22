@@ -28,6 +28,7 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
   String streamName = "test" + UUID.randomUUID().toString();
   String workerId = UUID.randomUUID().toString();
   Integer consumerCreationTime = 15; //35 for aws
+  String testMessage = "hello, world";
 
   @Before
   public void mockServicesForScheduler() {
@@ -63,6 +64,8 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
     scheduler.shutdown();
     Assert.assertTrue(eventProcessor.CONSUMER_CREATED);
     Assert.assertTrue(eventProcessor.RECORD_RECEIVED);
+    Assert.assertTrue(eventProcessor.messages.size() > 0);
+    Assert.assertEquals(eventProcessor.messages.get(0), testMessage);
   }
 
   public Scheduler createScheduler(ConfigsBuilder configsBuilder) {
@@ -81,9 +84,8 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
 
   public void putRecord(KinesisAsyncClient kinesisClient) throws Exception {
     System.out.println("PUTTING RECORD");
-    String message = "hello, world!";
     PutRecordRequest request = PutRecordRequest.builder().partitionKey("partitionkey").streamName(streamName)
-        .data(SdkBytes.fromUtf8String(message)).build();
+        .data(SdkBytes.fromUtf8String(testMessage)).build();
     PutRecordResponse response = kinesisClient.putRecord(request).get();
 
     Assert.assertNotNull(response);

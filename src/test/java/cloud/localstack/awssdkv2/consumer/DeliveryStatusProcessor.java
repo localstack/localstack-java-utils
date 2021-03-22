@@ -11,7 +11,7 @@ import software.amazon.kinesis.lifecycle.events.ShutdownRequestedInput;
 import software.amazon.kinesis.processor.ShardRecordProcessor;
 import software.amazon.kinesis.retrieval.KinesisClientRecord;
 
-public class DeliveryStatusProcessor implements ShardRecordProcessor{
+public class DeliveryStatusProcessor implements ShardRecordProcessor {
     EventProcessor eventProcessor;
     private static final Logger LOG = Logger.getLogger(DeliveryStatusProcessor.class.getName());
 
@@ -24,13 +24,24 @@ public class DeliveryStatusProcessor implements ShardRecordProcessor{
     }
 
     public void processRecords(ProcessRecordsInput processRecordsInput) {
+        LOG.info("RECORDS PROCESSING");
         this.eventProcessor.RECORD_RECEIVED = true;
-        LOG.info("RECORD PROCESSING");
+        processRecordsInput.records().forEach(record -> {
+            try {
+                processRecord(record);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void processRecord(KinesisClientRecord record) throws IOException {
-        this.eventProcessor.RECORD_RECEIVED = true;
         LOG.info("RECORD PROCESSING");
+        this.eventProcessor.RECORD_RECEIVED = true;
+        byte[] message = new byte[record.data().remaining()];
+        record.data().get(message);
+        String string = new String(message);
+        eventProcessor.messages.add(string);
     }
 
     public void processAndPublishRecord(byte[] messageStatus) throws IOException {

@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class KinesisSchedulerTest extends PowerMockLocalStack {
   String streamName = "test" + UUID.randomUUID().toString();
   String workerId = UUID.randomUUID().toString();
+  Integer consumerCreationTime = 15; //35 for aws
 
   @Before
   public void mockServicesForScheduler() {
@@ -54,10 +55,10 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
     Scheduler scheduler = createScheduler(configsBuilder);
 
     new Thread(scheduler).start();
-    TimeUnit.SECONDS.sleep(7);
+    TimeUnit.SECONDS.sleep(consumerCreationTime);
 
     putRecord(kinesisAsyncClient);
-    TimeUnit.SECONDS.sleep(10);
+    TimeUnit.SECONDS.sleep(5);
 
     scheduler.shutdown();
     Assert.assertTrue(eventProcessor.CONSUMER_CREATED);
@@ -79,6 +80,7 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
   }
 
   public void putRecord(KinesisAsyncClient kinesisClient) throws Exception {
+    System.out.println("PUTTING RECORD");
     String message = "hello, world!";
     PutRecordRequest request = PutRecordRequest.builder().partitionKey("partitionkey").streamName(streamName)
         .data(SdkBytes.fromUtf8String(message)).build();

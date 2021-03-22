@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 public class KinesisSchedulerTest extends PowerMockLocalStack {
   String streamName = "test" + UUID.randomUUID().toString();
   String workerId = UUID.randomUUID().toString();
-  Integer consumerCreationTime = 15; //35 for aws
   String testMessage = "hello, world";
+  Integer consumerCreationTime = 15; //35 for aws
 
   @Before
   public void mockServicesForScheduler() {
-    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
+    // System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
     PowerMockLocalStack.mockCloudWatchAsyncClient();
     PowerMockLocalStack.mockDynamoDBAsync();
     PowerMockLocalStack.mockKinesisAsync();

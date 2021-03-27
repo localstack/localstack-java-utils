@@ -17,6 +17,7 @@ public class LocalstackDockerTest {
 
     private static final LocalstackDockerConfiguration DOCKER_CONFIG = LocalstackDockerConfiguration.builder()
             .randomizePorts(true)
+//            .platform("linux/x86_64")
             .build();
 
     @Rule

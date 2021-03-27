@@ -60,7 +60,7 @@ public class RunCommand extends Command {
     }
 
     public RunCommand withPlatform(String platform) {
-        addOptions("-platform", platform);
+        addOptions("--platform", platform);
         return this;
     }
 

@@ -59,6 +59,11 @@ public class RunCommand extends Command {
         return this;
     }
 
+    public RunCommand withPlatform(String platform) {
+        addOptions("-platform", platform);
+        return this;
+    }
+
     private void addEnvOption(String name, String value) {
         addOptions("-e", String.format("%s=%s", name, value));
     }

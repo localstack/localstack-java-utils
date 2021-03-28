@@ -27,6 +27,7 @@ public class LocalstackDockerConfiguration {
 
     private final String imageName;
     private final String imageTag;
+    private final String platform;
 
     @Builder.Default
     private final String portEdge = "4566";

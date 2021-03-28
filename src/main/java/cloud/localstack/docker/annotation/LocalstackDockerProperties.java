@@ -92,4 +92,6 @@ public @interface LocalstackDockerProperties {
      * This can be used to run tests with an existing LocalStack container running on the host.
      */
     boolean ignoreDockerRunErrors() default false;
+
+    String platform() default "";
 }

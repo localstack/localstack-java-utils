@@ -93,5 +93,9 @@ public @interface LocalstackDockerProperties {
      */
     boolean ignoreDockerRunErrors() default false;
 
+    /**
+     * Specifies a target platform for the localstack docker image. Value is used by the --platform flag in the
+     * docker run command
+     */
     String platform() default "";
 }

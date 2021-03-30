@@ -55,6 +55,7 @@ public class Container {
      * @param portMappings
      * @param bindMounts  Docker host to container volume mapping like /host/dir:/container/dir, be aware that the host
      * directory must be an absolute path
+     * @param platform  Docker host to container volume mapping like /host/dir:/container/dir, be aware that the hos
      */
     public static Container createLocalstackContainer(
             String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageName, String imageTag, String portEdge,

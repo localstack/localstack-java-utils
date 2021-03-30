@@ -43,6 +43,7 @@ public class LocalstackDockerAnnotationProcessor {
             .portEdge(getEnvOrDefault("LOCALSTACK_EDGE_PORT", properties.portEdge()))
             .portElasticSearch(getEnvOrDefault("LOCALSTACK_ELASTICSEARCH_PORT", properties.portElasticSearch()))
             .useSingleDockerContainer(properties.useSingleDockerContainer())
+            .platform(StringUtils.isEmpty(properties.platform()) ? null : properties.platform())
             .build();
     }
 

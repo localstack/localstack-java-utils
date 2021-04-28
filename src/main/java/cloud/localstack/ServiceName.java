@@ -3,6 +3,7 @@ package cloud.localstack;
 public class ServiceName {
     public static final String API_GATEWAY = "apigateway";
     public static final String KINESIS = "kinesis";
+    public static final String KMS = "kms";
     public static final String DYNAMO = "dynamodb";
     public static final String DYNAMO_STREAMS = "dynamodbstreams";
     public static final String ELASTICSEARCH = "elasticsearch";

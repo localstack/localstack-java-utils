@@ -22,6 +22,10 @@ import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
 import com.amazonaws.services.kinesis.AmazonKinesisAsyncClientBuilder;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSAsync;
+import com.amazonaws.services.kms.AWSKMSAsyncClientBuilder;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaAsync;
 import com.amazonaws.services.lambda.AWSLambdaAsyncClientBuilder;
@@ -57,6 +61,7 @@ import cloud.localstack.LocalstackTestRunner;
         AWSLambdaClientBuilder.class, AWSLogsClientBuilder.class, AWSLogsAsyncClientBuilder.class,
         AmazonS3ClientBuilder.class, AmazonSimpleEmailServiceAsyncClientBuilder.class,
         AmazonSimpleEmailServiceClientBuilder.class, AmazonSNSAsyncClientBuilder.class, AmazonSNSClientBuilder.class,
+        AWSKMSClientBuilder.class, AWSKMSAsyncClientBuilder.class,
         AWSSecretsManagerClientBuilder.class, AmazonSQSClientBuilder.class })
 @PowerMockIgnore({ "javax.crypto.*", "org.hamcrest.*", "javax.net.ssl.*", "com.sun.org.apache.xerces.*", "javax.xml.*",
         "org.xml.*", "javax.management.*", "javax.security.*", "org.w3c.*" })
@@ -96,6 +101,18 @@ public abstract class PowerMockLocalStack {
         AmazonKinesis mockService = TestUtils.getClientKinesis();
         PowerMockito.mockStatic(AmazonKinesisClientBuilder.class);
         when(AmazonKinesisClientBuilder.defaultClient()).thenReturn(mockService);
+    }
+    
+    public static void mockKMS() {
+        AWSKMS mockService = TestUtils.getClientKMS();
+        PowerMockito.mockStatic(AWSKMSClientBuilder.class);
+        when(AWSKMSClientBuilder.defaultClient()).thenReturn(mockService);
+    }
+    
+    public static void mockKMSAsync() {
+        AWSKMSAsync mockService = TestUtils.getClientKMSAsync();
+        PowerMockito.mockStatic(AWSKMSAsyncClientBuilder.class);
+        when(AWSKMSAsyncClientBuilder.defaultClient()).thenReturn(mockService);
     }
 
     public static void mockKinesisAsync() {

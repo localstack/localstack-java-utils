@@ -139,6 +139,10 @@ public class Localstack {
     public String getEndpointKinesis() {
         return endpointForService(ServiceName.KINESIS);
     }
+    
+    public String getEndpointKMS() {
+        return endpointForService(ServiceName.KMS);
+    }
 
     public String getEndpointLambda() {
         return endpointForService(ServiceName.LAMBDA);

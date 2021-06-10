@@ -75,7 +75,7 @@ public class Container {
             + ":" + LOCALSTACK_PORT_ELASTICSEARCH;
 
         if(pullNewImage || !imageExists) {
-            LOG.info("Pulling latest image...");
+            LOG.info(String.format("Pulling image %s", fullImageName));
             new PullCommand(imageNameOrDefault, imageTag).execute();
         }
 
@@ -84,7 +84,7 @@ public class Container {
             .withExposedPorts(fullPortElasticSearch, randomizePorts)
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
             .withEnvironmentVariable(ENV_DEBUG, ENV_DEBUG_DEFAULT)
-            .withEnvironmentVariable(ENV_USE_SSL, Localstack.INSTANCE.useSSL() ? "1" : "0")
+            .withEnvironmentVariable(ENV_USE_SSL, Localstack.useSSL() ? "1" : "0")
             .withEnvironmentVariables(environmentVariables)
             .withBindMountedVolumes(bindMounts);
 
@@ -92,7 +92,7 @@ public class Container {
             runCommand = runCommand.withPlatform(platform);
 
         for (Integer port : portMappings.keySet()) {
-            runCommand = runCommand.withExposedPorts("" + port, false);
+            runCommand = runCommand.withExposedPorts(String.valueOf(port), false);
         }
         String containerId = runCommand.execute();
         LOG.info("Started container: " + containerId);

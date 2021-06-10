@@ -29,8 +29,12 @@ public class Localstack {
 
     private static final int DEFAULT_EDGE_PORT = 4566;
 
-    private static final String PORT_CONFIG_FILENAME = "/opt/code/localstack/" +
-            ".venv/lib/python3.8/site-packages/localstack_client/config.py";
+    private static final String LOCALSTACK_FOLDER = "/opt/code/localstack/";
+
+    private static final String PYTHON_3_8_LIB = ".venv/lib/python3.8/";
+    private static final String PYTHON_3_7_LIB = ".venv/lib/python3.7/";
+
+    private static final String PORT_CONFIG_FILENAME = "site-packages/localstack_client/config.py";
 
     //Regular expression used to parse localstack config to determine default ports for services
     private static final Pattern DEFAULT_PORT_PATTERN = Pattern.compile("'(\\w+)'\\Q: '{proto}://{host}:\\E(\\d+)'");
@@ -110,7 +114,14 @@ public class Localstack {
     }
 
     private void loadServiceToPortMap() {
-        String localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", PORT_CONFIG_FILENAME));
+        String localStackPortConfig;
+        try {
+            String completePath = LOCALSTACK_FOLDER + PYTHON_3_8_LIB + PORT_CONFIG_FILENAME;
+            localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", completePath));
+        } catch (Exception e) {
+            String completePath = LOCALSTACK_FOLDER + PYTHON_3_7_LIB + PORT_CONFIG_FILENAME;
+            localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", completePath));
+        }
 
         int edgePort = getEdgePort();
         Map<String, Integer> ports = new RegexStream(DEFAULT_PORT_PATTERN.matcher(localStackPortConfig)).stream()

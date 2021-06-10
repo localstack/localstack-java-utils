@@ -78,8 +78,8 @@ You can configure the Docker behaviour using the `@LocalstackDockerProperties` a
 | `portElasticSearch`         | Port number for the elasticsearch service                                                                                    | String                       | `4571`        |
 | `hostNameResolver`          | Used for determining the host name of the machine running the docker containers so that the containers can be addressed.     | IHostNameResolver            | `localhost`     |
 | `environmentVariableProvider` | Used for injecting environment variables into the container.                                                               | IEnvironmentVariableProvider | Empty Map     |
-| `bindMountProvider          | Used bind mounting files and directories into the container, useful to run init scripts before using the container.          | IBindMountProvider           | Empty Map     |
-|  initializationToken        | Give a regex that will be searched in the logstream of the container, start is complete only when the token is found. Use with bindMountProvider to execute init scripts. | String | Empty String |
+| `bindMountProvider`         | Used bind mounting files and directories into the container, useful to run init scripts before using the container.          | IBindMountProvider           | Empty Map     |
+|  `initializationToken`      | Give a regex that will be searched in the logstream of the container, start is complete only when the token is found. Use with bindMountProvider to execute init scripts. | String | Empty String |
 | `useSingleDockerContainer`  | Whether a singleton container should be used by all test classes.                                                            | boolean | `false`     |
 
 For more details, please refer to the README of the main LocalStack repo: https://github.com/localstack/localstack

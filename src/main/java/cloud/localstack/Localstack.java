@@ -74,7 +74,8 @@ public class Localstack {
                 dockerConfiguration.getPortElasticSearch(),
                 dockerConfiguration.getEnvironmentVariables(),
                 dockerConfiguration.getPortMappings(),
-                dockerConfiguration.getBindMounts()
+                dockerConfiguration.getBindMounts(),
+                dockerConfiguration.getPlatform()
             );
             loadServiceToPortMap();
 
@@ -137,6 +138,10 @@ public class Localstack {
 
     public String getEndpointKinesis() {
         return endpointForService(ServiceName.KINESIS);
+    }
+    
+    public String getEndpointKMS() {
+        return endpointForService(ServiceName.KMS);
     }
 
     public String getEndpointLambda() {

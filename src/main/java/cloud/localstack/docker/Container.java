@@ -2,6 +2,7 @@ package cloud.localstack.docker;
 
 import cloud.localstack.Localstack;
 import cloud.localstack.docker.command.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -54,11 +55,12 @@ public class Container {
      * @param portMappings
      * @param bindMounts  Docker host to container volume mapping like /host/dir:/container/dir, be aware that the host
      * directory must be an absolute path
+     * @param platform target platform for the localstack docker image
      */
     public static Container createLocalstackContainer(
             String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageName, String imageTag, String portEdge,
             String portElasticSearch, Map<String, String> environmentVariables, Map<Integer, Integer> portMappings,
-            Map<String, String> bindMounts) {
+            Map<String, String> bindMounts, String platform) {
 
         environmentVariables = environmentVariables == null ? Collections.emptyMap() : environmentVariables;
         bindMounts = bindMounts == null ? Collections.emptyMap() : bindMounts;
@@ -73,7 +75,7 @@ public class Container {
             + ":" + LOCALSTACK_PORT_ELASTICSEARCH;
 
         if(pullNewImage || !imageExists) {
-            LOG.info("Pulling latest image...");
+            LOG.info(String.format("Pulling image %s", fullImageName));
             new PullCommand(imageNameOrDefault, imageTag).execute();
         }
 
@@ -82,12 +84,15 @@ public class Container {
             .withExposedPorts(fullPortElasticSearch, randomizePorts)
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
             .withEnvironmentVariable(ENV_DEBUG, ENV_DEBUG_DEFAULT)
-            .withEnvironmentVariable(ENV_USE_SSL, Localstack.INSTANCE.useSSL() ? "1" : "0")
+            .withEnvironmentVariable(ENV_USE_SSL, Localstack.useSSL() ? "1" : "0")
             .withEnvironmentVariables(environmentVariables)
             .withBindMountedVolumes(bindMounts);
 
+        if(!StringUtils.isEmpty(platform))
+            runCommand = runCommand.withPlatform(platform);
+
         for (Integer port : portMappings.keySet()) {
-            runCommand = runCommand.withExposedPorts("" + port, false);
+            runCommand = runCommand.withExposedPorts(String.valueOf(port), false);
         }
         String containerId = runCommand.execute();
         LOG.info("Started container: " + containerId);

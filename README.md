@@ -60,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.9</version>
+    <version>0.2.11</version>
 </dependency>
 ```
 
@@ -78,8 +78,8 @@ You can configure the Docker behaviour using the `@LocalstackDockerProperties` a
 | `portElasticSearch`         | Port number for the elasticsearch service                                                                                    | String                       | `4571`        |
 | `hostNameResolver`          | Used for determining the host name of the machine running the docker containers so that the containers can be addressed.     | IHostNameResolver            | `localhost`     |
 | `environmentVariableProvider` | Used for injecting environment variables into the container.                                                               | IEnvironmentVariableProvider | Empty Map     |
-| `bindMountProvider          | Used bind mounting files and directories into the container, useful to run init scripts before using the container.          | IBindMountProvider           | Empty Map     |
-|  initializationToken        | Give a regex that will be searched in the logstream of the container, start is complete only when the token is found. Use with bindMountProvider to execute init scripts. | String | Empty String |
+| `bindMountProvider`         | Used bind mounting files and directories into the container, useful to run init scripts before using the container.          | IBindMountProvider           | Empty Map     |
+|  `initializationToken`      | Give a regex that will be searched in the logstream of the container, start is complete only when the token is found. Use with bindMountProvider to execute init scripts. | String | Empty String |
 | `useSingleDockerContainer`  | Whether a singleton container should be used by all test classes.                                                            | boolean | `false`     |
 
 For more details, please refer to the README of the main LocalStack repo: https://github.com/localstack/localstack
@@ -108,6 +108,7 @@ make build
 
 ## Change Log
 
+* v0.2.11: Enable specification of "platform" when configuring container
 * v0.2.10: Add Lambda async utils for AWS SDK v2; add support for specifying bind mounts and init scripts via `@LocalstackDockerProperties`; add PowerMock integration for easy patching of AWS SDK to use local endpoints; add support for configuring the Docker image name via `@LocalstackDockerProperties`; add tests for templated emails
 * v0.2.8: Allow overwriting the port binding via environment variables
 * v0.2.7: Extend `@LocalstackDockerProperties` to include port binding

@@ -20,6 +20,10 @@ import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
 import com.amazonaws.services.kinesis.AmazonKinesisAsyncClientBuilder;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSAsync;
+import com.amazonaws.services.kms.AWSKMSAsyncClientBuilder;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaAsync;
 import com.amazonaws.services.lambda.AWSLambdaAsyncClientBuilder;
@@ -203,6 +207,17 @@ public class TestUtils {
                 withCredentials(getCredentialsProvider()).build();
     }
 
+    public static AWSKMS getClientKMS(){
+        return AWSKMSClientBuilder.standard().
+            withEndpointConfiguration(getEndpointConfigurationKMS()).
+            withCredentials(getCredentialsProvider()).build();
+    }
+    
+    public static AWSKMSAsync getClientKMSAsync(){
+        return AWSKMSAsyncClientBuilder.standard().
+            withEndpointConfiguration(getEndpointConfigurationKMS()).
+            withCredentials(getCredentialsProvider()).build();
+    }
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationIAM() {
         return getEndpointConfiguration(Localstack.INSTANCE.getEndpointIAM());
@@ -254,6 +269,10 @@ public class TestUtils {
 
     protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationStepFunctions() {
         return getEndpointConfiguration(Localstack.INSTANCE.getEndpointStepFunctions());
+    }
+    
+    protected static AwsClientBuilder.EndpointConfiguration getEndpointConfigurationKMS() {
+        return getEndpointConfiguration(Localstack.INSTANCE.getEndpointKMS());
     }
 
     /**

@@ -1,6 +1,7 @@
 package cloud.localstack.awssdkv2;
 
 import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RunWith(LocalstackTestRunner.class)
+@LocalstackDockerProperties(ignoreDockerRunErrors = true)
 public class KinesisV2ConsumerTest {
 
   @Test
@@ -49,6 +51,6 @@ public class KinesisV2ConsumerTest {
   public void testGetRecordJSON() throws Exception {
     System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
     this.testGetRecordCBOR();
-    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
+    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "true");
   }
 }

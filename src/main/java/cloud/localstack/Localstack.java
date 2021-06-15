@@ -85,7 +85,8 @@ public class Localstack {
                 localStackContainer.waitForLogToken(dockerConfiguration.getInitializationToken());
             }
         } catch (Exception t) {
-            if (t.toString().contains("port is already allocated") && dockerConfiguration.isIgnoreDockerRunErrors()) {
+            if ((t.toString().contains("port is already allocated") || t.toString().contains("address already in use")) 
+                && dockerConfiguration.isIgnoreDockerRunErrors()) {
                 LOG.info("Ignoring port conflict when starting Docker container, due to ignoreDockerRunErrors=true");
                 localStackContainer = Container.getRunningLocalstackContainer();
                 loadServiceToPortMap();
@@ -114,6 +115,10 @@ public class Localstack {
             
             try {
                 localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", filePath));
+                if(localStackPortConfig.contains("No such container")){
+                    throw new LocalstackDockerException("No localstack_main container, make sure tu install localstack",
+                    new Exception());
+                }
                 break;
             } catch (Exception e) {
                 if(i == (PYTHON_VERSIONS_FOLDERS.length - 1)){

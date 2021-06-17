@@ -116,7 +116,12 @@ public class Localstack {
             try {
                 localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", filePath));
                 if(localStackPortConfig.contains("No such container")){
-                    throw new LocalstackDockerException("No localstack_main container, make sure tu install localstack",
+                    throw new LocalstackDockerException("No localstack_main container",
+                    new Exception());
+                }
+                
+                if(localStackPortConfig.contains("No such file")){
+                    throw new LocalstackDockerException("No config file found",
                     new Exception());
                 }
                 break;

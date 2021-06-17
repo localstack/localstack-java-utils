@@ -2,6 +2,7 @@ package cloud.localstack.awssdkv2;
 
 import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.sample.LambdaHandler;
 import cloud.localstack.utils.LocalTestUtil;
 
@@ -12,6 +13,9 @@ import software.amazon.awssdk.services.cloudwatch.*;
 import software.amazon.awssdk.services.cloudwatch.model.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.iam.*;
+import software.amazon.awssdk.services.iam.model.*;
+import software.amazon.awssdk.services.iam.paginators.ListUsersPublisher;
 import software.amazon.awssdk.services.kinesis.*;
 import software.amazon.awssdk.services.kinesis.model.*;
 import software.amazon.awssdk.services.lambda.model.CreateFunctionRequest;
@@ -42,8 +46,11 @@ import java.time.Instant;
 
 import software.amazon.awssdk.core.SdkBytes;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(LocalstackTestRunner.class)
+@LocalstackDockerProperties(ignoreDockerRunErrors=true)
 public class BasicFeaturesSDKV2Test {
 
     static {
@@ -258,4 +265,47 @@ public class BasicFeaturesSDKV2Test {
         val function = functions.functions().stream().filter(f -> f.functionName().equals(functionName)).findFirst().get();
         Assert.assertNotNull(function);
     }
+	
+    @Test
+	public void testIAMUserCreation() throws Exception {
+		IamAsyncClient iamClient = TestUtils.getClientIamAsyncV2();
+
+		String username =  UUID.randomUUID().toString();
+		CreateUserRequest createUserRequest = CreateUserRequest.builder().userName(username).build();
+		iamClient.createUser(createUserRequest);
+		
+        boolean userFound = false;
+        List<User> users = iamClient.listUsers().get().users();
+
+
+        for (int i = 0; i < users.size(); i++) {
+            System.out.println(users.get(i).userName());
+            if(users.get(i).userName().equals(username)){
+                userFound = true;
+                break;
+            }
+        }
+
+		Assert.assertTrue(userFound);
+	}
+	
+    @Test
+    public void testIAMListUserPagination() throws Exception {
+		IamAsyncClient iamClient = TestUtils.getClientIamAsyncV2();
+
+		String username = UUID.randomUUID().toString();
+		CreateUserRequest createUserRequest = CreateUserRequest.builder().userName(username).build();
+		iamClient.createUser(createUserRequest);
+		
+
+       AtomicBoolean userFound = new AtomicBoolean(false);
+       iamClient.listUsersPaginator().users().subscribe(user -> {
+           if(user.userName().equals(username)){
+               userFound.set(true);
+           }
+       });
+        
+       TimeUnit.SECONDS.sleep(2);
+       Assert.assertTrue(userFound.get());
+	}
 }

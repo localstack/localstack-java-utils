@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.services.s3.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.ssm.*;
+import software.amazon.awssdk.services.iam.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
@@ -62,7 +63,11 @@ public class TestUtils {
     public static LambdaAsyncClient getClientLambdaAsyncV2() {
         return wrapApiClientV2(LambdaAsyncClient.builder(), Localstack.INSTANCE.getEndpointCloudWatch()).build();
     }
-
+    
+    public static IamAsyncClient getClientIamAsyncV2() {
+        return wrapApiClientV2(IamAsyncClient.builder(), Localstack.INSTANCE.getEndpointIAM()).build();
+    }
+    
     public static <T extends SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {
         try {
             return (T) ((AwsClientBuilder)builder

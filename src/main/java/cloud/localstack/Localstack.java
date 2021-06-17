@@ -29,17 +29,21 @@ public class Localstack {
 
     private static final int DEFAULT_EDGE_PORT = 4566;
 
-    private static final String PORT_CONFIG_FILENAME = "/opt/code/localstack/" +
-            ".venv/lib/python3.8/site-packages/localstack_client/config.py";
+    private static final String[] PYTHON_VERSIONS_FOLDERS = { "python3.8", "python3.7" };
 
-    //Regular expression used to parse localstack config to determine default ports for services
+    private static final String PORT_CONFIG_FILENAME = "/opt/code/localstack/"
+            + ".venv/lib/%s/site-packages/localstack_client/config.py";
+
+    // Regular expression used to parse localstack config to determine default ports
+    // for services
     private static final Pattern DEFAULT_PORT_PATTERN = Pattern.compile("'(\\w+)'\\Q: '{proto}://{host}:\\E(\\d+)'");
 
     private Container localStackContainer;
 
     /**
-     * This is a mapping from service name to internal ports.  In order to use them, the
-     * internal port must be resolved to an external docker port via Container.getExternalPortFor()
+     * This is a mapping from service name to internal ports. In order to use them,
+     * the internal port must be resolved to an external docker port via
+     * Container.getExternalPortFor()
      */
     private static Map<String, Integer> serviceToPortMap;
 
@@ -54,7 +58,8 @@ public class Localstack {
         CommonUtils.disableSslCertChecking();
     }
 
-    private Localstack() { }
+    private Localstack() {
+    }
 
     public void startup(LocalstackDockerConfiguration dockerConfiguration) {
         if (locked) {
@@ -64,19 +69,12 @@ public class Localstack {
         this.externalHostName = dockerConfiguration.getExternalHostName();
 
         try {
-            localStackContainer = Container.createLocalstackContainer(
-                dockerConfiguration.getExternalHostName(),
-                dockerConfiguration.isPullNewImage(),
-                dockerConfiguration.isRandomizePorts(),
-                dockerConfiguration.getImageName(),
-                dockerConfiguration.getImageTag(),
-                dockerConfiguration.getPortEdge(),
-                dockerConfiguration.getPortElasticSearch(),
-                dockerConfiguration.getEnvironmentVariables(),
-                dockerConfiguration.getPortMappings(),
-                dockerConfiguration.getBindMounts(),
-                dockerConfiguration.getPlatform()
-            );
+            localStackContainer = Container.createLocalstackContainer(dockerConfiguration.getExternalHostName(),
+                    dockerConfiguration.isPullNewImage(), dockerConfiguration.isRandomizePorts(),
+                    dockerConfiguration.getImageName(), dockerConfiguration.getImageTag(),
+                    dockerConfiguration.getPortEdge(), dockerConfiguration.getPortElasticSearch(),
+                    dockerConfiguration.getEnvironmentVariables(), dockerConfiguration.getPortMappings(),
+                    dockerConfiguration.getBindMounts(), dockerConfiguration.getPlatform());
             loadServiceToPortMap();
 
             LOG.info("Waiting for LocalStack container to be ready...");
@@ -87,7 +85,8 @@ public class Localstack {
                 localStackContainer.waitForLogToken(dockerConfiguration.getInitializationToken());
             }
         } catch (Exception t) {
-            if (t.toString().contains("port is already allocated") && dockerConfiguration.isIgnoreDockerRunErrors()) {
+            if ((t.toString().contains("port is already allocated") || t.toString().contains("address already in use")) 
+                && dockerConfiguration.isIgnoreDockerRunErrors()) {
                 LOG.info("Ignoring port conflict when starting Docker container, due to ignoreDockerRunErrors=true");
                 localStackContainer = Container.getRunningLocalstackContainer();
                 loadServiceToPortMap();
@@ -110,7 +109,25 @@ public class Localstack {
     }
 
     private void loadServiceToPortMap() {
-        String localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", PORT_CONFIG_FILENAME));
+        String localStackPortConfig = "";
+        for (int i = 0; i < PYTHON_VERSIONS_FOLDERS.length; i++) {
+            String filePath = String.format(PORT_CONFIG_FILENAME, PYTHON_VERSIONS_FOLDERS[i]);
+            
+            localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", filePath));
+            if(localStackPortConfig.contains("No such container")){
+                localStackPortConfig = "";
+                continue;
+            }else if(localStackPortConfig.contains("No such file")){
+                localStackPortConfig = "";
+                continue;
+            }else{
+                break;
+            }
+        }
+
+        if(localStackPortConfig.isEmpty()){
+            throw new LocalstackDockerException("No config file found",new Exception());
+        }
 
         int edgePort = getEdgePort();
         Map<String, Integer> ports = new RegexStream(DEFAULT_PORT_PATTERN.matcher(localStackPortConfig)).stream()
@@ -122,10 +139,11 @@ public class Localstack {
     public String getEndpointS3() {
         String s3Endpoint = endpointForService(ServiceName.S3);
         /*
-         * Use the domain name wildcard *.localhost.localstack.cloud which maps to 127.0.0.1
-         * We need to do this because S3 SDKs attempt to access a domain <bucket-name>.<service-host-name>
-         * which by default would result in <bucket-name>.localhost, but that name cannot be resolved
-         * (unless hardcoded in /etc/hosts)
+         * Use the domain name wildcard *.localhost.localstack.cloud which maps to
+         * 127.0.0.1 We need to do this because S3 SDKs attempt to access a domain
+         * <bucket-name>.<service-host-name> which by default would result in
+         * <bucket-name>.localhost, but that name cannot be resolved (unless hardcoded
+         * in /etc/hosts)
          */
         s3Endpoint = s3Endpoint.replace("localhost", Constants.LOCALHOST_DOMAIN_NAME);
         return s3Endpoint;
@@ -139,7 +157,7 @@ public class Localstack {
     public String getEndpointKinesis() {
         return endpointForService(ServiceName.KINESIS);
     }
-    
+
     public String getEndpointKMS() {
         return endpointForService(ServiceName.KMS);
     }

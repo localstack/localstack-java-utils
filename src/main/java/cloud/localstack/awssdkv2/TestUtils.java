@@ -61,7 +61,7 @@ public class TestUtils {
     }
 
     public static LambdaAsyncClient getClientLambdaAsyncV2() {
-        return wrapApiClientV2(LambdaAsyncClient.builder(), Localstack.INSTANCE.getEndpointCloudWatch()).build();
+        return wrapApiClientV2(LambdaAsyncClient.builder(), Localstack.INSTANCE.getEndpointLambda()).build();
     }
     
     public static IamAsyncClient getClientIamAsyncV2() {

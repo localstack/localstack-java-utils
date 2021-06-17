@@ -60,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.11</version>
+    <version>0.2.12</version>
 </dependency>
 ```
 

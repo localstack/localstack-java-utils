@@ -113,23 +113,20 @@ public class Localstack {
         for (int i = 0; i < PYTHON_VERSIONS_FOLDERS.length; i++) {
             String filePath = String.format(PORT_CONFIG_FILENAME, PYTHON_VERSIONS_FOLDERS[i]);
             
-            try {
-                localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", filePath));
-                if(localStackPortConfig.contains("No such container")){
-                    throw new LocalstackDockerException("No localstack_main container",
-                    new Exception());
-                }
-                
-                if(localStackPortConfig.contains("No such file")){
-                    throw new LocalstackDockerException("No config file found",
-                    new Exception());
-                }
+            localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", filePath));
+            if(localStackPortConfig.contains("No such container")){
+                localStackPortConfig = "";
+                continue;
+            }else if(localStackPortConfig.contains("No such file")){
+                localStackPortConfig = "";
+                continue;
+            }else{
                 break;
-            } catch (Exception e) {
-                if(i == (PYTHON_VERSIONS_FOLDERS.length - 1)){
-                    throw e;
-                }
             }
+        }
+
+        if(localStackPortConfig.isEmpty()){
+            throw new LocalstackDockerException("No config file found",new Exception());
         }
 
         int edgePort = getEdgePort();

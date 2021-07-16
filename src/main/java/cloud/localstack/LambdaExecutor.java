@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +90,7 @@ public class LambdaExecutor {
 			}
 		}
 
-		Context ctx = new LambdaContext();
+		Context ctx = new LambdaContext(UUID.randomUUID().toString());
 		if (handler instanceof RequestHandler) {
 			Object result = ((RequestHandler<Object, ?>) handler).handleRequest(inputObject, ctx);
 			// try turning the output into json

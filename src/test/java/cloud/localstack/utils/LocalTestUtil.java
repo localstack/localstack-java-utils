@@ -9,13 +9,8 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
-
-import com.amazonaws.services.kinesis.model.Record;
-import com.amazonaws.services.lambda.model.FunctionCode;
-import software.amazon.awssdk.core.SdkBytes;
 
 /**
  * Utility methods used for the LocalStack unit and integration tests.
@@ -24,19 +19,19 @@ import software.amazon.awssdk.core.SdkBytes;
  */
 public class LocalTestUtil {
 
-	public static FunctionCode createFunctionCode(Class<?> clazz) throws Exception {
-		val code = new FunctionCode();
-		code.setZipFile(createFunctionByteBuffer(clazz));
+	public static com.amazonaws.services.lambda.model.FunctionCode createFunctionCode(Class<?> clazz) throws Exception {
+		val code = new com.amazonaws.services.lambda.model.FunctionCode();
+		code.setZipFile(createFunctionByteBuffer(clazz, false));
 		return code;
 	}
 
 	public static software.amazon.awssdk.services.lambda.model.FunctionCode createFunctionCodeSDKV2(Class<?> clazz) throws Exception{
 		val codeBuilder = software.amazon.awssdk.services.lambda.model.FunctionCode.builder();
-		codeBuilder.zipFile(SdkBytes.fromByteBuffer(createFunctionByteBuffer(clazz)));
+		codeBuilder.zipFile(software.amazon.awssdk.core.SdkBytes.fromByteBuffer(createFunctionByteBuffer(clazz, true)));
 		return codeBuilder.build();
 	}
 
-	private static ByteBuffer createFunctionByteBuffer(Class<?> clazz) throws Exception{
+	private static ByteBuffer createFunctionByteBuffer(Class<?> clazz, boolean sdkv2) throws Exception{
 		ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream jarOut = new ByteArrayOutputStream();
 		// create zip file
@@ -46,8 +41,10 @@ public class LocalTestUtil {
 
 		// write class files into jar stream
 		addClassToJar(clazz, jarStream);
-		addClassToJar(Record.class, jarStream);
-		addClassToJar(SQSEvent.class, jarStream);
+		if (!sdkv2) {
+            addClassToJar(com.amazonaws.services.kinesis.model.Record.class, jarStream);
+            addClassToJar(com.amazonaws.services.lambda.runtime.events.SQSEvent.class, jarStream);
+        }
 		// write MANIFEST into jar stream
 		JarEntry mfEntry = new JarEntry("META-INF/MANIFEST.MF");
 		jarStream.putNextEntry(mfEntry);

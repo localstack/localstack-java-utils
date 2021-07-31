@@ -36,7 +36,7 @@ public class DeliveryStatusProcessor implements ShardRecordProcessor {
     }
 
     public void processRecord(KinesisClientRecord record) throws IOException {
-        LOG.info("RECORD PROCESSING");
+        LOG.info("Processing record: " + record);
         this.eventProcessor.RECORD_RECEIVED = true;
         byte[] message = new byte[record.data().remaining()];
         record.data().get(message);

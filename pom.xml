@@ -87,6 +87,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- core AWS libs (independent of v1/v2 SDK) -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>${lambda.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- required to build on java 9+ -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -205,12 +213,6 @@
                             <artifactId>aws-java-sdk-kinesisvideo</artifactId>
                         </exclusion>
                     </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-lambda-java-core</artifactId>
-                    <version>${lambda.core.version}</version>
-                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.amazonaws</groupId>

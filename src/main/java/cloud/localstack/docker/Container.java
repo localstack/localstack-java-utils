@@ -125,7 +125,10 @@ public class Container {
                 .map(PortMapping::getExternalPort)
                 .findFirst().orElse(null);
 
-        if (externalPort == null && internalPort == Localstack.DEFAULT_EDGE_PORT) {
+        if (externalPort != null) {
+            return externalPort;
+        }
+        if (internalPort == Localstack.DEFAULT_EDGE_PORT) {
             return internalPort;
         }
 

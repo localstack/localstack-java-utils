@@ -78,16 +78,13 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
   public void createStream(KinesisAsyncClient kinesisClient) throws Exception {
     CreateStreamRequest request = CreateStreamRequest.builder().streamName(streamName).shardCount(1).build();
     CreateStreamResponse response = kinesisClient.createStream(request).get();
-
     Assert.assertNotNull(response);
   }
 
   public void putRecord(KinesisAsyncClient kinesisClient) throws Exception {
-    System.out.println("PUTTING RECORD");
     PutRecordRequest request = PutRecordRequest.builder().partitionKey("partitionkey").streamName(streamName)
         .data(SdkBytes.fromUtf8String(testMessage)).build();
     PutRecordResponse response = kinesisClient.putRecord(request).get();
-
     Assert.assertNotNull(response);
   }
 

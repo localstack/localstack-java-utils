@@ -15,9 +15,9 @@ install:
 
 script:
   - set -e
+  - nohup docker pull localstack/localstack > /dev/null &
+  - make compile
   - mvn -q -DskipTests test
-  - docker pull localstack/localstack-light > /dev/null
-  - docker tag localstack/localstack-light localstack/localstack
   - make test
   - docker ps -a
 

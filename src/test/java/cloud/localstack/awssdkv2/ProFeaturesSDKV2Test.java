@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.qldb.*;
 import software.amazon.awssdk.services.qldb.model.*;
 import software.amazon.qldb.*;
 import software.amazon.awssdk.services.qldbsession.*;
+import com.amazon.ion.*;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -49,13 +50,19 @@ public class ProFeaturesSDKV2Test {
         // list tables
         List<String> tableNames = new ArrayList<String>();
         driver.getTableNames().forEach(tableNames::add);
-        System.out.println("tableNames " + tableNames);
         Assert.assertTrue(tableNames.contains(tableName1));
         Assert.assertTrue(tableNames.contains(tableName2));
 
+        // list tables via que
         String query = "SELECT VALUE name FROM information_schema.user_tables WHERE status = 'ACTIVE'";
         Result result = driver.execute(txn -> { return txn.execute(query); });
-        System.out.println("result " + result);
+        Assert.assertNotNull(result);
+
+        // list result entries
+        List<IonValue> tableNames2 = new ArrayList<IonValue>();
+        result.forEach(tableNames2::add);
+        Assert.assertTrue(tableNames2.contains(tableName1));
+        Assert.assertTrue(tableNames2.contains(tableName2));
     }
 
 }

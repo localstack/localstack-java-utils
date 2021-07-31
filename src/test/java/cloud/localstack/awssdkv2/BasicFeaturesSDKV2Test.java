@@ -23,9 +23,7 @@ import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.s3.*;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
-import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+import software.amazon.awssdk.services.secretsmanager.model.*;
 import software.amazon.awssdk.services.sns.*;
 import software.amazon.awssdk.services.sns.model.*;
 import software.amazon.awssdk.services.sqs.*;
@@ -96,6 +94,7 @@ public class BasicFeaturesSDKV2Test {
     @Test
     public void testCreateDynamoDBTable() throws Exception {
         DynamoDbAsyncClient dynamoDbAsyncClient = TestUtils.getClientDyanamoAsyncV2();
+        String tableName = "test-s-"+ UUID.randomUUID().toString();
         CreateTableRequest createTableRequest = CreateTableRequest.builder()
                 .keySchema(
                         KeySchemaElement.builder()
@@ -112,10 +111,12 @@ public class BasicFeaturesSDKV2Test {
                                 .readCapacityUnits(5L)
                                 .writeCapacityUnits(5L)
                                 .build())
-                .tableName("test")
+                .tableName(tableName)
                 .build();
         CreateTableResponse response = dynamoDbAsyncClient.createTable(createTableRequest).get();
         Assert.assertNotNull(response);
+        // clean up
+        dynamoDbAsyncClient.deleteTable(DeleteTableRequest.builder().tableName(tableName).build());
     }
 
     @Test
@@ -153,8 +154,10 @@ public class BasicFeaturesSDKV2Test {
         // Test integration of ssm parameter with LocalStack using SDK v2
 
         final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
-        clientSsm.putParameter(PutParameterRequest.builder().name("testparameter").value("testvalue").build());
-        CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(GetParameterRequest.builder().name("testparameter").build());
+        final String paramName = "param-"+UUID.randomUUID().toString();
+        clientSsm.putParameter(PutParameterRequest.builder().name(paramName).value("testvalue").build()).join();
+        CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(
+            GetParameterRequest.builder().name(paramName).build());
         String parameterValue = getParameterResponse.get().parameter().value();
         Assert.assertNotNull(parameterValue);
         Assert.assertEquals("testvalue", parameterValue);
@@ -163,7 +166,8 @@ public class BasicFeaturesSDKV2Test {
     @Test
     public void testGetSecretsManagerSecret() throws Exception {
         final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
-        clientSecretsManager.createSecret(CreateSecretRequest.builder().name("testsecret").secretString("secretcontent").build());
+        clientSecretsManager.createSecret(
+            CreateSecretRequest.builder().name("testsecret").secretString("secretcontent").build()).join();
         CompletableFuture<GetSecretValueResponse> getSecretResponse = clientSecretsManager.getSecretValue(
             GetSecretValueRequest.builder().secretId("testsecret").build());
         String secretValue = getSecretResponse.get().secretString();
@@ -176,15 +180,20 @@ public class BasicFeaturesSDKV2Test {
     public void testGetSecretAsParam() throws Exception {
         final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
         final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
+
+        final String secretName = "test-s-"+UUID.randomUUID().toString();
         clientSecretsManager.createSecret(CreateSecretRequest.builder()
-            .name("testsecret").secretString("secretcontent").build()).join();
+            .name(secretName).secretString("secretcontent").build()).join();
 
         CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(
-            GetParameterRequest.builder().name("/aws/reference/secretsmanager/testsecret").build());
-        String parameterValue = getParameterResponse.get().parameter().value();
+            GetParameterRequest.builder().name("/aws/reference/secretsmanager/" + secretName).build());
+        final String parameterValue = getParameterResponse.get().parameter().value();
 
         Assert.assertNotNull(parameterValue);
         Assert.assertEquals("secretcontent", parameterValue);
+
+        // clean up
+        clientSecretsManager.deleteSecret(DeleteSecretRequest.builder().secretId(secretName).build());
     }
     @Test
     public void testCWPutMetrics() throws Exception {
@@ -272,14 +281,12 @@ public class BasicFeaturesSDKV2Test {
 
 		String username =  UUID.randomUUID().toString();
 		CreateUserRequest createUserRequest = CreateUserRequest.builder().userName(username).build();
-		iamClient.createUser(createUserRequest);
+		iamClient.createUser(createUserRequest).join();
 		
         boolean userFound = false;
         List<User> users = iamClient.listUsers().get().users();
 
-
         for (int i = 0; i < users.size(); i++) {
-            System.out.println(users.get(i).userName());
             if(users.get(i).userName().equals(username)){
                 userFound = true;
                 break;
@@ -295,17 +302,16 @@ public class BasicFeaturesSDKV2Test {
 
 		String username = UUID.randomUUID().toString();
 		CreateUserRequest createUserRequest = CreateUserRequest.builder().userName(username).build();
-		iamClient.createUser(createUserRequest);
-		
+		iamClient.createUser(createUserRequest).join();
 
-       AtomicBoolean userFound = new AtomicBoolean(false);
-       iamClient.listUsersPaginator().users().subscribe(user -> {
-           if(user.userName().equals(username)){
-               userFound.set(true);
-           }
-       });
-        
-       TimeUnit.SECONDS.sleep(2);
-       Assert.assertTrue(userFound.get());
+        AtomicBoolean userFound = new AtomicBoolean(false);
+        iamClient.listUsersPaginator().users().subscribe(user -> {
+            if(user.userName().equals(username)){
+                userFound.set(true);
+            }
+        });
+
+        TimeUnit.SECONDS.sleep(2);
+        Assert.assertTrue(userFound.get());
 	}
 }

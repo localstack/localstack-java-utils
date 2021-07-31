@@ -120,11 +120,16 @@ public class Container {
      * Given an internal port, retrieve the publicly addressable port that maps to it
      */
     public int getExternalPortFor(int internalPort) {
-        return ports.stream()
+        Integer externalPort = ports.stream()
                 .filter(port -> port.getInternalPort() == internalPort)
                 .map(PortMapping::getExternalPort)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Port: " + internalPort + " does not exist"));
+                .findFirst().orElse(null);
+
+        if (externalPort == null && internalPort == Localstack.DEFAULT_EDGE_PORT) {
+            return internalPort;
+        }
+
+        throw new IllegalArgumentException("Port " + internalPort + " is not mapped in the LocalStack container");
     }
 
     public void waitForAllPorts(String ip) {

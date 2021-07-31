@@ -22,12 +22,11 @@ public class Localstack {
     public static final String ENV_CONFIG_EDGE_PORT = "EDGE_PORT";
     public static final String INIT_SCRIPTS_PATH = "/docker-entrypoint-initaws.d";
     public static final String TMP_PATH = "/tmp/localstack";
+    public static final int DEFAULT_EDGE_PORT = 4566;
 
     private static final Logger LOG = Logger.getLogger(Localstack.class.getName());
 
     private static final Pattern READY_TOKEN = Pattern.compile("Ready\\.");
-
-    private static final int DEFAULT_EDGE_PORT = 4566;
 
     private static final String[] PYTHON_VERSIONS_FOLDERS = { "python3.8", "python3.7" };
 
@@ -39,6 +38,9 @@ public class Localstack {
     private static final Pattern DEFAULT_PORT_PATTERN = Pattern.compile("'(\\w+)'\\Q: '{proto}://{host}:\\E(\\d+)'");
 
     private Container localStackContainer;
+
+    // Whether to use the edge port 4566 as fallback if the service port cannot be determined
+    private boolean useEdgePortAsFallback = true;
 
     /**
      * This is a mapping from service name to internal ports. In order to use them,
@@ -109,6 +111,15 @@ public class Localstack {
     }
 
     private void loadServiceToPortMap() {
+        try {
+            doLoadServiceToPortMap();
+        } catch (Exception e) {
+            LOG.info("Ignoring error when fetching service ports -> using single edge port");
+        }
+    }
+
+    // TODO: this is now obsolete, as we're using a single edge port - remove!
+    private void doLoadServiceToPortMap() {
         String localStackPortConfig = "";
         for (int i = 0; i < PYTHON_VERSIONS_FOLDERS.length; i++) {
             String filePath = String.format(PORT_CONFIG_FILENAME, PYTHON_VERSIONS_FOLDERS[i]);
@@ -242,16 +253,26 @@ public class Localstack {
         return endpointForService(ServiceName.IAM);
     }
 
+    public String getEndpointQLDB() {
+        return endpointForService(ServiceName.QLDB);
+    }
+
     public String endpointForService(String serviceName) {
         return endpointForPort(getServicePort(serviceName));
     }
 
     public int getServicePort(String serviceName) {
         if (serviceToPortMap == null) {
+            if (useEdgePortAsFallback) {
+                return getEdgePort();
+            }
             throw new IllegalStateException("Service to port mapping has not been determined yet.");
         }
 
         if (!serviceToPortMap.containsKey(serviceName)) {
+            if (useEdgePortAsFallback) {
+                return getEdgePort();
+            }
             throw new IllegalArgumentException("Unknown port mapping for service: " + serviceName);
         }
 

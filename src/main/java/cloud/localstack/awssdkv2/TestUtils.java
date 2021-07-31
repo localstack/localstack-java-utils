@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.s3.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.ssm.*;
 import software.amazon.awssdk.services.iam.*;
+import software.amazon.awssdk.services.qldb.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
@@ -38,6 +39,10 @@ public class TestUtils {
 
     public static SqsAsyncClient getClientSQSAsyncV2() {
         return wrapApiClientV2(SqsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSQS()).build();
+    }
+
+    public static QldbAsyncClient getClientQLDBAsyncV2() {
+        return wrapApiClientV2(QldbAsyncClient.builder(), Localstack.INSTANCE.getEndpointQLDB()).build();
     }
 
     public static SnsAsyncClient getClientSNSAsyncV2() {

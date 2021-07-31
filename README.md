@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/localstack/localstack-java-utils.svg)](https://travis-ci.org/localstack/localstack-java-utils)
+[![Build Status](https://travis-ci.com/localstack/localstack-java-utils.svg)](https://travis-ci.com/localstack/localstack-java-utils)
 [![Maven Central](https://img.shields.io/maven-central/v/cloud.localstack/localstack-utils)](https://mvnrepository.com/artifact/cloud.localstack/localstack-utils)
 
 # LocalStack Java Utils
@@ -108,7 +108,7 @@ make build
 
 ## Change Log
 
-* v0.2.14: Add ability to get handler class name through `_HANDLER` environment variable like on real **AWS Lambda** platform and **Lambci** environment
+* v0.2.14: Add ability to get handler class name through `_HANDLER` environment variable like on real AWS and Lambci environment
 * v0.2.11: Enable specification of "platform" when configuring container
 * v0.2.10: Add Lambda async utils for AWS SDK v2; add support for specifying bind mounts and init scripts via `@LocalstackDockerProperties`; add PowerMock integration for easy patching of AWS SDK to use local endpoints; add support for configuring the Docker image name via `@LocalstackDockerProperties`; add tests for templated emails
 * v0.2.8: Allow overwriting the port binding via environment variables

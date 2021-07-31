@@ -6,6 +6,9 @@ usage:           ## Show this help
 build:           ## Build the code using Maven
 	mvn -Pfatjar $(ADDITIONAL_MVN_ARGS) clean javadoc:jar source:jar package $(ADDITIONAL_MVN_TARGETS)
 
+compile:
+	mvn -Pawssdkv1,awssdkv2 -DskipTests compile test-compile
+
 publish-maven:   ## Publish artifacts to Maven Central
 	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS="-DskipTests" make build
 

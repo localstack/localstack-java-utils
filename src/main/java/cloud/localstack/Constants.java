@@ -10,6 +10,8 @@ public class Constants {
 
     public static final String DEFAULT_AWS_ACCOUNT_ID = "000000000000";
 
+    public static final String ENV_LOCALSTACK_API_KEY = "LOCALSTACK_API_KEY";
+
     public static final String DEFAULT_REGION = "us-east-1";
     public static final String TEST_ACCESS_KEY = "test";
     public static final String TEST_SECRET_KEY = "test";

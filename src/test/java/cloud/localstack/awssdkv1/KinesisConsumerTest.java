@@ -1,7 +1,7 @@
 package cloud.localstack.awssdkv1;
 
 import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.awssdkv1.TestUtils;
+import cloud.localstack.docker.annotation.*;
 
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
 import com.amazonaws.services.kinesis.model.CreateStreamRequest;
@@ -10,6 +10,7 @@ import com.amazonaws.services.kinesis.model.GetRecordsRequest;
 import com.amazonaws.services.kinesis.model.GetRecordsResult;
 import com.amazonaws.services.kinesis.model.GetShardIteratorRequest;
 import com.amazonaws.SDKGlobalConfiguration;
+import com.amazonaws.services.kinesis.model.ResourceInUseException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,51 +22,75 @@ import java.util.stream.Collectors;
 import java.nio.ByteBuffer;
 
 @RunWith(LocalstackTestRunner.class)
+@LocalstackDockerProperties(ignoreDockerRunErrors=true)
 public class KinesisConsumerTest {
 
-  @Test
-  public void testGetRecordCBOR() throws Exception {
-    String streamName = "test-s-" + UUID.randomUUID().toString();
-    AmazonKinesisAsync kinesisClient = TestUtils.getClientKinesisAsync();
+    @Test
+    public void testGetRecordCBOR() throws Exception {
+        String valueBefore = this.getCborDisableConfig();
+        System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "false");
+        try {
+            this.runGetRecord();
+        } finally {
+            System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, valueBefore);
+        }
+    }
 
-    CreateStreamRequest createStreamRequest = new CreateStreamRequest();
-    createStreamRequest.setStreamName(streamName);
-    createStreamRequest.setShardCount(1);
+    @Test
+    public void testGetRecordJSON() throws Exception {
+        String valueBefore = this.getCborDisableConfig();
+        System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "true");
+        try {
+            this.runGetRecord();
+        } finally {
+            System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, valueBefore);
+        }
+    }
 
-    kinesisClient.createStream(createStreamRequest);
-    TimeUnit.SECONDS.sleep(2);
+    private String getCborDisableConfig() {
+        String valueBefore = System.getProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY);
+        valueBefore = valueBefore == null ? "" : valueBefore;
+        return valueBefore;
+    }
 
-    PutRecordRequest putRecordRequest = new PutRecordRequest();
-    putRecordRequest.setPartitionKey("partitionkey");
-    putRecordRequest.setStreamName(streamName);
+    private void runGetRecord() throws Exception {
+        String streamName = "test-s-" + UUID.randomUUID().toString();
+        AmazonKinesisAsync kinesisClient = TestUtils.getClientKinesisAsync();
 
-    String message = "Hello world!";
-    putRecordRequest.setData(ByteBuffer.wrap(message.getBytes()));
+        try {
+            CreateStreamRequest createStreamRequest = new CreateStreamRequest();
+            createStreamRequest.setStreamName(streamName);
+            createStreamRequest.setShardCount(1);
 
-    String shardId = kinesisClient.putRecord(putRecordRequest).getShardId();
+            kinesisClient.createStream(createStreamRequest);
+            TimeUnit.SECONDS.sleep(1);
+        } catch (ResourceInUseException e) { /* ignore */ }
 
-    GetShardIteratorRequest getShardIteratorRequest = new GetShardIteratorRequest();
-    getShardIteratorRequest.setShardId(shardId);
-    getShardIteratorRequest.setShardIteratorType("TRIM_HORIZON");
-    getShardIteratorRequest.setStreamName(streamName);
+        PutRecordRequest putRecordRequest = new PutRecordRequest();
+        putRecordRequest.setPartitionKey("partitionkey");
+        putRecordRequest.setStreamName(streamName);
 
-    String shardIterator = kinesisClient.getShardIterator(getShardIteratorRequest).getShardIterator();
+        String message = "Hello world!";
+        putRecordRequest.setData(ByteBuffer.wrap(message.getBytes()));
 
-    GetRecordsRequest getRecordRequest = new GetRecordsRequest();
-    getRecordRequest.setShardIterator(shardIterator);
+        String shardId = kinesisClient.putRecord(putRecordRequest).getShardId();
 
-    getRecordRequest.setShardIterator(shardIterator);
-    GetRecordsResult recordsResponse = kinesisClient.getRecords(getRecordRequest);
+        GetShardIteratorRequest getShardIteratorRequest = new GetShardIteratorRequest();
+        getShardIteratorRequest.setShardId(shardId);
+        getShardIteratorRequest.setShardIteratorType("TRIM_HORIZON");
+        getShardIteratorRequest.setStreamName(streamName);
 
-    List<String> records = recordsResponse.getRecords().stream().map(r -> new String(r.getData().array()))
-        .collect(Collectors.toList());
-    Assert.assertEquals(message, records.get(0));
-  }
+        String shardIterator = kinesisClient.getShardIterator(getShardIteratorRequest).getShardIterator();
 
-  @Test
-  public void testGetRecordJSON() throws Exception {
-    System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "true");
-    this.testGetRecordCBOR();
-    System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "false");
-  }
+        GetRecordsRequest getRecordRequest = new GetRecordsRequest();
+        getRecordRequest.setShardIterator(shardIterator);
+
+        getRecordRequest.setShardIterator(shardIterator);
+        GetRecordsResult recordsResponse = kinesisClient.getRecords(getRecordRequest);
+
+        List<String> records = recordsResponse.getRecords().stream().map(r -> new String(r.getData().array()))
+            .collect(Collectors.toList());
+        Assert.assertEquals(message, records.get(0));
+    }
+
 }

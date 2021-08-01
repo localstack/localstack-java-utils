@@ -10,5 +10,8 @@
       <AppenderRef ref="ConsoleAppender"/>
     </Root>
     <Logger name="software.amazon.awssdk" level="INFO" />
+    <!-- enable lines below for detailed message logging -->
+<!--    <Logger name="org.apache.http.wire" level="DEBUG" />-->
+<!--    <Logger name="com.amazonaws.request" level="DEBUG" />-->
   </Loggers>
 </Configuration>

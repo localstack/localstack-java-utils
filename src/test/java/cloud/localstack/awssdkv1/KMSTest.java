@@ -1,10 +1,5 @@
 package cloud.localstack.awssdkv1;
 
-import cloud.localstack.awssdkv1.PowerMockLocalStack;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.nio.ByteBuffer;
 
 import com.amazonaws.services.kms.AWSKMS;

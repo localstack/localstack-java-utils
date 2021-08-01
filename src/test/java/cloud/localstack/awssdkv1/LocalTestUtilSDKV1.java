@@ -1,18 +1,7 @@
-package cloud.localstack.awssdkv2;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+package cloud.localstack.awssdkv1;
 
 import com.amazonaws.services.kinesis.model.Record;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-
-import org.apache.commons.io.IOUtils;
 
 import cloud.localstack.utils.LocalTestUtil;
 

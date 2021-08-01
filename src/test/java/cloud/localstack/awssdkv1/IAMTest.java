@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-import cloud.localstack.awssdkv1.TestUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;

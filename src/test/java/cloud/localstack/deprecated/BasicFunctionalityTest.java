@@ -1,6 +1,7 @@
 package cloud.localstack.deprecated;
 
 import cloud.localstack.CommonUtils;
+import cloud.localstack.awssdkv1.LocalTestUtilSDKV1;
 import cloud.localstack.utils.LocalTestUtil;
 import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.awssdkv1.sample.KinesisLambdaHandler;
@@ -109,7 +110,7 @@ public class BasicFunctionalityTest {
         CreateFunctionRequest request = new CreateFunctionRequest();
         request.setFunctionName(functionName);
         request.setRuntime(Runtime.Java8);
-        request.setCode(LocalTestUtil.createFunctionCode(KinesisLambdaHandler.class));
+        request.setCode(LocalTestUtilSDKV1.createFunctionCode(KinesisLambdaHandler.class));
         request.setHandler(KinesisLambdaHandler.class.getName());
         request.setRole("r1");
         lambda.createFunction(request);
@@ -145,7 +146,7 @@ public class BasicFunctionalityTest {
         request.setFunctionName(functionName);
         request.setRuntime(Runtime.Java8);
         request.setRole("r1");
-        request.setCode(LocalTestUtil.createFunctionCode(SQSLambdaHandler.class));
+        request.setCode(LocalTestUtilSDKV1.createFunctionCode(SQSLambdaHandler.class));
         request.setHandler(SQSLambdaHandler.class.getName());
         lambda.createFunction(request);
 

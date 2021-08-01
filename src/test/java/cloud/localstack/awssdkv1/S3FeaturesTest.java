@@ -1,8 +1,9 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import cloud.localstack.*;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.awssdkv1.TestUtils;
 

@@ -1,4 +1,4 @@
-package cloud.localstack.sample;
+package cloud.localstack.awssdkv1.sample;
 /*
  * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *

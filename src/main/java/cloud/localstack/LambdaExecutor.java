@@ -1,8 +1,9 @@
 package cloud.localstack;
 
-import cloud.localstack.lambda.DDBEventParser;
-import cloud.localstack.lambda.KinesisEventParser;
-import cloud.localstack.lambda.S3EventParser;
+import cloud.localstack.awssdkv1.lambda.DDBEventParser;
+import cloud.localstack.awssdkv1.lambda.KinesisEventParser;
+import cloud.localstack.awssdkv1.lambda.S3EventParser;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;

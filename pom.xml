@@ -201,6 +201,24 @@
         </profile>
         <profile>
             <id>awssdkv1</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/awssdkv2/**/*.java</exclude>
+                                <exclude>**/deprecated/**/*.java</exclude>
+                            </excludes>
+                            <testExcludes>
+                                <exclude>**/awssdkv2/**/*.java</exclude>
+                                <exclude>**/deprecated/**/*.java</exclude>
+                            </testExcludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>com.amazonaws</groupId>
@@ -248,6 +266,26 @@
         </profile>
         <profile>
             <id>awssdkv2</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/awssdkv1/**/*.java</exclude>
+                                <exclude>**/deprecated/**/*.java</exclude>
+                                <exclude>**/LambdaExecutor.java</exclude>
+                            </excludes>
+                            <testExcludes>
+                                <exclude>**/awssdkv1/**/*.java</exclude>
+                                <exclude>**/deprecated/**/*.java</exclude>
+                                <exclude>**/LambdaExecutor.java</exclude>
+                            </testExcludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>software.amazon.awssdk</groupId>
@@ -278,18 +316,6 @@
                 </dependency>
                 <dependency>
                     <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>sns</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>sqs</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
                     <artifactId>ssm</artifactId>
                     <version>${aws.sdkv2.version}</version>
                     <scope>provided</scope>
@@ -297,12 +323,6 @@
                 <dependency>
                     <groupId>software.amazon.awssdk</groupId>
                     <artifactId>secretsmanager</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>kinesis</artifactId>
                     <version>${aws.sdkv2.version}</version>
                     <scope>provided</scope>
                 </dependency>
@@ -477,12 +497,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.21.0</version>
+                <version>2.22.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit4</artifactId>
-                        <version>2.21.0</version>
+                        <version>2.22.1</version>
                     </dependency>
                     <dependency>
                         <groupId>org.junit.platform</groupId>

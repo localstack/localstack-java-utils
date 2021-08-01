@@ -7,8 +7,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.*;
 import static org.mockito.Mockito.when;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDB;
-
 import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
 import software.amazon.awssdk.services.cloudwatch.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;

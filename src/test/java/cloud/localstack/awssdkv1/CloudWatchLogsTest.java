@@ -1,4 +1,4 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import com.amazonaws.services.logs.model.LogGroup;
 import com.amazonaws.services.logs.model.OutputLogEvent;
 import com.amazonaws.services.logs.model.PutLogEventsRequest;
 
+import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;

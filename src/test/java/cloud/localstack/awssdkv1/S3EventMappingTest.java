@@ -1,6 +1,5 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
-import cloud.localstack.lambda.S3EventParser;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.event.S3EventNotification;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +9,8 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
+import cloud.localstack.awssdkv1.lambda.S3EventParser;
+import cloud.localstack.LocalstackTestRunner;
 import static cloud.localstack.LambdaExecutor.get;
 import static cloud.localstack.LambdaExecutor.readFile;
 

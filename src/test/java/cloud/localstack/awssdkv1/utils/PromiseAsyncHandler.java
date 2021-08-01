@@ -1,4 +1,4 @@
-package cloud.localstack.utils;
+package cloud.localstack.awssdkv1.utils;
 
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.handlers.AsyncHandler;

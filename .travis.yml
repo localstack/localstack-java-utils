@@ -17,7 +17,7 @@ script:
   - set -e
   - nohup docker pull localstack/localstack > /dev/null &
   - make compile
-  - mvn -q -DskipTests test
+  - MVN_TEST_ARGS="-q -DskipTests" make test
   - make test
   - docker ps -a
 

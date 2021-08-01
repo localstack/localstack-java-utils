@@ -1,5 +1,6 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
+import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
@@ -26,7 +27,6 @@ import org.powermock.modules.junit4.*;
 /**
  * Test integration of SES messaging with LocalStack
  */
-// @RunWith(LocalstackTestRunner.class)
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(LocalstackTestRunner.class)
 @LocalstackDockerProperties(services = { "sns" })

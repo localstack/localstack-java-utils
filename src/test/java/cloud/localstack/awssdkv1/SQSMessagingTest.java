@@ -1,7 +1,8 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
-import cloud.localstack.utils.PromiseAsyncHandler;
+import cloud.localstack.*;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import cloud.localstack.awssdkv1.utils.PromiseAsyncHandler;
 import cloud.localstack.awssdkv1.TestUtils;
 
 import com.amazon.sqs.javamessaging.SQSConnection;

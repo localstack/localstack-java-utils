@@ -1,6 +1,7 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
-import cloud.localstack.utils.PromiseAsyncHandler;
+import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.awssdkv1.utils.PromiseAsyncHandler;
 import cloud.localstack.awssdkv1.TestUtils;
 
 import com.amazonaws.services.sns.AmazonSNS;

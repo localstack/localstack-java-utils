@@ -1,4 +1,4 @@
-package cloud.localstack.sample;
+package cloud.localstack.awssdkv1.sample;
 
 import cloud.localstack.awssdkv1.TestUtils;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -19,12 +19,7 @@ public class SQSLambdaHandler implements RequestHandler<SQSEvent, Object> {
     protected AmazonS3 clientS3;
 
     public SQSLambdaHandler() {
-        try {
-            clientS3 = TestUtils.getClientS3();
-        } catch (Exception e) {
-            // fall back to deprecated TestUtils
-            clientS3 = cloud.localstack.deprecated.TestUtils.getClientS3();
-        }
+        clientS3 = TestUtils.getClientS3();
     }
 
     @Override

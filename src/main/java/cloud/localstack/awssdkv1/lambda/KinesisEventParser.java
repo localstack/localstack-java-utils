@@ -1,4 +1,4 @@
-package cloud.localstack.lambda;
+package cloud.localstack.awssdkv1.lambda;
 
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;

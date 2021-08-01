@@ -1,6 +1,6 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
-import cloud.localstack.lambda.KinesisEventParser;
+import cloud.localstack.awssdkv1.lambda.KinesisEventParser;
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;

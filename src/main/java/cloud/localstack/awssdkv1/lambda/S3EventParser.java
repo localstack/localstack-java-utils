@@ -1,4 +1,5 @@
-package cloud.localstack.lambda;
+package cloud.localstack.awssdkv1.lambda;
+
 import static cloud.localstack.LambdaExecutor.get;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.event.S3EventNotification;

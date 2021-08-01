@@ -1,4 +1,4 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.awssdkv1.TestUtils;

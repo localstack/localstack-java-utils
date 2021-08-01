@@ -4,7 +4,7 @@ import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.sample.LambdaHandler;
-import cloud.localstack.utils.LocalTestUtil;
+import cloud.localstack.awssdkv2.LocalTestUtilSDKV2;
 
 import lombok.val;
 
@@ -166,14 +166,18 @@ public class BasicFeaturesSDKV2Test {
     @Test
     public void testGetSecretsManagerSecret() throws Exception {
         final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
+        final String secretName = "test-s-" + UUID.randomUUID().toString();
         clientSecretsManager.createSecret(
-            CreateSecretRequest.builder().name("testsecret").secretString("secretcontent").build()).join();
+            CreateSecretRequest.builder().name(secretName).secretString("secretcontent").build()).join();
         CompletableFuture<GetSecretValueResponse> getSecretResponse = clientSecretsManager.getSecretValue(
-            GetSecretValueRequest.builder().secretId("testsecret").build());
+            GetSecretValueRequest.builder().secretId(secretName).build());
         String secretValue = getSecretResponse.get().secretString();
 
         Assert.assertNotNull(secretValue);
         Assert.assertEquals("secretcontent", secretValue);
+
+        // clean up
+        clientSecretsManager.deleteSecret(DeleteSecretRequest.builder().secretId(secretName).build());
     }
 
     @Test
@@ -181,7 +185,7 @@ public class BasicFeaturesSDKV2Test {
         final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
         final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
 
-        final String secretName = "test-s-"+UUID.randomUUID().toString();
+        final String secretName = "test-s-" + UUID.randomUUID().toString();
         clientSecretsManager.createSecret(CreateSecretRequest.builder()
             .name(secretName).secretString("secretcontent").build()).join();
 
@@ -266,7 +270,7 @@ public class BasicFeaturesSDKV2Test {
         val createFunctionRequest = CreateFunctionRequest.builder().functionName(functionName)
                 .runtime(Runtime.JAVA8)
                 .role("r1")
-                .code(LocalTestUtil.createFunctionCodeSDKV2(LambdaHandler.class))
+                .code(LocalTestUtilSDKV2.createFunctionCode(LambdaHandler.class))
                 .handler(LambdaHandler.class.getName()).build();
         val response = lambdaClient.createFunction(createFunctionRequest).get();
         Assert.assertNotNull(response);

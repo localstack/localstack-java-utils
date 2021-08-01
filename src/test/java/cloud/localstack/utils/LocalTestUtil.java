@@ -9,7 +9,6 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import lombok.val;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -19,19 +18,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class LocalTestUtil {
 
-	public static com.amazonaws.services.lambda.model.FunctionCode createFunctionCode(Class<?> clazz) throws Exception {
-		val code = new com.amazonaws.services.lambda.model.FunctionCode();
-		code.setZipFile(createFunctionByteBuffer(clazz, false));
-		return code;
-	}
-
-	public static software.amazon.awssdk.services.lambda.model.FunctionCode createFunctionCodeSDKV2(Class<?> clazz) throws Exception{
-		val codeBuilder = software.amazon.awssdk.services.lambda.model.FunctionCode.builder();
-		codeBuilder.zipFile(software.amazon.awssdk.core.SdkBytes.fromByteBuffer(createFunctionByteBuffer(clazz, true)));
-		return codeBuilder.build();
-	}
-
-	private static ByteBuffer createFunctionByteBuffer(Class<?> clazz, boolean sdkv2) throws Exception{
+	protected static ByteBuffer createFunctionByteBuffer(Class<?> clazz, Class<?> ... additionalClasses) throws Exception{
 		ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream jarOut = new ByteArrayOutputStream();
 		// create zip file
@@ -41,9 +28,8 @@ public class LocalTestUtil {
 
 		// write class files into jar stream
 		addClassToJar(clazz, jarStream);
-		if (!sdkv2) {
-            addClassToJar(com.amazonaws.services.kinesis.model.Record.class, jarStream);
-            addClassToJar(com.amazonaws.services.lambda.runtime.events.SQSEvent.class, jarStream);
+		for (Class<?> _class : additionalClasses) {
+            addClassToJar(_class, jarStream);
         }
 		// write MANIFEST into jar stream
 		JarEntry mfEntry = new JarEntry("META-INF/MANIFEST.MF");

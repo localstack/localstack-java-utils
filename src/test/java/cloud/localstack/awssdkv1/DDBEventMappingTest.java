@@ -1,6 +1,6 @@
-package cloud.localstack;
+package cloud.localstack.awssdkv1;
 
-import cloud.localstack.lambda.DDBEventParser;
+import cloud.localstack.awssdkv1.lambda.DDBEventParser;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

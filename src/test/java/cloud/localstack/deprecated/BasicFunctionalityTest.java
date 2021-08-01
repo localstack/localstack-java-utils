@@ -1,11 +1,11 @@
 package cloud.localstack.deprecated;
 
 import cloud.localstack.CommonUtils;
-import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.utils.LocalTestUtil;
-import cloud.localstack.sample.KinesisLambdaHandler;
-import cloud.localstack.sample.S3Sample;
-import cloud.localstack.sample.SQSLambdaHandler;
+import cloud.localstack.awssdkv1.TestUtils;
+import cloud.localstack.awssdkv1.sample.KinesisLambdaHandler;
+import cloud.localstack.awssdkv1.sample.S3Sample;
+import cloud.localstack.awssdkv1.sample.SQSLambdaHandler;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.model.ListStreamsResult;

@@ -10,7 +10,7 @@ compile:
 	mvn -Pawssdkv1,awssdkv2 $(ADDITIONAL_MVN_ARGS) -DskipTests compile test-compile
 
 publish-maven:   ## Publish artifacts to Maven Central
-	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS="-DskipTests" make build
+	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS="-DskipTests -Pawssdkv1,awssdkv2" make build
 
 test-v1:
 	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn $(MVN_TEST_ARGS) -Pawssdkv1 \

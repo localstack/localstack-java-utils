@@ -6,15 +6,18 @@ usage:           ## Show this help
 build:           ## Build the code using Maven
 	mvn -Pfatjar $(ADDITIONAL_MVN_ARGS) clean javadoc:jar source:jar package $(ADDITIONAL_MVN_TARGETS)
 
+compile:
+	mvn -Pawssdkv1,awssdkv2 $(ADDITIONAL_MVN_ARGS) -DskipTests compile test-compile
+
 publish-maven:   ## Publish artifacts to Maven Central
-	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS=" " make build
+	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS="-DskipTests -Pawssdkv1,awssdkv2" make build
 
 test-v1:
-	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv1 \
-                -Dtest="!cloud.localstack.awssdkv2.*Test" test
+	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn $(MVN_TEST_ARGS) -Pawssdkv1 \
+		-Dtest="cloud.localstack.awssdkv1.*Test" test
 
 test-v2:
-	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv2 \
+	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn $(MVN_TEST_ARGS) -Pawssdkv2 \
 		-Dtest="cloud.localstack.awssdkv2.*Test" test
 
 test:            ## Run Java/JUnit tests for AWS SDK v1 and v2

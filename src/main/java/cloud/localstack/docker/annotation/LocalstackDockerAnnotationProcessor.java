@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -21,7 +22,7 @@ public class LocalstackDockerAnnotationProcessor {
     public LocalstackDockerConfiguration process(final Class<?> klass) {
         return Stream.of(klass.getAnnotations())
             .filter(annotation -> annotation instanceof LocalstackDockerProperties)
-            .map(i -> (LocalstackDockerProperties) i)
+            .map(LocalstackDockerProperties.class::cast)
             .map(this::processDockerPropertiesAnnotation)
             .findFirst()
             .orElse(LocalstackDockerConfiguration.DEFAULT);
@@ -30,6 +31,8 @@ public class LocalstackDockerAnnotationProcessor {
     private LocalstackDockerConfiguration processDockerPropertiesAnnotation(LocalstackDockerProperties properties) {
         return LocalstackDockerConfiguration.builder()
             .environmentVariables(this.getEnvironments(properties))
+            .bindMounts(this.getBindMounts(properties))
+            .initializationToken(StringUtils.isEmpty(properties.initializationToken()) ? null : Pattern.compile(properties.initializationToken()))
             .externalHostName(this.getExternalHostName(properties))
             .portMappings(this.getCustomPortMappings(properties))
             .pullNewImage(properties.pullNewImage())
@@ -40,6 +43,7 @@ public class LocalstackDockerAnnotationProcessor {
             .portEdge(getEnvOrDefault("LOCALSTACK_EDGE_PORT", properties.portEdge()))
             .portElasticSearch(getEnvOrDefault("LOCALSTACK_ELASTICSEARCH_PORT", properties.portElasticSearch()))
             .useSingleDockerContainer(properties.useSingleDockerContainer())
+            .platform(StringUtils.isEmpty(properties.platform()) ? null : properties.platform())
             .build();
     }
 
@@ -73,6 +77,15 @@ public class LocalstackDockerAnnotationProcessor {
             environmentVariables.put("SERVICES", services);
         }
         return environmentVariables;
+    }
+
+    private Map<String, String> getBindMounts(final LocalstackDockerProperties properties) {
+        try {
+            IBindMountProvider environmentProvider = properties.bindMountProvider().newInstance();
+            return new HashMap<>(environmentProvider.get());
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new IllegalStateException("Unable to get bind mounts", ex);
+        }
     }
 
     private String getExternalHostName(final LocalstackDockerProperties properties) {

@@ -1,8 +1,9 @@
 package cloud.localstack;
 
-import cloud.localstack.lambda.DDBEventParser;
-import cloud.localstack.lambda.KinesisEventParser;
-import cloud.localstack.lambda.S3EventParser;
+import cloud.localstack.awssdkv1.lambda.DDBEventParser;
+import cloud.localstack.awssdkv1.lambda.KinesisEventParser;
+import cloud.localstack.awssdkv1.lambda.S3EventParser;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -29,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,13 +43,13 @@ public class LambdaExecutor {
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-		if(args.length < 2) {
+		if (args.length != 1 && args.length != 2) {
 			System.err.println("Usage: java " + LambdaExecutor.class.getSimpleName() +
-					" <lambdaClass> <recordsFilePath>");
+					" [<lambdaClass>] <recordsFilePath>");
 			System.exit(1);
 		}
 
-		String fileContent = readFile(args[1]);
+		String fileContent = args.length == 1 ? readFile(args[0]) : readFile(args[1]);
 		ObjectMapper reader = new ObjectMapper();
 		reader.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 		reader.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -56,7 +58,17 @@ public class LambdaExecutor {
 		List<Map<String,Object>> records = (List<Map<String, Object>>) get(map, "Records");
 		Object inputObject = map;
 
-		Object handler = getHandler(args[0]);
+		Object handler;
+		if (args.length == 2) {
+			handler = getHandler(args[0]);
+		} else {
+			String handlerEnvVar = System.getenv("_HANDLER");
+			if (handlerEnvVar == null) {
+				System.err.println("Handler must be provided by '_HANDLER' environment variable");
+				System.exit(1);
+			}
+			handler = getHandler(handlerEnvVar);
+		}
 		if (records == null) {
 			Optional<Object> deserialisedInput = getInputObject(reader, fileContent, handler);
 			if (deserialisedInput.isPresent()) {
@@ -89,7 +101,7 @@ public class LambdaExecutor {
 			}
 		}
 
-		Context ctx = new LambdaContext();
+		Context ctx = new LambdaContext(UUID.randomUUID().toString());
 		if (handler instanceof RequestHandler) {
 			Object result = ((RequestHandler<Object, ?>) handler).handleRequest(inputObject, ctx);
 			// try turning the output into json
@@ -134,19 +146,19 @@ public class LambdaExecutor {
 
 	public static <T> T get(Map<String,T> map, String key) {
 		T result = map.get(key);
-		if(result != null) {
+		if (result != null) {
 			return result;
 		}
 		key = StringUtils.uncapitalize(key);
 		result = map.get(key);
-		if(result != null) {
+		if (result != null) {
 			return result;
 		}
 		return map.get(key.toLowerCase());
 	}
 
 	public static String readFile(String file) throws Exception {
-		if(!file.startsWith("/")) {
+		if (!file.startsWith("/")) {
 			file = System.getProperty("user.dir") + "/" + file;
 		}
 		return Files.lines(Paths.get(file), StandardCharsets.UTF_8).collect(Collectors.joining());

@@ -6,16 +6,16 @@ import cloud.localstack.awssdkv1.TestUtils;
 import cloud.localstack.docker.Container;
 import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-
+import com.amazonaws.services.sqs.AmazonSQS;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-import com.amazonaws.services.sqs.AmazonSQS;
-
-import static cloud.localstack.docker.ContainerTest.*;
+import static cloud.localstack.docker.ContainerTest.EXTERNAL_HOST_NAME;
+import static cloud.localstack.docker.ContainerTest.pullNewImage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(LocalstackTestRunner.class)
 @ExtendWith(LocalstackDockerExtension.class)
@@ -35,7 +35,7 @@ public class PortBindingTest {
     @Test
     public void createLocalstackContainerWithRandomPorts() throws Exception {
         Container container = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, true, null, null, null, null, null, null);
+            EXTERNAL_HOST_NAME, pullNewImage, true, null, null, null, null, null, null, null, null);
 
         try {
             container.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -53,7 +53,7 @@ public class PortBindingTest {
     @Test
     public void createLocalstackContainerWithStaticPorts() throws Exception {
         Container container = Container.createLocalstackContainer(
-            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, null, null);
+            EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, null, null, null, null);
 
         try {
             container.waitForAllPorts(EXTERNAL_HOST_NAME);

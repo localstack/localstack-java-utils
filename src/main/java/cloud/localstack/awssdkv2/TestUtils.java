@@ -2,6 +2,7 @@ package cloud.localstack.awssdkv2;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
 import software.amazon.awssdk.utils.*;
 import software.amazon.awssdk.http.*;
 import software.amazon.awssdk.services.cloudwatch.*;
@@ -11,6 +12,8 @@ import software.amazon.awssdk.services.sqs.*;
 import software.amazon.awssdk.services.s3.*;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.ssm.*;
+import software.amazon.awssdk.services.iam.*;
+import software.amazon.awssdk.services.qldb.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder;
@@ -38,6 +41,10 @@ public class TestUtils {
         return wrapApiClientV2(SqsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSQS()).build();
     }
 
+    public static QldbAsyncClient getClientQLDBAsyncV2() {
+        return wrapApiClientV2(QldbAsyncClient.builder(), Localstack.INSTANCE.getEndpointQLDB()).build();
+    }
+
     public static SnsAsyncClient getClientSNSAsyncV2() {
         return wrapApiClientV2(SnsAsyncClient.builder(), Localstack.INSTANCE.getEndpointSNS()).build();
     }
@@ -58,6 +65,14 @@ public class TestUtils {
         return wrapApiClientV2(CloudWatchAsyncClient.builder(), Localstack.INSTANCE.getEndpointCloudWatch()).build();
     }
 
+    public static LambdaAsyncClient getClientLambdaAsyncV2() {
+        return wrapApiClientV2(LambdaAsyncClient.builder(), Localstack.INSTANCE.getEndpointLambda()).build();
+    }
+    
+    public static IamAsyncClient getClientIamAsyncV2() {
+        return wrapApiClientV2(IamAsyncClient.builder(), Localstack.INSTANCE.getEndpointIAM()).build();
+    }
+    
     public static <T extends SdkAsyncClientBuilder> T wrapApiClientV2(T builder, String endpointURL) {
         try {
             return (T) ((AwsClientBuilder)builder

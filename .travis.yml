@@ -15,9 +15,9 @@ install:
 
 script:
   - set -e
-  - mvn -q -DskipTests test
-  - docker pull localstack/localstack-light > /dev/null
-  - docker tag localstack/localstack-light localstack/localstack
+  - nohup docker pull localstack/localstack > /dev/null &
+  - make compile
+  - MVN_TEST_ARGS="-q -DskipTests" make test
   - make test
   - docker ps -a
 

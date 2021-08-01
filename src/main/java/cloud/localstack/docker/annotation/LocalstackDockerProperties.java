@@ -1,10 +1,11 @@
 package cloud.localstack.docker.annotation;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.annotation.Inherited;
+
 
 /**
  * An annotation to provide parameters to the main (Docker-based) LocalstackTestRunner
@@ -27,6 +28,18 @@ public @interface LocalstackDockerProperties {
     Class<? extends IEnvironmentVariableProvider> environmentVariableProvider() default DefaultEnvironmentVariableProvider.class;
 
     /**
+     * Used for injecting directories or files that are bind mounted into the docker container. Implement a class that provides a map
+     * of host to container directory or file mappings, with host directories/files as keys and container directories/files as values.
+     * Remember that Docker needs absolute paths for host directories and files.
+     */
+    Class<? extends IBindMountProvider> bindMountProvider() default IBindMountProvider.EmptyBindMountProvider.class;
+
+    /**
+     * A Java Regex that is used to wait for the execution of custom init scripts 
+     */
+    String initializationToken() default "";
+
+    /**
      * Determines if a new image is pulled from the docker repo before the tests are run.
      */
     boolean pullNewImage() default false;
@@ -43,6 +56,7 @@ public @interface LocalstackDockerProperties {
     /**
      * Determines which services should be run when the localstack starts. When empty, all the services available get
      * up and running.
+     * @see cloud.localstack.ServiceName
      */
     String[] services() default {};
 
@@ -78,4 +92,10 @@ public @interface LocalstackDockerProperties {
      * This can be used to run tests with an existing LocalStack container running on the host.
      */
     boolean ignoreDockerRunErrors() default false;
+
+    /**
+     * Specifies a target platform for the localstack docker image. Value is used by the --platform flag in the
+     * docker run command
+     */
+    String platform() default "";
 }

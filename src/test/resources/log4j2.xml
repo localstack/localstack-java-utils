@@ -1,4 +1,4 @@
-<Configuration status="DEBUG">
+<Configuration status="INFO">
   <Appenders>
     <Console name="ConsoleAppender" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} [%t] %-5p %c:%L - %m%n" />
@@ -6,9 +6,12 @@
   </Appenders>
 
   <Loggers>
-    <Root level="DEBUG">
+    <Root level="INFO">
       <AppenderRef ref="ConsoleAppender"/>
     </Root>
-    <Logger name="software.amazon.awssdk" level="DEBUG" />
+    <Logger name="software.amazon.awssdk" level="INFO" />
+    <!-- enable lines below for detailed message logging -->
+<!--    <Logger name="org.apache.http.wire" level="DEBUG" />-->
+<!--    <Logger name="com.amazonaws.request" level="DEBUG" />-->
   </Loggers>
 </Configuration>

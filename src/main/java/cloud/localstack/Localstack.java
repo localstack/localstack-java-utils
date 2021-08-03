@@ -60,8 +60,7 @@ public class Localstack {
         CommonUtils.disableSslCertChecking();
     }
 
-    private Localstack() {
-    }
+    private Localstack() {}
 
     public void startup(LocalstackDockerConfiguration dockerConfiguration) {
         if (locked) {
@@ -70,12 +69,19 @@ public class Localstack {
         locked = true;
         this.externalHostName = dockerConfiguration.getExternalHostName();
 
+        Map<String, String> environmentVariables = dockerConfiguration.getEnvironmentVariables();
+        environmentVariables = environmentVariables == null ? Collections.emptyMap() : environmentVariables;
+        environmentVariables = new HashMap<String, String>(environmentVariables);
+        // add default environment variables
+        Map<String, String> defaultEnvVars = getDefaultEnvironmentVariables();
+        environmentVariables.putAll(defaultEnvVars);
+
         try {
             localStackContainer = Container.createLocalstackContainer(dockerConfiguration.getExternalHostName(),
                     dockerConfiguration.isPullNewImage(), dockerConfiguration.isRandomizePorts(),
                     dockerConfiguration.getImageName(), dockerConfiguration.getImageTag(),
                     dockerConfiguration.getPortEdge(), dockerConfiguration.getPortElasticSearch(),
-                    dockerConfiguration.getEnvironmentVariables(), dockerConfiguration.getPortMappings(),
+                    environmentVariables, dockerConfiguration.getPortMappings(),
                     dockerConfiguration.getBindMounts(), dockerConfiguration.getPlatform());
             loadServiceToPortMap();
 
@@ -118,6 +124,19 @@ public class Localstack {
         }
     }
 
+    private Map<String, String> getDefaultEnvironmentVariables() {
+        Map<String, String> result = new HashMap<String, String>();
+        addEnvVariableIfDefined(Constants.ENV_LOCALSTACK_API_KEY, result);
+        return result;
+    }
+
+    private void addEnvVariableIfDefined(String envVarName, Map<String, String> envVars) {
+        String value = System.getenv(envVarName);
+        if (value != null) {
+            envVars.put(envVarName, value);
+        }
+    }
+
     // TODO: this is now obsolete, as we're using a single edge port - remove!
     private void doLoadServiceToPortMap() {
         String localStackPortConfig = "";
@@ -125,18 +144,18 @@ public class Localstack {
             String filePath = String.format(PORT_CONFIG_FILENAME, PYTHON_VERSIONS_FOLDERS[i]);
             
             localStackPortConfig = localStackContainer.executeCommand(Arrays.asList("cat", filePath));
-            if(localStackPortConfig.contains("No such container")){
+            if (localStackPortConfig.contains("No such container")) {
                 localStackPortConfig = "";
                 continue;
-            }else if(localStackPortConfig.contains("No such file")){
+            } else if(localStackPortConfig.contains("No such file")) {
                 localStackPortConfig = "";
                 continue;
-            }else{
+            } else {
                 break;
             }
         }
 
-        if(localStackPortConfig.isEmpty()){
+        if (localStackPortConfig.isEmpty()) {
             throw new LocalstackDockerException("No config file found",new Exception());
         }
 

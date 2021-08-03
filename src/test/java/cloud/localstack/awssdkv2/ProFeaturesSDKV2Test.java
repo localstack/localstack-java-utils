@@ -162,6 +162,28 @@ public class ProFeaturesSDKV2Test {
         cleanUp(ledgerName);
     }
 
+    @Test
+    public void testCreateDropTable() throws Exception {
+        if (!isProEnabled()) {
+            return;
+        }
+        LOG.info("Running test testCreateDropTable() ...");
+        String ledgerName = "l123";
+        QldbDriver driver = createLedgerAndGetDriver(ledgerName);
+        driver.execute(txn -> {
+            txn.execute("CREATE TABLE A");
+        });
+
+        driver.execute(txn -> {
+            txn.execute("DROP TABLE A");
+        });
+
+        Set<String> tableNames = StreamSupport.stream(driver.getTableNames().spliterator(), false)
+                .collect(Collectors.toSet());
+
+        Assert.assertTrue(tableNames.isEmpty());
+    }
+
     // UTIL FUNCTIONS AND CLASSES BELOW
 
     public static class Wallet {
@@ -216,6 +238,12 @@ public class ProFeaturesSDKV2Test {
     public enum WalletType {
         PERSONAL,
         BUSINESS
+    }
+
+
+    private QldbDriver createLedgerAndGetDriver(String ledgerName, String ... tableNames) throws Exception {
+        createLedgerAndTables(ledgerName, tableNames);
+        return getDriver(ledgerName);
     }
 
     private void createLedgerAndTables(String ledgerName, String ... tableNames) throws Exception {

@@ -1,7 +1,7 @@
 ADDITIONAL_MVN_ARGS ?= -DskipTests -q
 export AWS_DEFAULT_REGION ?= us-east-1
 export AWS_REGION ?= us-east-1
-export SERVICES ?= serverless,kinesis,sns,sqs,iam,cloudwatch
+export SERVICES ?= serverless,kinesis,sns,sqs,iam,cloudwatch,qldb
 
 usage:           ## Show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'

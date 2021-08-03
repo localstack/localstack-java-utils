@@ -61,8 +61,8 @@ public class ProFeaturesSDKV2Test {
         Assert.assertNotNull(result);
 
         // list result entries
-        List<IonValue> tableNames2 = new ArrayList<IonValue>();
-        result.forEach(tableNames2::add);
+        List<String> tableNames2 = new ArrayList<>();
+        result.forEach(v -> tableNames2.add(((IonString)v).stringValue()));
         Assert.assertTrue(tableNames2.contains(tableName1));
         Assert.assertTrue(tableNames2.contains(tableName2));
 
@@ -91,9 +91,9 @@ public class ProFeaturesSDKV2Test {
 
         Set<String> result = StreamSupport.stream(indexQueryResult.spliterator(), false)
                 .map(v -> (IonStruct) v)
-                .map(s -> s.get("expr").toString())
+                .map(s -> ((IonString)s.get("expr")).stringValue())
                 .collect(Collectors.toSet());
-        Assert.assertEquals(new HashSet<String>(Arrays.asList("\"[attr1]\"")), result);
+        Assert.assertEquals(new HashSet<>(Arrays.asList("[attr1]")), result);
 
         // clean up
         cleanUp(ledgerName);
@@ -126,7 +126,7 @@ public class ProFeaturesSDKV2Test {
             }
         });
 
-        wallet.setDescription("my business wallet");
+        wallet.setDescription("my test wallet");
         wallet.setBalance(26.12d);
         wallet.setTags(ImmutableMap.of());
         wallet.setType(WalletType.BUSINESS);
@@ -255,7 +255,6 @@ public class ProFeaturesSDKV2Test {
 
         QldbDriver driver = getDriver(ledgerName);
 
-        // create tables
         for (String tableName : tableNames) {
             driver.execute(txn -> { return txn.execute("CREATE TABLE " + tableName); });
         }

@@ -160,6 +160,12 @@
             <version>3.9.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-ion</artifactId>
+            <version>2.12.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>

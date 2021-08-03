@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static cloud.localstack.awssdkv1.TestUtils.getCredentialsProvider;
 
 @Deprecated
 @SuppressWarnings("all")

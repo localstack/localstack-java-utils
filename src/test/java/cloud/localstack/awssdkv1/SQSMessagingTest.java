@@ -219,12 +219,12 @@ public class SQSMessagingTest {
 
         String resultPolicy = result.getAttributes().get("RedrivePolicy");
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 
         try {
             map = mapper.readValue(resultPolicy, new TypeReference<Map<String, Object>>(){});
-            Assert.assertEquals( map.get("maxReceiveCount"), maxReceiveCount);
-            Assert.assertEquals( map.get("deadLetterTargetArn"), dlQueueArn);
+            Assert.assertEquals(map.get("maxReceiveCount"), maxReceiveCount);
+            Assert.assertEquals(map.get("deadLetterTargetArn"), dlQueueArn);
         } catch (Exception e) {
             throw new RuntimeException("No RedrivePolicy found");
         }

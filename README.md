@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/localstack/localstack-java-utils.svg)](https://travis-ci.com/localstack/localstack-java-utils)
 [![Maven Central](https://img.shields.io/maven-central/v/cloud.localstack/localstack-utils)](https://mvnrepository.com/artifact/cloud.localstack/localstack-utils)
-
+[![Thundra Foresight](https://thundra-assets-prod.s3.us-west-2.amazonaws.com/images/badges/thundra-foresight-badge-enabled.svg)](https://foresight.thundra.live/testRuns/71e743a6-b8d5-4d55-aa89-5299f3c3d08e)
 # LocalStack Java Utils
 
 Java utilities and JUnit integration for [LocalStack](https://github.com/localstack/localstack).

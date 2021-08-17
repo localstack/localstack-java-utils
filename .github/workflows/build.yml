@@ -1,0 +1,36 @@
+name: Maven Run for Production Environment
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "8"
+      - name: Start Docker containers
+        run: |
+          set -e
+          mvn -q -DskipTests test
+          nohup docker pull localstack/localstack-light > /dev/null &
+          nohup docker pull lambci/lambda:java8 > /dev/null &
+      - name: Thundra Maven Test Instrumentation Action
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        uses: thundra-io/thundra-maven-test-action@v1
+        with:
+          apikey: ${{ secrets.THUNDRA_API_KEY }}
+          project_id: ${{ secrets.THUNDRA_PROJECT_ID }}
+      - name: Run Tests
+        run: make test

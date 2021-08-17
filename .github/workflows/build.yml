@@ -30,7 +30,9 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         uses: thundra-io/thundra-maven-test-action@v1
         with:
-          apikey: ${{ secrets.THUNDRA_API_KEY }}
-          project_id: ${{ secrets.THUNDRA_PROJECT_ID }}
+          apikey: ${{ secrets.THUNDRA_DEMO_ACCOUNT_LOCALSTACK_APIKEY }}
+          project_id: ${{ secrets.THUNDRA_DEMO_ACCOUNT_LOCALSTACK_PROJECTID }}
       - name: Run Tests
         run: make test
+        env:
+          THUNDRA_AGENT_REPORT_REST_BASEURL: https://collector.thundra.us/v1

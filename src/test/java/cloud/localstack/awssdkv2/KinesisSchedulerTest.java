@@ -3,6 +3,11 @@ package cloud.localstack.awssdkv2;
 import cloud.localstack.awssdkv2.consumer.DeliveryStatusRecordProcessorFactory;
 import cloud.localstack.awssdkv2.consumer.EventProcessor;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
@@ -15,24 +20,27 @@ import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
 import software.amazon.kinesis.common.ConfigsBuilder;
 import software.amazon.kinesis.coordinator.Scheduler;
 import software.amazon.kinesis.metrics.NullMetricsFactory;
+import software.amazon.kinesis.retrieval.RetrievalConfig;
+import software.amazon.kinesis.retrieval.polling.PollingConfig;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.*;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @LocalstackDockerProperties(ignoreDockerRunErrors = true)
 public class KinesisSchedulerTest extends PowerMockLocalStack {
+
     String streamName = "test" + UUID.randomUUID().toString();
     String workerId = UUID.randomUUID().toString();
     String testMessage = "hello, world";
     Integer consumerCreationTime = 15; //35 for real AWS
 
+    // Revert system properties to the back after the test
+    @Rule
+    public SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
+
     @Before
     public void mockServicesForScheduler() {
-        // System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
+        System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
         PowerMockLocalStack.mockCloudWatchAsyncClient();
         PowerMockLocalStack.mockDynamoDBAsync();
         PowerMockLocalStack.mockKinesisAsync();
@@ -51,7 +59,14 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
         DeliveryStatusRecordProcessorFactory processorFactory = new DeliveryStatusRecordProcessorFactory(eventProcessor);
 
         ConfigsBuilder configsBuilder = new ConfigsBuilder(streamName, streamName, kinesisAsyncClient, dynamoAsyncClient,
-            cloudWatchAsyncClient, workerId, processorFactory);
+                cloudWatchAsyncClient, workerId, processorFactory) {
+            @Override
+            public RetrievalConfig retrievalConfig() {
+                RetrievalConfig retrievalConfig = super.retrievalConfig();
+                retrievalConfig.retrievalSpecificConfig(new PollingConfig(streamName(), kinesisClient()));
+                return retrievalConfig;
+            }
+        };
         Scheduler scheduler = createScheduler(configsBuilder);
 
         new Thread(scheduler).start();

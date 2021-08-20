@@ -1,56 +1,45 @@
 package cloud.localstack.awssdkv1;
 
 import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.docker.annotation.*;
-
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.services.kinesis.AmazonKinesisAsync;
 import com.amazonaws.services.kinesis.model.CreateStreamRequest;
-import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.amazonaws.services.kinesis.model.GetRecordsRequest;
 import com.amazonaws.services.kinesis.model.GetRecordsResult;
 import com.amazonaws.services.kinesis.model.GetShardIteratorRequest;
-import com.amazonaws.SDKGlobalConfiguration;
+import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.amazonaws.services.kinesis.model.ResourceInUseException;
-
+import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.*;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.nio.ByteBuffer;
 
 @RunWith(LocalstackTestRunner.class)
 @LocalstackDockerProperties(ignoreDockerRunErrors=true)
 public class KinesisConsumerTest {
 
+    // Revert system properties to the back after the test
+    @Rule
+    public SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
+
     @Test
     public void testGetRecordCBOR() throws Exception {
-        String valueBefore = this.getCborDisableConfig();
         System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "false");
-        try {
-            this.runGetRecord();
-        } finally {
-            System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, valueBefore);
-        }
+        runGetRecord();
     }
 
     @Test
     public void testGetRecordJSON() throws Exception {
-        String valueBefore = this.getCborDisableConfig();
         System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, "true");
-        try {
-            this.runGetRecord();
-        } finally {
-            System.setProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY, valueBefore);
-        }
-    }
-
-    private String getCborDisableConfig() {
-        String valueBefore = System.getProperty(SDKGlobalConfiguration.AWS_CBOR_DISABLE_SYSTEM_PROPERTY);
-        valueBefore = valueBefore == null ? "" : valueBefore;
-        return valueBefore;
+        runGetRecord();
     }
 
     private void runGetRecord() throws Exception {

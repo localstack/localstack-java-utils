@@ -12,7 +12,10 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
+import io.thundra.jexter.junit4.core.envvar.EnvironmentVariableSandboxRule;
+import io.thundra.jexter.junit5.core.envvar.EnvironmentVariableSandbox;
 import org.assertj.core.api.Assertions;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 
@@ -27,9 +30,17 @@ import java.util.Map;
 @RunWith(LocalstackTestRunner.class)
 @ExtendWith(LocalstackDockerExtension.class)
 @LocalstackDockerProperties(randomizePorts = true, services = "sqs")
+// [JUnit5] Revert environment variables to the back after the test suite (class)
+@EnvironmentVariableSandbox
 public class DockerOnlySQSFunctionalityTest {
 
-    static {
+    // [JUnit4] Revert environment variables to the back after the test suite (class)
+    @ClassRule
+    public static EnvironmentVariableSandboxRule environmentVariableSandboxRule = new EnvironmentVariableSandboxRule();
+
+    @org.junit.BeforeClass
+    @org.junit.jupiter.api.BeforeAll
+    public static void beforeAll() {
         CommonUtils.setEnv("AWS_CBOR_DISABLE", "1");
     }
 
@@ -105,4 +116,5 @@ public class DockerOnlySQSFunctionalityTest {
                 new AWSStaticCredentialsProvider(TestUtils.TEST_CREDENTIALS)).build();
         return connectionFactory.createConnection();
     }
+
 }

@@ -2,17 +2,24 @@ package cloud.localstack.awssdkv2;
 
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-
+import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
-import software.amazon.awssdk.core.*;
-import software.amazon.awssdk.services.kinesis.model.*;
+import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
+import software.amazon.awssdk.services.kinesis.model.GetRecordsRequest;
+import software.amazon.awssdk.services.kinesis.model.GetRecordsResponse;
+import software.amazon.awssdk.services.kinesis.model.GetShardIteratorRequest;
+import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import software.amazon.awssdk.services.kinesis.model.ShardIteratorType;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -20,8 +27,14 @@ import java.util.stream.Collectors;
 @LocalstackDockerProperties(ignoreDockerRunErrors = true)
 public class KinesisV2ConsumerTest {
 
+  // Revert system properties to the back after the test suite (class)
+  @Rule
+  public SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
+
   @Test
   public void testGetRecordCBOR() throws Exception {
+    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "true");
+
     String streamName = "test-s-" + UUID.randomUUID().toString();
     KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
 
@@ -50,7 +63,7 @@ public class KinesisV2ConsumerTest {
   @Test
   public void testGetRecordJSON() throws Exception {
     System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
-    this.testGetRecordCBOR();
-    System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "true");
+    testGetRecordCBOR();
   }
+
 }

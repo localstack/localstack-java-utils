@@ -1,19 +1,19 @@
 package cloud.localstack.docker;
 
+import cloud.localstack.CommonUtils;
 import cloud.localstack.Localstack;
 import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-import cloud.localstack.CommonUtils;
 import cloud.localstack.awssdkv1.TestUtils;
-
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import com.amazon.sqs.javamessaging.SQSConnection;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.services.cloudwatch.*;
-import com.amazonaws.services.cloudwatch.model.*;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
-import com.amazonaws.services.identitymanagement.model.CreateRoleRequest;
-import com.amazonaws.services.identitymanagement.model.EntityAlreadyExistsException;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.amazonaws.services.cloudwatch.model.Dimension;
+import com.amazonaws.services.cloudwatch.model.MetricDatum;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
+import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -22,6 +22,9 @@ import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
+import com.amazonaws.services.identitymanagement.model.CreateRoleRequest;
+import com.amazonaws.services.identitymanagement.model.EntityAlreadyExistsException;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.model.CreateStreamRequest;
 import com.amazonaws.services.kinesis.model.ListStreamsResult;
@@ -37,10 +40,14 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
 import com.amazonaws.util.IOUtils;
+import io.thundra.jexter.junit4.core.envvar.EnvironmentVariableSandboxRule;
+import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
+import io.thundra.jexter.junit5.core.envvar.EnvironmentVariableSandbox;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.junit.Assert;
 
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -56,9 +63,17 @@ import java.util.Map;
 @RunWith(LocalstackTestRunner.class)
 @ExtendWith(LocalstackDockerExtension.class)
 @LocalstackDockerProperties(randomizePorts = true)
+// [JUnit5] Revert environment variables to the back after the test suite (class)
+@EnvironmentVariableSandbox
 public class BasicDockerFunctionalityTest {
 
-    static {
+    // [JUnit4] Revert environment variables to the back after the test suite (class)
+    @ClassRule
+    public static EnvironmentVariableSandboxRule environmentVariableSandboxRule = new EnvironmentVariableSandboxRule();
+
+    @org.junit.BeforeClass
+    @org.junit.jupiter.api.BeforeAll
+    public static void beforeAll() {
         CommonUtils.setEnv("AWS_CBOR_DISABLE", "1");
     }
 
@@ -228,4 +243,5 @@ public class BasicDockerFunctionalityTest {
                 new AWSStaticCredentialsProvider(TestUtils.TEST_CREDENTIALS)).build();
         return connectionFactory.createConnection();
     }
+
 }

@@ -4,45 +4,71 @@ import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.sample.LambdaHandler;
-import cloud.localstack.awssdkv2.LocalTestUtilSDKV2;
-
+import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import lombok.val;
-
-import software.amazon.awssdk.core.SdkSystemSetting;
-import software.amazon.awssdk.services.cloudwatch.*;
-import software.amazon.awssdk.services.cloudwatch.model.*;
-import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
-import software.amazon.awssdk.services.dynamodb.model.*;
-import software.amazon.awssdk.services.iam.*;
-import software.amazon.awssdk.services.iam.model.*;
-import software.amazon.awssdk.services.iam.paginators.ListUsersPublisher;
-import software.amazon.awssdk.services.kinesis.*;
-import software.amazon.awssdk.services.kinesis.model.*;
-import software.amazon.awssdk.services.lambda.model.CreateFunctionRequest;
-import software.amazon.awssdk.services.lambda.model.Runtime;
-import software.amazon.awssdk.services.s3.*;
-import software.amazon.awssdk.services.s3.model.*;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
-import software.amazon.awssdk.services.secretsmanager.model.*;
-import software.amazon.awssdk.services.sns.*;
-import software.amazon.awssdk.services.sns.model.*;
-import software.amazon.awssdk.services.sqs.*;
-import software.amazon.awssdk.services.sqs.model.*;
-import software.amazon.awssdk.services.ssm.*;
-import software.amazon.awssdk.services.ssm.model.*;
-
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
+import software.amazon.awssdk.services.cloudwatch.model.Dimension;
+import software.amazon.awssdk.services.cloudwatch.model.MetricDatum;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataRequest;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataResponse;
+import software.amazon.awssdk.services.cloudwatch.model.StandardUnit;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse;
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
+import software.amazon.awssdk.services.dynamodb.model.KeyType;
+import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
+import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
+import software.amazon.awssdk.services.iam.IamAsyncClient;
+import software.amazon.awssdk.services.iam.model.CreateUserRequest;
+import software.amazon.awssdk.services.iam.model.User;
+import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
+import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
+import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import software.amazon.awssdk.services.lambda.model.CreateFunctionRequest;
+import software.amazon.awssdk.services.lambda.model.Runtime;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
+import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
+import software.amazon.awssdk.services.secretsmanager.model.DeleteSecretRequest;
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
+import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
+import software.amazon.awssdk.services.sqs.model.CreateQueueResponse;
+import software.amazon.awssdk.services.ssm.SsmAsyncClient;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
+import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
-import java.util.*;
 import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.ZoneOffset;
-import java.time.Instant;
-
-import software.amazon.awssdk.core.SdkBytes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,7 +77,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @LocalstackDockerProperties(ignoreDockerRunErrors=true)
 public class BasicFeaturesSDKV2Test {
 
-    static {
+    // Revert system properties to the back after the test suite (class)
+    @ClassRule
+    public static SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
+
+    @BeforeClass
+    public static void beforeAll() {
         System.setProperty(SdkSystemSetting.CBOR_ENABLED.property(), "false");
     }
 
@@ -318,4 +349,5 @@ public class BasicFeaturesSDKV2Test {
         TimeUnit.SECONDS.sleep(2);
         Assert.assertTrue(userFound.get());
 	}
+
 }

@@ -22,7 +22,7 @@ public class LambdaContext implements Context {
 	private static final String TODAY = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 	private static final String CONTAINER_ID = UUID.randomUUID().toString();
 
-	private final Logger LOG = Logger.getLogger(LambdaContext.class.getName());
+	private transient final Logger LOG = Logger.getLogger(LambdaContext.class.getName());
 
 	private final String requestId;
 

@@ -186,6 +186,12 @@ public class LambdaExecutor {
 		return inputObject;
 	}
 
+	/**
+	 * Parses the handler name
+	 * Depending on the string, the result handlerMethod can be null
+	 * @param handlerName Handler name in the format "java.package.class::handlerMethodName" or "java.package.class"
+	 * @return Result containing the class name, and the handler method if specified
+	 */
 	private static HandlerNameParseResult parseHandlerName(String handlerName) {
 		String[] split = handlerName.split("::", 2);
 		String className = split[0];
@@ -194,6 +200,11 @@ public class LambdaExecutor {
 	}
 
 
+	/**
+	 * Returns a instance of the class specified by handler name
+	 * @param handlerName name (including package information) of the class to load and instantiate
+	 * @return New object of handlerName class
+	 */
 	private static Object getHandler(String handlerName) throws NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException, InstantiationException, ClassNotFoundException {
 		Class<?> clazz = Class.forName(handlerName);

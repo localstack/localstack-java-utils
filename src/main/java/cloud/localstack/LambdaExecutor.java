@@ -125,7 +125,7 @@ public class LambdaExecutor {
 			}
 			// The contract with lambci is to print the result to stdout, whereas logs go to stderr
 			System.out.println(result);
-		}  else if (handler instanceof RequestStreamHandler) {
+		} else if (handler instanceof RequestStreamHandler) {
 			OutputStream os = new ByteArrayOutputStream();
 			((RequestStreamHandler) handler).handleRequest(
 					new StringInputStream(fileContent), os, ctx);
@@ -137,7 +137,7 @@ public class LambdaExecutor {
 	 * Returns the method matching the specified name implemented in the given handler object class
 	 * @param handler Handler the method in question belongs to
 	 * @param handlerMethodName Name of the method we are looking for in the handler
-	 * @return Method object with the given method
+	 * @return Method object for the method with the given method name
 	 * @throws MultipleMatchingHandlersException Thrown when multiple methods in the given handler exist for the given name
 	 * @throws NoMatchingHandlerException Thrown if no method in the handler is matching the given name
 	 */
@@ -151,7 +151,6 @@ public class LambdaExecutor {
 			throw new NoMatchingHandlerException("No matching handlers for method name: "
 					+ handlerMethodName);
 		}
-		System.err.println("Matched methods: " + handlerMethods);
 		return handlerMethods.get(0);
 	}
 

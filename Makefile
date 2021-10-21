@@ -10,6 +10,7 @@ usage:           ## Show this help
 
 build:           ## Build the code using Maven
 	mvn -Pfatjar $(ADDITIONAL_MVN_ARGS) clean javadoc:jar source:jar package $(ADDITIONAL_MVN_TARGETS)
+	mvn clean javadoc:jar source:jar package
 
 compile:
 	mvn -Pawssdkv1,awssdkv2 $(ADDITIONAL_MVN_ARGS) -DskipTests compile test-compile

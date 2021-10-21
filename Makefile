@@ -13,16 +13,16 @@ build:           ## Build the code using Maven
 	mvn clean javadoc:jar source:jar package
 
 compile:
-	mvn -Pawssdkv1,awssdkv2 $(ADDITIONAL_MVN_ARGS) -DskipTests compile test-compile
+	mvn $(ADDITIONAL_MVN_ARGS) -DskipTests compile test-compile
 
 publish-maven:   ## Publish artifacts to Maven Central
-	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS="-DskipTests -Pawssdkv1,awssdkv2" make build
+	ADDITIONAL_MVN_TARGETS=deploy ADDITIONAL_MVN_ARGS="-DskipTests" make build
 
 test-v1:
-	mvn $(MVN_TEST_ARGS) -Pawssdkv1 -Dtest="cloud.localstack.awssdkv1.*Test" test
+	mvn $(MVN_TEST_ARGS) -Dtest="cloud.localstack.awssdkv1.*Test" test
 
 test-v2:
-	mvn $(MVN_TEST_ARGS) -Pawssdkv2 -Dtest="cloud.localstack.awssdkv2.*Test" test
+	mvn $(MVN_TEST_ARGS) -Dtest="cloud.localstack.awssdkv2.*Test" test
 
 test:            ## Run Java/JUnit tests for AWS SDK v1 and v2
 	make test-v2

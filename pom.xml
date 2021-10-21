@@ -38,20 +38,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.5.2</version>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
+        <!-- general utils/libs -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -75,24 +62,141 @@
             <version>1.18.4</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.9</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.9</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- core AWS libs (independent of v1/v2 SDK) -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-core</artifactId>
             <version>${lambda.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- AWS SDK v1 dependencies -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.sdk.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.amazonaws</groupId>
+                    <artifactId>aws-java-sdk-kinesisvideo</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>2.2.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${aws.sdk.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-lambda</artifactId>
+            <version>${aws.sdk.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>${aws.sdk.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>amazon-sqs-java-messaging-lib</artifactId>
+            <version>1.0.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- AWS SDK v2 dependencies -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>kinesis</artifactId>
+            <version>${aws.sdkv2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>cloudwatch</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ssm</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>secretsmanager</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>iam</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>lambda</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>qldb</artifactId>
+            <version>${aws.sdkv2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.kinesis</groupId>
+            <artifactId>amazon-kinesis-client</artifactId>
+            <version>2.2.9</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.qldb</groupId>
+            <artifactId>amazon-qldb-driver-java</artifactId>
+            <version>2.3.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -133,6 +237,34 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jcl</artifactId>
             <version>2.14.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- testing utils (required for compilation) -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.5.2</version>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>2.0.9</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.9</version>
             <scope>provided</scope>
         </dependency>
 
@@ -185,6 +317,7 @@
             <version>${jexter.version}</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <profiles>
@@ -227,176 +360,6 @@
                     <groupId>joda-time</groupId>
                     <artifactId>joda-time</artifactId>
                     <version>2.6</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>awssdkv1</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/awssdkv2/**/*.java</exclude>
-                                <exclude>**/deprecated/**/*.java</exclude>
-                            </excludes>
-                            <testExcludes>
-                                <exclude>**/awssdkv2/**/*.java</exclude>
-                                <exclude>**/deprecated/**/*.java</exclude>
-                            </testExcludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk</artifactId>
-                    <version>${aws.sdk.version}</version>
-                    <scope>provided</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.amazonaws</groupId>
-                            <artifactId>aws-java-sdk-kinesisvideo</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-lambda-java-events</artifactId>
-                    <version>2.2.7</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-core</artifactId>
-                    <version>${aws.sdk.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-lambda</artifactId>
-                    <version>${aws.sdk.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-sqs</artifactId>
-                    <version>${aws.sdk.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>amazon-sqs-java-messaging-lib</artifactId>
-                    <version>1.0.5</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>awssdkv2</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/awssdkv1/**/*.java</exclude>
-                                <exclude>**/deprecated/**/*.java</exclude>
-                                <exclude>**/LambdaExecutor.java</exclude>
-                            </excludes>
-                            <testExcludes>
-                                <exclude>**/awssdkv1/**/*.java</exclude>
-                                <exclude>**/deprecated/**/*.java</exclude>
-                                <exclude>**/LambdaExecutor.java</exclude>
-                            </testExcludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>sns</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>sqs</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>kinesis</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>cloudwatch</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>dynamodb</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>ssm</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>secretsmanager</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>s3</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>iam</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>netty-nio-client</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>lambda</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>qldb</artifactId>
-                    <version>${aws.sdkv2.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>software.amazon.kinesis</groupId>
-                    <artifactId>amazon-kinesis-client</artifactId>
-                    <version>2.2.9</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>software.amazon.qldb</groupId>
-                    <artifactId>amazon-qldb-driver-java</artifactId>
-                    <version>2.3.1</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -456,31 +419,6 @@
                             <include>software.*:*</include>
                         </includes>
                     </artifactSet>
-                    <relocations>
-                        <!--Default relocations of-->
-                        <!--http://central.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.301/aws-java-sdk-bundle-1.11.301.pom-->
-                        <!-- TODO remove this section..? -->
-                        <!-- <relocation>
-                            <pattern>org.joda</pattern>
-                            <shadedPattern>com.amazonaws.thirdparty.joda</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.fasterxml.jackson</pattern>
-                            <shadedPattern>com.amazonaws.thirdparty.jackson</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.apache.http</pattern>
-                            <shadedPattern>com.amazonaws.thirdparty.apache.http</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.apache.commons</pattern>
-                            <shadedPattern>com.amazonaws.thirdparty.apache.commons</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>software.amazon.ion</pattern>
-                            <shadedPattern>com.amazonaws.thirdparty.ion</shadedPattern>
-                        </relocation> -->
-                    </relocations>
                 </configuration>
             </plugin>
             <plugin>

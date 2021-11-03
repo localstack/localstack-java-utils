@@ -60,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.16</version>
+    <version>0.2.17</version>
 </dependency>
 ```
 
@@ -108,6 +108,7 @@ make build
 
 ## Change Log
 
+* v0.2.17: Fix issue with using :: to specify lambda handler which implements the RequestHandler interface, revert removal of EC2HostNameResolver annotation
 * v0.2.16: Add support for :: notation for Java Lambda handler specification, fix failing QLDB tests, fix failing tests with Jexter rules/extensions
 * v0.2.15: Fix Kinesis CBOR tests; fix project setup and classpath for SDK v1/v2 utils; fix awaiting results in tests using async clients; refactor classpath setup for v1/v2 SDKs; fall back to using edge port if port mapping cannot be determined from container
 * v0.2.14: Add ability to get handler class name through `_HANDLER` environment variable like on real AWS and Lambci environment

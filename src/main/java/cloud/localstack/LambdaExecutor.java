@@ -143,10 +143,10 @@ public class LambdaExecutor {
 	 */
 	private static Method getHandlerMethodByName(Object handler, String handlerMethodName) throws MultipleMatchingHandlersException, NoMatchingHandlerException {
 		List<Method> handlerMethods = Arrays.stream(handler.getClass().getMethods())
-				.filter(method -> method.getName().equals(handlerMethodName))
+				.filter(method -> method.getName().equals(handlerMethodName) && !method.isBridge()) // we do not want bridge methods here
 				.collect(Collectors.toList());
 		if (handlerMethods.size() > 1) {
-			throw new MultipleMatchingHandlersException("Multiple matching headers: " + handlerMethods);
+			throw new MultipleMatchingHandlersException("Multiple matching handlers: " + handlerMethods);
 		} else if (handlerMethods.isEmpty()) {
 			throw new NoMatchingHandlerException("No matching handlers for method name: "
 					+ handlerMethodName);

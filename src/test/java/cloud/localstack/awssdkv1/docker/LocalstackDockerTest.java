@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 
 public class LocalstackDockerTest {
 
@@ -50,6 +51,13 @@ public class LocalstackDockerTest {
         AmazonSQS amazonSQS = TestUtils.getClientSQS();
         thrown.expect(SdkClientException.class);
         amazonSQS.createQueue("test-queue").getQueueUrl();
+    }
+
+    @Test
+    public void restart() {
+        Localstack.INSTANCE.startup(DOCKER_CONFIG);
+        Localstack.INSTANCE.stop();
+        assertFalse(Localstack.INSTANCE.isRunning());
     }
 
     @After

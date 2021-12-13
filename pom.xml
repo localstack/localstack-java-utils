@@ -4,15 +4,15 @@
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.17</version>
+    <version>0.2.18</version>
     <name>localstack-utils</name>
 
     <description>Java utilities for the LocalStack platform.</description>
     <url>http://localstack.cloud</url>
     <developers>
         <developer>
-            <id>whummer</id>
-            <name>Waldemar Hummer</name>
+            <id>localstack-team</id>
+            <name>LocalStack Contributors</name>
         </developer>
     </developers>
     <licenses>

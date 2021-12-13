@@ -60,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.17</version>
+    <version>0.2.18</version>
 </dependency>
 ```
 
@@ -108,6 +108,7 @@ make build
 
 ## Change Log
 
+* v0.2.18: Fix for isRunning method after stopping the container; filter synthetic bridge methods during method detection for java Lambda full handler syntax; pass ADDITIONAL_MVN_ARGS to mvn javadoc command; bump version of log4j to 2.15.0 to fix CVE-2021-44228
 * v0.2.17: Fix issue with using :: to specify lambda handler which implements the RequestHandler interface, revert removal of EC2HostNameResolver annotation
 * v0.2.16: Add support for :: notation for Java Lambda handler specification, fix failing QLDB tests, fix failing tests with Jexter rules/extensions
 * v0.2.15: Fix Kinesis CBOR tests; fix project setup and classpath for SDK v1/v2 utils; fix awaiting results in tests using async clients; refactor classpath setup for v1/v2 SDKs; fall back to using edge port if port mapping cannot be determined from container

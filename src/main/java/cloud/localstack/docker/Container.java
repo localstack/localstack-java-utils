@@ -29,7 +29,7 @@ public class Container {
     private static final int MAX_PORT_CONNECTION_ATTEMPTS = 10;
     private static final int MAX_LOG_COLLECTION_ATTEMPTS = 120;
     private static final long POLL_INTERVAL = 1000;
-    private static final int NUM_LOG_LINES = 100;
+    private static final int NUM_LOG_LINES = 1000;
 
     private static final String ENV_DEBUG = "DEBUG";
     private static final String ENV_USE_SSL = "USE_SSL";

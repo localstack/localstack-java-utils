@@ -5,6 +5,7 @@ import cloud.localstack.awssdkv1.TestUtils;
 
 import java.util.UUID;
 
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync;
 import com.amazonaws.services.simpleemail.model.*;
@@ -17,6 +18,7 @@ import org.junit.runner.RunWith;
  * Test integration of SES messaging with LocalStack
  */
 @RunWith(LocalstackTestRunner.class)
+@LocalstackDockerProperties(ignoreDockerRunErrors = true)
 public class SESMessagingTest {
 
     static final String FROM = "sender@example.com";

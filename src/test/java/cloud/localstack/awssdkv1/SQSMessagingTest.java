@@ -40,7 +40,6 @@ public class SQSMessagingTest {
 
     private static final String JMS_QUEUE_NAME = "aws_develop_class_jms";
     private static final String SAMPLE_QUEUE_NAME = "aws_develop_class";
-    private static final String SAMPLE_MULTI_BYTE_CHAR_QUEUE_NAME = "aws_develop_multi_byte";
 
     @BeforeClass
     public static void setup() {
@@ -155,7 +154,8 @@ public class SQSMessagingTest {
     @Test
     public void testSendMultiByteCharactersMessage() throws JMSException {
         final AmazonSQS clientSQS = TestUtils.getClientSQS();
-        final String queueUrl = clientSQS.createQueue(SAMPLE_MULTI_BYTE_CHAR_QUEUE_NAME).getQueueUrl();
+        final String queueName = "queue-" + System.currentTimeMillis();
+        final String queueUrl = clientSQS.createQueue(queueName).getQueueUrl();
 
         /*
          * send a message to the queue
@@ -173,6 +173,11 @@ public class SQSMessagingTest {
 
         Assert.assertNotNull(sendMessageResult);
         Assert.assertEquals("acbd18db4cc2f85cedef654fccc4a4d8", sendMessageResult.getMD5OfMessageBody());
+        if (!sendMessageResult.getMD5OfMessageAttributes().equals("23bf3e5b587065b0cfbe95761641595a")) {
+            // print details for debugging in CI (TODO remove once test is fixed)
+            System.out.println("messageAttributes " + messageAttributes);
+            System.out.println("getMD5OfMessageAttributes " + sendMessageResult.getMD5OfMessageAttributes());
+        }
         Assert.assertEquals("23bf3e5b587065b0cfbe95761641595a", sendMessageResult.getMD5OfMessageAttributes());
 
         /*
@@ -180,6 +185,8 @@ public class SQSMessagingTest {
          */
         final ReceiveMessageResult messageResult = clientSQS.receiveMessage(queueUrl);
         Assert.assertNotNull(messageResult);
+
+        // TODO: clean up resources!
     }
 
     /**

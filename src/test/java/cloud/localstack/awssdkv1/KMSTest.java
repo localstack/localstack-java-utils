@@ -2,6 +2,8 @@ package cloud.localstack.awssdkv1;
 
 import java.nio.ByteBuffer;
 
+import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.CreateKeyRequest;
@@ -18,6 +20,7 @@ import org.junit.Test;
 /**
  * Test integration of KMS with LocalStack
  */
+@LocalstackDockerProperties(ignoreDockerRunErrors = true)
 public class KMSTest extends PowerMockLocalStack {
     private AWSKMS awskms;
     private String keyId = "";

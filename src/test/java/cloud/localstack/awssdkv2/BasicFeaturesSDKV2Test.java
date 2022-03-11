@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.testcontainers.utility.ThrowingFunction;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
 import software.amazon.awssdk.services.cloudwatch.model.Dimension;
@@ -55,8 +57,12 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
@@ -82,14 +88,20 @@ import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 import software.amazon.awssdk.services.ssm.model.PutParameterResponse;
 
+import static org.junit.Assert.assertThrows;
+
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -618,6 +630,38 @@ public class BasicFeaturesSDKV2Test {
 
         TimeUnit.SECONDS.sleep(2);
         Assert.assertTrue(userFound.get());
+	}
+
+	@Test
+	public void testS3ObjectDeletion() {
+		S3AsyncClient s3 = TestUtils.getClientS3AsyncV2();
+
+		String bucketName = UUID.randomUUID().toString();
+        CreateBucketRequest createBucketRequest = CreateBucketRequest.builder().bucket(bucketName).build();
+		s3.createBucket(createBucketRequest).join();
+
+		String keyName = "my-key-1";        
+        PutObjectRequest objectRequest = PutObjectRequest.builder().bucket(bucketName).key(keyName).build();
+        AsyncRequestBody requestBody = AsyncRequestBody.fromBytes("data".getBytes());
+		s3.putObject(objectRequest, requestBody).join();        
+
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(bucketName).key(keyName).build();
+		s3.deleteObject(deleteObjectRequest).join();
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketName).key(keyName).build();
+		
+		CompletionException exception = assertThrows(CompletionException.class, () -> {
+			s3.getObject(getObjectRequest, AsyncResponseTransformer.toBytes()).join();
+	    });
+		Assert.assertTrue(exception.getCause().getMessage().contains("The specified key does not exist."));			
+
+		s3.putObject(objectRequest, requestBody).join();        
+		s3.deleteObject(deleteObjectRequest).join();
+		
+        CompletionException exception2 = assertThrows(CompletionException.class, () -> {
+			s3.getObject(getObjectRequest, AsyncResponseTransformer.toBytes()).join();
+	    });
+		Assert.assertTrue(exception2.getCause().getMessage().contains("The specified key does not exist."));			
 	}
 
 }

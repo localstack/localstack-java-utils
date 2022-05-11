@@ -11,55 +11,74 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testcontainers.utility.ThrowingFunction;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
 import software.amazon.awssdk.services.cloudwatch.model.Dimension;
 import software.amazon.awssdk.services.cloudwatch.model.MetricDatum;
 import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataRequest;
 import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataResponse;
 import software.amazon.awssdk.services.cloudwatch.model.StandardUnit;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.KeyType;
 import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 import software.amazon.awssdk.services.iam.IamAsyncClient;
+import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.CreateUserRequest;
+import software.amazon.awssdk.services.iam.model.CreateUserResponse;
+import software.amazon.awssdk.services.iam.model.ListUsersResponse;
 import software.amazon.awssdk.services.iam.model.User;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
+import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
 import software.amazon.awssdk.services.lambda.model.CreateFunctionRequest;
+import software.amazon.awssdk.services.lambda.model.CreateFunctionResponse;
+import software.amazon.awssdk.services.lambda.model.ListFunctionsResponse;
 import software.amazon.awssdk.services.lambda.model.Runtime;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
+import software.amazon.awssdk.services.secretsmanager.model.CreateSecretResponse;
 import software.amazon.awssdk.services.secretsmanager.model.DeleteSecretRequest;
+import software.amazon.awssdk.services.secretsmanager.model.DeleteSecretResponse;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
 import software.amazon.awssdk.services.sns.model.CreateTopicResponse;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 import software.amazon.awssdk.services.sqs.model.CreateQueueResponse;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
+import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
+import software.amazon.awssdk.services.ssm.model.PutParameterResponse;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
@@ -69,7 +88,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -87,31 +105,74 @@ public class BasicFeaturesSDKV2Test {
     }
 
     @Test
+    public void testCreateSqsQueueAsyncV2() throws Exception {
+        SqsAsyncClient sqsAsyncClient = TestUtils.getClientSQSAsyncV2();
+        validateCreateSqsQueueV2(createReq -> sqsAsyncClient.createQueue(createReq).get());
+    }
+
+    @Test
     public void testCreateSqsQueueV2() throws Exception {
+        SqsClient sqsClient = TestUtils.getClientSQSV2();
+        validateCreateSqsQueueV2(createReq -> sqsClient.createQueue(createReq));
+    }
+
+    protected static void validateCreateSqsQueueV2(
+        ThrowingFunction<CreateQueueRequest, CreateQueueResponse> createAction
+    ) throws Exception {
         String queueName = "test-q-"+ UUID.randomUUID().toString();
         CreateQueueRequest request = CreateQueueRequest.builder().queueName(queueName).build();
-        SqsAsyncClient sqsClient = TestUtils.getClientSQSAsyncV2();
-        CreateQueueResponse queue = sqsClient.createQueue(request).get();
+        CreateQueueResponse queue = createAction.apply(request);
         Assert.assertTrue(queue.queueUrl().contains(Constants.DEFAULT_AWS_ACCOUNT_ID + "/" + queueName));
     }
 
     @Test
+    public void testCreateKinesisStreamAsyncV2() throws Exception {
+        KinesisAsyncClient kinesisAsyncClient = TestUtils.getClientKinesisAsyncV2();
+        validateCreateKinesisStreamV2(createReq -> kinesisAsyncClient.createStream(createReq).get());
+    }
+
+    @Test
     public void testCreateKinesisStreamV2() throws Exception {
+        KinesisClient kinesisClient = TestUtils.getClientKinesisV2();
+        validateCreateKinesisStreamV2(createReq -> kinesisClient.createStream(createReq));
+    }
+
+    protected static void validateCreateKinesisStreamV2(
+        ThrowingFunction<CreateStreamRequest, CreateStreamResponse> createAction
+    ) throws Exception {
         String streamName = "test-s-"+ UUID.randomUUID().toString();
-        KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
         CreateStreamRequest request = CreateStreamRequest.builder()
             .streamName(streamName).shardCount(1).build();
-        CreateStreamResponse response = kinesisClient.createStream(request).get();
+        CreateStreamResponse response = createAction.apply(request);
         Assert.assertNotNull(response);
     }
 
     @Test
+    public void testCreateKinesisRecordAsyncV2() throws Exception {
+        KinesisAsyncClient kinesisAsyncClient = TestUtils.getClientKinesisAsyncV2();
+        validateCreateKinesisRecordV2(
+            createReq -> kinesisAsyncClient.createStream(createReq).get(),
+            putReq -> kinesisAsyncClient.putRecord(putReq).get()
+        );
+    }
+
+    @Test
     public void testCreateKinesisRecordV2() throws Exception {
+        KinesisClient kinesisClient = TestUtils.getClientKinesisV2();
+        validateCreateKinesisRecordV2(
+            createReq -> kinesisClient.createStream(createReq),
+            putReq -> kinesisClient.putRecord(putReq)
+        );
+    }
+
+    protected static void validateCreateKinesisRecordV2(
+        ThrowingFunction<CreateStreamRequest, CreateStreamResponse> createAction,
+        ThrowingFunction<PutRecordRequest, PutRecordResponse> putAction
+    ) throws Exception {
         String streamName = "test-s-"+UUID.randomUUID().toString();
-        KinesisAsyncClient kinesisClient = TestUtils.getClientKinesisAsyncV2();
         CreateStreamRequest request = CreateStreamRequest.builder()
             .streamName(streamName).shardCount(1).build();
-        CreateStreamResponse response = kinesisClient.createStream(request).get();
+        CreateStreamResponse response = createAction.apply(request);
         Assert.assertNotNull(response);
 
         SdkBytes payload = SdkBytes.fromByteBuffer(ByteBuffer.wrap(String.format("testData-%d", 1).getBytes()));
@@ -119,12 +180,31 @@ public class BasicFeaturesSDKV2Test {
         putRecordRequest.streamName(streamName);
         putRecordRequest.data(payload);
         putRecordRequest.partitionKey(String.format("partitionKey-%d", 1));
-        Assert.assertNotNull(kinesisClient.putRecord(putRecordRequest.build()));
+        Assert.assertNotNull(putAction.apply(putRecordRequest.build()));
+    }
+
+    @Test
+    public void testCreateDynamoDBTableAsync() throws Exception {
+        DynamoDbAsyncClient dynamoDbAsyncClient = TestUtils.getClientDyanamoAsyncV2();
+        validateCreateDynamoDBTable(
+            createReq -> dynamoDbAsyncClient.createTable(createReq).get(),
+            deleteReq -> dynamoDbAsyncClient.deleteTable(deleteReq).get()
+        );
     }
 
     @Test
     public void testCreateDynamoDBTable() throws Exception {
-        DynamoDbAsyncClient dynamoDbAsyncClient = TestUtils.getClientDyanamoAsyncV2();
+        DynamoDbClient dynamoDbClient = TestUtils.getClientDyanamoV2();
+        validateCreateDynamoDBTable(
+            createReq -> dynamoDbClient.createTable(createReq),
+            deleteReq -> dynamoDbClient.deleteTable(deleteReq)
+        );
+    }
+
+    protected static void validateCreateDynamoDBTable(
+        ThrowingFunction<CreateTableRequest, CreateTableResponse> createAction,
+        ThrowingFunction<DeleteTableRequest, DeleteTableResponse> deleteAction
+    ) throws Exception {
         String tableName = "test-s-"+ UUID.randomUUID().toString();
         CreateTableRequest createTableRequest = CreateTableRequest.builder()
                 .keySchema(
@@ -144,95 +224,215 @@ public class BasicFeaturesSDKV2Test {
                                 .build())
                 .tableName(tableName)
                 .build();
-        CreateTableResponse response = dynamoDbAsyncClient.createTable(createTableRequest).get();
+        CreateTableResponse response = createAction.apply(createTableRequest);
         Assert.assertNotNull(response);
         // clean up
-        dynamoDbAsyncClient.deleteTable(DeleteTableRequest.builder().tableName(tableName).build());
+        deleteAction.apply(DeleteTableRequest.builder().tableName(tableName).build());
+    }
+
+    @Test
+    public void testS3CreateListBucketsAsync() throws Exception {
+        S3AsyncClient s3AsyncClient = TestUtils.getClientS3AsyncV2();
+        validateS3CreateListBuckets(
+            createReq -> s3AsyncClient.createBucket(createReq).get(),
+            listReq -> s3AsyncClient.listBuckets(listReq).get()
+        );
     }
 
     @Test
     public void testS3CreateListBuckets() throws Exception {
+        S3Client s3Client = TestUtils.getClientS3V2();
+        validateS3CreateListBuckets(
+            createReq -> s3Client.createBucket(createReq),
+            listReq -> s3Client.listBuckets(listReq)
+        );
+    }
+
+    protected static void validateS3CreateListBuckets(
+        ThrowingFunction<CreateBucketRequest, CreateBucketResponse> createAction,
+        ThrowingFunction<ListBucketsRequest, ListBucketsResponse> listAction
+    ) throws Exception {
         String bucketName = "test-b-"+UUID.randomUUID().toString();
-        S3AsyncClient s3Client = TestUtils.getClientS3AsyncV2();
         CreateBucketRequest request = CreateBucketRequest.builder().bucket(bucketName).build();
-        CreateBucketResponse response = s3Client.createBucket(request).get();
+        CreateBucketResponse response = createAction.apply(request);
         Assert.assertNotNull(response);
         ListBucketsRequest listRequest = ListBucketsRequest.builder().build();
-        ListBucketsResponse buckets = s3Client.listBuckets(listRequest).get();
+        ListBucketsResponse buckets = listAction.apply(listRequest);
         Bucket bucket = buckets.buckets().stream().filter(b -> b.name().equals(bucketName)).findFirst().get();
         Assert.assertNotNull(bucket);
     }
 
     @Test
+    public void testSendSNSMessageAsync() throws Exception {
+        final SnsAsyncClient snsAsyncClient = TestUtils.getClientSNSAsyncV2();
+        validateSendSNSMessage(
+            createReq -> snsAsyncClient.createTopic(createReq).get(),
+            publishReq -> snsAsyncClient.publish(publishReq).get()
+        );
+    }
+
+    @Test
     public void testSendSNSMessage() throws Exception {
+        final SnsClient snsClient = TestUtils.getClientSNSV2();
+        validateSendSNSMessage(
+            createReq -> snsClient.createTopic(createReq),
+            publishReq -> snsClient.publish(publishReq)
+        );
+    }
+
+    protected void validateSendSNSMessage(
+        ThrowingFunction<CreateTopicRequest, CreateTopicResponse> createAction,
+        ThrowingFunction<PublishRequest, PublishResponse> publishAction
+    ) throws Exception {
         // Test integration of SNS messaging with LocalStack using SDK v2
 
         final String topicName = "test-t-"+UUID.randomUUID().toString();
-        final SnsAsyncClient clientSNS = TestUtils.getClientSNSAsyncV2();
-        CreateTopicResponse createTopicResponse = clientSNS.createTopic(
-            CreateTopicRequest.builder().name(topicName).build()).get();
+        CreateTopicResponse createTopicResponse = createAction.apply(
+            CreateTopicRequest.builder().name(topicName).build());
 
         String topicArn = createTopicResponse.topicArn();
         Assert.assertNotNull(topicArn);
         PublishRequest publishRequest = PublishRequest.builder().topicArn(topicArn).subject("test subject").message("message test.").build();
 
-        PublishResponse publishResponse = clientSNS.publish(publishRequest).get();
+        PublishResponse publishResponse = publishAction.apply(publishRequest);
         Assert.assertNotNull(publishResponse.messageId());
     }
 
     @Test
+    public void testGetSsmParameterAsync() throws Exception {
+        final SsmAsyncClient ssmAsyncClient = TestUtils.getClientSSMAsyncV2();
+        validateGetSsmParameter(
+            putReq -> ssmAsyncClient.putParameter(putReq).get(),
+            getReq -> ssmAsyncClient.getParameter(getReq).get()
+        );
+    }
+
+    @Test
     public void testGetSsmParameter() throws Exception {
+        final SsmClient ssmClient = TestUtils.getClientSSMV2();
+        validateGetSsmParameter(
+            putReq -> ssmClient.putParameter(putReq),
+            getReq -> ssmClient.getParameter(getReq)
+        );
+    }
+
+    protected static void validateGetSsmParameter(
+        ThrowingFunction<PutParameterRequest, PutParameterResponse> putAction,
+        ThrowingFunction<GetParameterRequest, GetParameterResponse> getAction
+    ) throws Exception {
         // Test integration of ssm parameter with LocalStack using SDK v2
 
-        final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
         final String paramName = "param-"+UUID.randomUUID().toString();
-        clientSsm.putParameter(PutParameterRequest.builder().name(paramName).value("testvalue").build()).join();
-        CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(
+        putAction.apply(PutParameterRequest.builder().name(paramName).value("testvalue").build());
+        GetParameterResponse getParameterResponse = getAction.apply(
             GetParameterRequest.builder().name(paramName).build());
-        String parameterValue = getParameterResponse.get().parameter().value();
+        String parameterValue = getParameterResponse.parameter().value();
         Assert.assertNotNull(parameterValue);
         Assert.assertEquals("testvalue", parameterValue);
     }
 
     @Test
+    public void testGetSecretsManagerSecretAsync() throws Exception {
+        final SecretsManagerAsyncClient secretsManagerAsync = TestUtils.getClientSecretsManagerAsyncV2();
+        validateGetSecretsManagerSecret(
+            createReq -> secretsManagerAsync.createSecret(createReq).get(),
+            getReq -> secretsManagerAsync.getSecretValue(getReq).get(),
+            delReq -> secretsManagerAsync.deleteSecret(delReq).get()
+        );
+    }
+
+    @Test
     public void testGetSecretsManagerSecret() throws Exception {
-        final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
+        final SecretsManagerClient secretsManager = TestUtils.getClientSecretsManagerV2();
+        validateGetSecretsManagerSecret(
+            createReq -> secretsManager.createSecret(createReq),
+            getReq -> secretsManager.getSecretValue(getReq),
+            delReq -> secretsManager.deleteSecret(delReq)
+        );
+    }
+
+    protected static void validateGetSecretsManagerSecret(
+        ThrowingFunction<CreateSecretRequest, CreateSecretResponse> createAction,
+        ThrowingFunction<GetSecretValueRequest, GetSecretValueResponse> getAction,
+        ThrowingFunction<DeleteSecretRequest, DeleteSecretResponse> deleteAction
+    ) throws Exception {
         final String secretName = "test-s-" + UUID.randomUUID().toString();
-        clientSecretsManager.createSecret(
-            CreateSecretRequest.builder().name(secretName).secretString("secretcontent").build()).join();
-        CompletableFuture<GetSecretValueResponse> getSecretResponse = clientSecretsManager.getSecretValue(
+        createAction.apply(
+            CreateSecretRequest.builder().name(secretName).secretString("secretcontent").build());
+        GetSecretValueResponse getSecretResponse = getAction.apply(
             GetSecretValueRequest.builder().secretId(secretName).build());
-        String secretValue = getSecretResponse.get().secretString();
+        String secretValue = getSecretResponse.secretString();
 
         Assert.assertNotNull(secretValue);
         Assert.assertEquals("secretcontent", secretValue);
 
         // clean up
-        clientSecretsManager.deleteSecret(DeleteSecretRequest.builder().secretId(secretName).build());
+        deleteAction.apply(DeleteSecretRequest.builder().secretId(secretName).build());
+    }
+
+    @Test
+    public void testGetSecretAsParamAsync() throws Exception {
+        final SsmAsyncClient ssmAsyncClient = TestUtils.getClientSSMAsyncV2();
+        final SecretsManagerAsyncClient secretsManagerAsyncClient = TestUtils.getClientSecretsManagerAsyncV2();
+
+        validateGetSecretAsParam(
+            createReq -> secretsManagerAsyncClient.createSecret(createReq).get(),
+            getReq -> ssmAsyncClient.getParameter(getReq).get(),
+            delReq -> secretsManagerAsyncClient.deleteSecret(delReq).get()
+        );
     }
 
     @Test
     public void testGetSecretAsParam() throws Exception {
-        final SsmAsyncClient clientSsm = TestUtils.getClientSSMAsyncV2();
-        final SecretsManagerAsyncClient clientSecretsManager = TestUtils.getClientSecretsManagerAsyncV2();
+        final SsmClient ssmClient = TestUtils.getClientSSMV2();
+        final SecretsManagerClient secretsManagerClient = TestUtils.getClientSecretsManagerV2();
 
+        validateGetSecretAsParam(
+            createReq -> secretsManagerClient.createSecret(createReq),
+            getReq -> ssmClient.getParameter(getReq),
+            delReq -> secretsManagerClient.deleteSecret(delReq)
+        );
+    }
+
+    protected static void validateGetSecretAsParam(
+        ThrowingFunction<CreateSecretRequest, CreateSecretResponse> createAction,
+        ThrowingFunction<GetParameterRequest, GetParameterResponse> getAction,
+        ThrowingFunction<DeleteSecretRequest, DeleteSecretResponse> delAction
+    ) throws Exception {
         final String secretName = "test-s-" + UUID.randomUUID().toString();
-        clientSecretsManager.createSecret(CreateSecretRequest.builder()
-            .name(secretName).secretString("secretcontent").build()).join();
+        createAction.apply(CreateSecretRequest.builder()
+            .name(secretName).secretString("secretcontent").build());
 
-        CompletableFuture<GetParameterResponse> getParameterResponse = clientSsm.getParameter(
+        GetParameterResponse getParameterResponse = getAction.apply(
             GetParameterRequest.builder().name("/aws/reference/secretsmanager/" + secretName).build());
-        final String parameterValue = getParameterResponse.get().parameter().value();
+        final String parameterValue = getParameterResponse.parameter().value();
 
         Assert.assertNotNull(parameterValue);
         Assert.assertEquals("secretcontent", parameterValue);
 
         // clean up
-        clientSecretsManager.deleteSecret(DeleteSecretRequest.builder().secretId(secretName).build());
+        delAction.apply(DeleteSecretRequest.builder().secretId(secretName).build());
     }
+
+    @Test
+    public void testCWPutMetricsAsync() throws Exception {
+        final CloudWatchAsyncClient cwClientAsync = TestUtils.getClientCloudWatchAsyncV2();
+        validateCWPutMetrics(
+            putReq -> cwClientAsync.putMetricData(putReq).get()
+        );
+    }
+
     @Test
     public void testCWPutMetrics() throws Exception {
-        final CloudWatchAsyncClient clientCW = TestUtils.getClientCloudWatchAsyncV2();
+        final CloudWatchClient cwClient = TestUtils.getClientCloudWatchV2();
+        validateCWPutMetrics(
+            putReq -> cwClient.putMetricData(putReq)
+        );
+    }
+
+    protected static void validateCWPutMetrics(
+        ThrowingFunction<PutMetricDataRequest, PutMetricDataResponse> putAction
+    ) throws Exception {
         Dimension dimension = Dimension.builder()
                     .name("UNIQUE_PAGES")
                     .value("URLS")
@@ -255,14 +455,29 @@ public class BasicFeaturesSDKV2Test {
              .namespace("SITE/TRAFFIC")
              .metricData(datum).build();
 
-        PutMetricDataResponse response = clientCW.putMetricData(request).get();
+        PutMetricDataResponse response = putAction.apply(request);
         Assert.assertNotNull(response);
     }
-    
+
+    @Test
+    public void testCWMultipleDimentionsAndMetricsAsync() throws Exception {
+        final CloudWatchAsyncClient clientCWAsync = TestUtils.getClientCloudWatchAsyncV2();
+        validateCWMultipleDimentionsAndMetrics(
+            putReq -> clientCWAsync.putMetricData(putReq).get()
+        );
+    }
+
     @Test
     public void testCWMultipleDimentionsAndMetrics() throws Exception {
-        final CloudWatchAsyncClient clientCW = TestUtils.getClientCloudWatchAsyncV2();
-        
+        final CloudWatchClient clientCW = TestUtils.getClientCloudWatchV2();
+        validateCWMultipleDimentionsAndMetrics(
+            putReq -> clientCW.putMetricData(putReq)
+        );
+    }
+
+    protected static void validateCWMultipleDimentionsAndMetrics(
+        ThrowingFunction<PutMetricDataRequest, PutMetricDataResponse> putAction
+    ) throws Exception {
         List<Dimension> awsDimensionList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             awsDimensionList.add(Dimension.builder()
@@ -275,8 +490,8 @@ public class BasicFeaturesSDKV2Test {
         String time = ZonedDateTime.now( ZoneOffset.UTC ).format( DateTimeFormatter.ISO_INSTANT );
         Instant instant = Instant.parse(time);
         double dataPoint = 1.23423;
-        
-        List<MetricDatum> metrics = new ArrayList();
+
+        List<MetricDatum> metrics = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             metrics.add(MetricDatum.builder()
             .metricName("PAGES_VISITED")
@@ -290,36 +505,74 @@ public class BasicFeaturesSDKV2Test {
              .namespace("SITE/TRAFFIC")
              .metricData(metrics).build();
 
-        PutMetricDataResponse response = clientCW.putMetricData(request).get();
+        PutMetricDataResponse response = putAction.apply(request);
         Assert.assertNotNull(response);
     }
 
     @Test
+    public void testLambdaCreateListFunctionsAsync() throws Exception {
+        val lambdaClientAsync = TestUtils.getClientLambdaAsyncV2();
+        validateLambdaCreateListFunctions(
+            createReq -> lambdaClientAsync.createFunction(createReq).get(),
+            x -> lambdaClientAsync.listFunctions().get()
+        );
+    }
+
+    @Test
     public void testLambdaCreateListFunctions() throws Exception {
+        val lambdaClient = TestUtils.getClientLambdaV2();
+        validateLambdaCreateListFunctions(
+            createReq -> lambdaClient.createFunction(createReq),
+            x -> lambdaClient.listFunctions()
+        );
+    }
+
+    protected static void validateLambdaCreateListFunctions(
+        ThrowingFunction<CreateFunctionRequest, CreateFunctionResponse> createAction,
+        ThrowingFunction<Void, ListFunctionsResponse> listAction
+    ) throws Exception {
         val functionName = "test-f-"+UUID.randomUUID().toString();
-        val lambdaClient = TestUtils.getClientLambdaAsyncV2();
         val createFunctionRequest = CreateFunctionRequest.builder().functionName(functionName)
                 .runtime(Runtime.JAVA8)
                 .role("r1")
                 .code(LocalTestUtilSDKV2.createFunctionCode(LambdaHandler.class))
                 .handler(LambdaHandler.class.getName()).build();
-        val response = lambdaClient.createFunction(createFunctionRequest).get();
+        val response = createAction.apply(createFunctionRequest);
         Assert.assertNotNull(response);
-        val functions = lambdaClient.listFunctions().get();
+        val functions = listAction.apply(null);
         val function = functions.functions().stream().filter(f -> f.functionName().equals(functionName)).findFirst().get();
         Assert.assertNotNull(function);
     }
-	
-    @Test
-	public void testIAMUserCreation() throws Exception {
-		IamAsyncClient iamClient = TestUtils.getClientIamAsyncV2();
 
-		String username =  UUID.randomUUID().toString();
-		CreateUserRequest createUserRequest = CreateUserRequest.builder().userName(username).build();
-		iamClient.createUser(createUserRequest).join();
-		
+    @Test
+	public void testIAMUserCreationAsync() throws Exception {
+		IamAsyncClient iamClientAsync = TestUtils.getClientIamAsyncV2();
+		validateIAMUserCreation(
+		    createReq -> iamClientAsync.createUser(createReq).get(),
+		    x -> iamClientAsync.listUsers().get()
+	    );
+	}
+
+    @Test
+    public void testIAMUserCreation() throws Exception {
+        IamClient iamClient = TestUtils.getClientIamV2();
+        validateIAMUserCreation(
+            createReq -> iamClient.createUser(createReq),
+            x -> iamClient.listUsers()
+        );
+    }
+
+    protected static void validateIAMUserCreation(
+        ThrowingFunction<CreateUserRequest, CreateUserResponse> createAction,
+        ThrowingFunction<Void, ListUsersResponse> listAction
+    ) throws Exception {
+
+        String username =  UUID.randomUUID().toString();
+        CreateUserRequest createUserRequest = CreateUserRequest.builder().userName(username).build();
+        createAction.apply(createUserRequest);
+
         boolean userFound = false;
-        List<User> users = iamClient.listUsers().get().users();
+        List<User> users = listAction.apply(null).users();
 
         for (int i = 0; i < users.size(); i++) {
             if(users.get(i).userName().equals(username)){
@@ -328,11 +581,11 @@ public class BasicFeaturesSDKV2Test {
             }
         }
 
-		Assert.assertTrue(userFound);
-	}
-	
+        Assert.assertTrue(userFound);
+    }
+
     @Test
-    public void testIAMListUserPagination() throws Exception {
+    public void testIAMListUserPaginationAsync() throws Exception {
 		IamAsyncClient iamClient = TestUtils.getClientIamAsyncV2();
 
 		String username = UUID.randomUUID().toString();

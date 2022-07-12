@@ -28,6 +28,7 @@ public class DockerExe {
             "C:/program files/docker/docker/resources/bin/docker.exe",
             "C:/program files/docker/docker/resources/docker.exe",
             "/usr/local/bin/docker",
+            "/opt/homebrew/bin/docker",
             "/usr/bin/docker");
 
     private final String exeLocation;

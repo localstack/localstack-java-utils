@@ -68,19 +68,20 @@ Simply add the following dependency to your `pom.xml` file:
 
 You can configure the Docker behaviour using the `@LocalstackDockerProperties` annotation with the following parameters:
 
-| property                    | usage                                                                                                                        | type                         | default value |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------|---------------|
-| `pullNewImage`              | Determines if a new image is pulled from the docker repo before the tests are run.                                           | boolean                      | `false`         |
-| `services`                  | Determines which services should be run when the localstack starts.                                                          | String[]                     | All           |
-| `imageName`                 | Use a specific image name (organisation/repo) for docker container                                                           | String                       | `localstack/localstack`  |
-| `imageTag`                  | Use a specific image tag for docker container                                                                                | String                       | `latest`        |
-| `portEdge`                  | Port number for the edge service, the main entry point for all API invocations                                               | String                       | `4566`        |
-| `portElasticSearch`         | Port number for the elasticsearch service                                                                                    | String                       | `4571`        |
-| `hostNameResolver`          | Used for determining the host name of the machine running the docker containers so that the containers can be addressed.     | IHostNameResolver            | `localhost`     |
-| `environmentVariableProvider` | Used for injecting environment variables into the container.                                                               | IEnvironmentVariableProvider | Empty Map     |
-| `bindMountProvider`         | Used bind mounting files and directories into the container, useful to run init scripts before using the container.          | IBindMountProvider           | Empty Map     |
-|  `initializationToken`      | Give a regex that will be searched in the logstream of the container, start is complete only when the token is found. Use with bindMountProvider to execute init scripts. | String | Empty String |
-| `useSingleDockerContainer`  | Whether a singleton container should be used by all test classes.                                                            | boolean | `false`     |
+| property                      | usage                                                                                                                                                                     | type                         | default value           |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|-------------------------|
+| `pullNewImage`                | Determines if a new image is pulled from the docker repo before the tests are run.                                                                                        | boolean                      | `false`                 |
+| `services`                    | Determines which services should be run when the localstack starts.                                                                                                       | String[]                     | All                     |
+| `imageName`                   | Use a specific image name (organisation/repo) for docker container                                                                                                        | String                       | `localstack/localstack` |
+| `imageTag`                    | Use a specific image tag for docker container                                                                                                                             | String                       | `latest`                |
+| `portEdge`                    | Port number for the edge service, the main entry point for all API invocations                                                                                            | String                       | `4566`                  |
+| `portElasticSearch`           | Port number for the elasticsearch service                                                                                                                                 | String                       | `4571`                  |
+| `portRDS`                     | Port number for the RDS service                                                                                                                                           | String                       | `4510`                  |
+| `hostNameResolver`            | Used for determining the host name of the machine running the docker containers so that the containers can be addressed.                                                  | IHostNameResolver            | `localhost`             |
+| `environmentVariableProvider` | Used for injecting environment variables into the container.                                                                                                              | IEnvironmentVariableProvider | Empty Map               |
+| `bindMountProvider`           | Used bind mounting files and directories into the container, useful to run init scripts before using the container.                                                       | IBindMountProvider           | Empty Map               |
+| `initializationToken`         | Give a regex that will be searched in the logstream of the container, start is complete only when the token is found. Use with bindMountProvider to execute init scripts. | String | Empty String            |
+| `useSingleDockerContainer`    | Whether a singleton container should be used by all test classes.                                                                                                         | boolean | `false`                 |
 
 For more details, please refer to the README of the main LocalStack repo: https://github.com/localstack/localstack
 

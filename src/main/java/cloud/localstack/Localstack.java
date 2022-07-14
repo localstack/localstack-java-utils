@@ -81,7 +81,7 @@ public class Localstack {
                     dockerConfiguration.isPullNewImage(), dockerConfiguration.isRandomizePorts(),
                     dockerConfiguration.getImageName(), dockerConfiguration.getImageTag(),
                     dockerConfiguration.getPortEdge(), dockerConfiguration.getPortElasticSearch(),
-                    environmentVariables, dockerConfiguration.getPortMappings(),
+                    dockerConfiguration.getPortRDS(), environmentVariables, dockerConfiguration.getPortMappings(),
                     dockerConfiguration.getBindMounts(), dockerConfiguration.getPlatform());
             loadServiceToPortMap();
 

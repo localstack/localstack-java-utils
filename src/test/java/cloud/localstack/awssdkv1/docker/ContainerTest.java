@@ -32,7 +32,7 @@ public class ContainerTest {
         HashMap<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put(MY_PROPERTY, MY_VALUE);
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, environmentVariables, null, null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null,null, environmentVariables, null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -60,7 +60,7 @@ public class ContainerTest {
 
         String customImageName = "localstack/localstack-full";
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, customImageName, null, null, null, null, null, null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, customImageName, null, null, null,null, null, null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
@@ -80,7 +80,7 @@ public class ContainerTest {
     public void createLocalstackContainerWithScriptMounted() {
 
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null, null, null, null,
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, null,null, null, null, null,
                 Collections.singletonMap(testFile("echo testmarker"), Localstack.INIT_SCRIPTS_PATH + "/test.sh"), null);
 
         try {
@@ -109,13 +109,14 @@ public class ContainerTest {
     @Test
     public void createLocalstackContainerWithCustomPorts() throws Exception {
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, "45660", "45710", null, null, null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, "45660", "45710", "45100", null, null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
 
             assertEquals(45660, localStackContainer.getExternalPortFor(4566));
             assertEquals(45710, localStackContainer.getExternalPortFor(4571));
+            assertEquals(45100, localStackContainer.getExternalPortFor(4510));
         }
         finally {
             localStackContainer.stop();
@@ -126,13 +127,14 @@ public class ContainerTest {
     @Test
     public void createLocalstackContainerWithRandomPorts() throws Exception {
         Container localStackContainer = Container.createLocalstackContainer(
-                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, ":4566", ":4571", null, null, null, null);
+                EXTERNAL_HOST_NAME, pullNewImage, false, null, null, ":4566", ":4571", ":4510",null, null, null, null);
 
         try {
             localStackContainer.waitForAllPorts(EXTERNAL_HOST_NAME);
 
             assertNotEquals(4566, localStackContainer.getExternalPortFor(4566));
             assertNotEquals(4571, localStackContainer.getExternalPortFor(4571));
+            assertNotEquals(4510, localStackContainer.getExternalPortFor(4510));
         }
         finally {
             localStackContainer.stop();

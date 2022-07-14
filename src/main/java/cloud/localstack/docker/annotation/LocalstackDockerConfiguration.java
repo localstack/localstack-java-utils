@@ -36,6 +36,9 @@ public class LocalstackDockerConfiguration {
     private final String portElasticSearch = "4571";
 
     @Builder.Default
+    private final String portRDS = "4510";
+
+    @Builder.Default
     private final String externalHostName = "localhost";
 
     @Builder.Default

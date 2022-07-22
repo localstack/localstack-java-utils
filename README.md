@@ -60,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.20</version>
+    <version>0.2.21</version>
 </dependency>
 ```
 
@@ -108,6 +108,7 @@ make build
 
 ## Change Log
 
+* v0.2.21: Bump version of AWS SDK v1; add AWS SDK v2 sync clients to TestUtils; add docker executable path under homebrew
 * v0.2.20: Fix extracting container logs for LocalStack startup check
 * v0.2.19: Bump version of log4j to 2.17.0 to fix further vulnerabilities related to recent CVE
 * v0.2.18: Fix for isRunning method after stopping the container; filter synthetic bridge methods during method detection for java Lambda full handler syntax; pass ADDITIONAL_MVN_ARGS to mvn javadoc command; bump version of log4j to 2.15.0 to fix CVE-2021-44228

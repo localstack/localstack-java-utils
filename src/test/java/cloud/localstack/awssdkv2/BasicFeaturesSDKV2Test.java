@@ -2,10 +2,15 @@ package cloud.localstack.awssdkv2;
 
 import cloud.localstack.Constants;
 import cloud.localstack.LocalstackTestRunner;
+import cloud.localstack.awssdkv1.sample.SQSLambdaHandler;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.sample.LambdaHandler;
+import cloud.localstack.utils.LocalTestUtil;
+import com.amazonaws.services.s3.model.ObjectListing;
 import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
+import lombok.SneakyThrows;
 import lombok.val;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -40,10 +45,7 @@ import software.amazon.awssdk.services.iam.model.ListUsersResponse;
 import software.amazon.awssdk.services.iam.model.User;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
-import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
-import software.amazon.awssdk.services.kinesis.model.CreateStreamResponse;
-import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
-import software.amazon.awssdk.services.kinesis.model.PutRecordResponse;
+import software.amazon.awssdk.services.kinesis.model.*;
 import software.amazon.awssdk.services.lambda.model.CreateFunctionRequest;
 import software.amazon.awssdk.services.lambda.model.CreateFunctionResponse;
 import software.amazon.awssdk.services.lambda.model.ListFunctionsResponse;
@@ -152,6 +154,7 @@ public class BasicFeaturesSDKV2Test {
         KinesisAsyncClient kinesisAsyncClient = TestUtils.getClientKinesisAsyncV2();
         validateCreateKinesisRecordV2(
             createReq -> kinesisAsyncClient.createStream(createReq).get(),
+            describeReq -> kinesisAsyncClient.describeStream(describeReq).get(),
             putReq -> kinesisAsyncClient.putRecord(putReq).get()
         );
     }
@@ -161,12 +164,14 @@ public class BasicFeaturesSDKV2Test {
         KinesisClient kinesisClient = TestUtils.getClientKinesisV2();
         validateCreateKinesisRecordV2(
             createReq -> kinesisClient.createStream(createReq),
+            describeReq -> kinesisClient.describeStream(describeReq),
             putReq -> kinesisClient.putRecord(putReq)
         );
     }
 
     protected static void validateCreateKinesisRecordV2(
         ThrowingFunction<CreateStreamRequest, CreateStreamResponse> createAction,
+        ThrowingFunction<DescribeStreamRequest, DescribeStreamResponse> describeAction,
         ThrowingFunction<PutRecordRequest, PutRecordResponse> putAction
     ) throws Exception {
         String streamName = "test-s-"+UUID.randomUUID().toString();
@@ -174,6 +179,18 @@ public class BasicFeaturesSDKV2Test {
             .streamName(streamName).shardCount(1).build();
         CreateStreamResponse response = createAction.apply(request);
         Assert.assertNotNull(response);
+
+        // wait for the stream to become active
+        DescribeStreamRequest describeStreamRequest = DescribeStreamRequest.builder().streamName(streamName).build();
+        Runnable check = new Runnable() {
+            @SneakyThrows
+            public void run() {
+                DescribeStreamResponse describeResponse = describeAction.apply(describeStreamRequest);
+                Assert.assertNotNull(describeResponse);
+                Assert.assertEquals(describeResponse.streamDescription().streamStatus(), StreamStatus.ACTIVE);
+            }
+        };
+        LocalTestUtil.retry(check, 5, 1);
 
         SdkBytes payload = SdkBytes.fromByteBuffer(ByteBuffer.wrap(String.format("testData-%d", 1).getBytes()));
         PutRecordRequest.Builder putRecordRequest = PutRecordRequest.builder();

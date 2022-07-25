@@ -2,6 +2,7 @@ package cloud.localstack.awssdkv1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import cloud.localstack.*;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
@@ -25,6 +26,7 @@ import org.apache.http.impl.client.*;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.mediastoredata.model.DeleteObjectResult;
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.model.lifecycle.*;
@@ -120,6 +122,42 @@ public class S3FeaturesTest {
 		Map<String, String> receivedMetadata = objectMetadataResponse.getUserMetadata();
 
 		Assert.assertEquals(originalMetadata, receivedMetadata);
+	}
+
+	/**
+	 * Test S3 objects deletion
+	 */
+	@Test
+	public void testObjectDeletion() {
+		AmazonS3 s3 = TestUtils.getClientS3();
+		String bucketName = UUID.randomUUID().toString();
+		s3.createBucket(bucketName);
+
+		Map<String, String> originalMetadata = new HashMap<String, String>();
+		originalMetadata.put("key1", "val1");
+		originalMetadata.put("key_2", "val2");
+		originalMetadata.put("__key3", "val3");
+		
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setUserMetadata(originalMetadata);
+
+		String keyName = "my-key-1";
+		InputStream is = new ByteArrayInputStream("test-string".getBytes(StandardCharsets.UTF_8));		
+		s3.putObject(new PutObjectRequest(bucketName, keyName, is, objectMetadata));
+		s3.deleteObject(new DeleteObjectRequest(bucketName, keyName));
+		
+		AmazonS3Exception exception = assertThrows(AmazonS3Exception.class, () -> {
+			s3.getObject(new GetObjectRequest(bucketName, keyName));
+	    	});
+		Assert.assertEquals(exception.getErrorCode(), "NoSuchKey");			
+
+		s3.putObject(new PutObjectRequest(bucketName, keyName, is, objectMetadata));
+		s3.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keyName));
+		
+		AmazonS3Exception exception2 = assertThrows(AmazonS3Exception.class, () -> {
+			s3.getObject(new GetObjectRequest(bucketName, keyName));
+	    	});
+		Assert.assertEquals(exception2.getErrorCode(), "NoSuchKey");			
 	}
 
 	@Test

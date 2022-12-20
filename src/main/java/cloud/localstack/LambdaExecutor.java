@@ -29,12 +29,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,7 +99,7 @@ public class LambdaExecutor {
 				inputObject = DDBEventParser.parse(records);
 			} else if (records.stream().anyMatch(record -> record.containsKey("s3"))) {
 				inputObject = S3EventParser.parse(records);
-			} else if (records.stream().anyMatch(record -> record.containsKey("sqs"))) {
+			} else if (records.stream().anyMatch(record -> Objects.equals(record.get("eventSource"), "aws:sqs"))) {
 				inputObject = reader.readValue(fileContent, SQSEvent.class);
 			}
 		}

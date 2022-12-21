@@ -106,6 +106,10 @@ To build the latest version of the code via Maven:
 make build
 ```
 
+### Releasing
+
+To publish a release of the library, the "Maven Release" Github Action can be manually triggered in the repository, which will take the latest code on `master` branch and publish it to Maven Central.
+
 ## Change Log
 
 * v0.2.22: Fix sqs event mapping for new event format, some test fixes

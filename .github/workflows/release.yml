@@ -1,0 +1,44 @@
+name: Maven Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Release to Maven Central
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "8"
+
+      - name: Set up credentials
+        env:
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        run: |
+          mkdir -p ~/.m2
+          cat <<EOT > ~/.m2/settings.xml
+          <settings>
+            <servers>
+              <server>
+                <id>ossrh</id>
+                <username>${MAVEN_USERNAME}</username>
+                <password>${MAVEN_PASSWORD}</password>
+              </server>
+            </servers>
+          </settings>
+          EOT
+
+          export GPG_TTY=$(tty)
+          echo -e "$MAVEN_GPG_KEY" | sed 's/\$/\n/' > /tmp/maven.gpg
+          gpg --no-tty --pinentry-mode loopback --passphrase $MAVEN_GPG_PASSPHRASE --import /tmp/maven.gpg
+          gpg -ab --no-tty --pinentry-mode loopback --passphrase $MAVEN_GPG_PASSPHRASE /tmp/maven.gpg
+
+      - name: Maven Publish
+        run: make publish-maven

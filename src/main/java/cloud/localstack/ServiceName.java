@@ -25,4 +25,5 @@ public class ServiceName {
     public static final String EC2 = "ec2";
     public static final String IAM = "iam";
     public static final String QLDB = "qldb";
+    public static final String STS = "sts";
 }

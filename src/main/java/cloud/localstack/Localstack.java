@@ -176,7 +176,7 @@ public class Localstack {
          * <bucket-name>.localhost, but that name cannot be resolved (unless hardcoded
          * in /etc/hosts)
          */
-        s3Endpoint = s3Endpoint.replace("localhost", Constants.LOCALHOST_DOMAIN_NAME);
+        s3Endpoint = s3Endpoint.replace("localhost", Constants.S3_LOCALHOST_DOMAIN_NAME);
         return s3Endpoint;
     }
 

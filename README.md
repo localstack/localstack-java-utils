@@ -60,7 +60,7 @@ Simply add the following dependency to your `pom.xml` file:
 <dependency>
     <groupId>cloud.localstack</groupId>
     <artifactId>localstack-utils</artifactId>
-    <version>0.2.22</version>
+    <version>0.2.23</version>
 </dependency>
 ```
 
@@ -112,6 +112,7 @@ To publish a release of the library, the "Maven Release" Github Action can be ma
 
 ## Change Log
 
+* v0.2.23: Fix S3 endpoints to be compatible with LocalStack v2
 * v0.2.22: Fix sqs event mapping for new event format, some test fixes
 * v0.2.21: Bump version of AWS SDK v1; add AWS SDK v2 sync clients to TestUtils; add docker executable path under homebrew
 * v0.2.20: Fix extracting container logs for LocalStack startup check

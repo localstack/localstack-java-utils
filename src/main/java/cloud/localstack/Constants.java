@@ -8,6 +8,8 @@ public class Constants {
 
     public static final String LOCALHOST_DOMAIN_NAME = "localhost.localstack.cloud";
 
+    public static final String S3_LOCALHOST_DOMAIN_NAME = "s3.localhost.localstack.cloud";
+
     public static final String DEFAULT_AWS_ACCOUNT_ID = "000000000000";
 
     public static final String ENV_LOCALSTACK_API_KEY = "LOCALSTACK_API_KEY";

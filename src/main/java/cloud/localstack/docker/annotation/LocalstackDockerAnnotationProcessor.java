@@ -42,6 +42,7 @@ public class LocalstackDockerAnnotationProcessor {
             .imageTag(StringUtils.isEmpty(properties.imageTag()) ? null : properties.imageTag())
             .portEdge(getEnvOrDefault("LOCALSTACK_EDGE_PORT", properties.portEdge()))
             .portElasticSearch(getEnvOrDefault("LOCALSTACK_ELASTICSEARCH_PORT", properties.portElasticSearch()))
+            .portRDS(getEnvOrDefault("LOCALSTACK_RDS_PORT", properties.portRDS()))
             .useSingleDockerContainer(properties.useSingleDockerContainer())
             .platform(StringUtils.isEmpty(properties.platform()) ? null : properties.platform())
             .build();

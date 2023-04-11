@@ -25,6 +25,7 @@ public class Container {
     private static final String LOCALSTACK_TAG = "latest";
     private static final String LOCALSTACK_PORT_EDGE = "4566";
     private static final String LOCALSTACK_PORT_ELASTICSEARCH = "4571";
+    private static final String LOCALSTACK_PORT_RDS = "4510";
 
     private static final int MAX_PORT_CONNECTION_ATTEMPTS = 10;
     private static final int MAX_LOG_COLLECTION_ATTEMPTS = 120;
@@ -51,15 +52,18 @@ public class Container {
      *                       in order to prevent conflicts with other localstack containers running on the same machine
      * @param imageName the name of the image defaults to {@value LOCALSTACK_NAME} if null
      * @param imageTag the tag of the image to pull, defaults to {@value LOCALSTACK_TAG} if null
+     * @param portEdge Edge port
+     * @param portElasticSearch Elasticsearch port
+     * @param portRDS RDS port
      * @param environmentVariables map of environment variables to be passed to the docker container
-     * @param portMappings
+     * @param portMappings All port mappings to be exposed by the container. If null, the default ports will be exposed.
      * @param bindMounts  Docker host to container volume mapping like /host/dir:/container/dir, be aware that the host
      * directory must be an absolute path
      * @param platform target platform for the localstack docker image
      */
     public static Container createLocalstackContainer(
             String externalHostName, boolean pullNewImage, boolean randomizePorts, String imageName, String imageTag, String portEdge,
-            String portElasticSearch, Map<String, String> environmentVariables, Map<Integer, Integer> portMappings,
+            String portElasticSearch, String portRDS, Map<String, String> environmentVariables, Map<Integer, Integer> portMappings,
             Map<String, String> bindMounts, String platform) {
 
         environmentVariables = environmentVariables == null ? Collections.emptyMap() : environmentVariables;
@@ -73,6 +77,7 @@ public class Container {
         String fullPortEdge = (portEdge == null ? LOCALSTACK_PORT_EDGE : portEdge) + ":" + LOCALSTACK_PORT_EDGE;
         String fullPortElasticSearch = (portElasticSearch == null ? LOCALSTACK_PORT_ELASTICSEARCH : portElasticSearch)
             + ":" + LOCALSTACK_PORT_ELASTICSEARCH;
+        String fullPortRDS = (portRDS == null ? LOCALSTACK_PORT_RDS : portRDS) + ":" + LOCALSTACK_PORT_RDS;
 
         if(pullNewImage || !imageExists) {
             LOG.info(String.format("Pulling image %s", fullImageName));
@@ -82,6 +87,7 @@ public class Container {
         RunCommand runCommand = new RunCommand(imageNameOrDefault, imageTag)
             .withExposedPorts(fullPortEdge, randomizePorts)
             .withExposedPorts(fullPortElasticSearch, randomizePorts)
+            .withExposedPorts(fullPortRDS, randomizePorts)
             .withEnvironmentVariable(LOCALSTACK_EXTERNAL_HOSTNAME, externalHostName)
             .withEnvironmentVariable(ENV_DEBUG, ENV_DEBUG_DEFAULT)
             .withEnvironmentVariable(ENV_USE_SSL, Localstack.useSSL() ? "1" : "0")

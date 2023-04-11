@@ -83,6 +83,12 @@ public @interface LocalstackDockerProperties {
     String portElasticSearch() default "4571";
 
     /**
+     * Port number for the RDS service. Alternatively, use the LOCALSTACK_RDS_PORT environment
+     * variable.
+     */
+    String portRDS() default "4510";
+
+    /**
      * Determines if the singleton container should be used by all test classes
      */
     boolean useSingleDockerContainer() default false;

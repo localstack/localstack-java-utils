@@ -21,7 +21,6 @@ public class Localstack {
     public static final String ENV_CONFIG_USE_SSL = "USE_SSL";
     public static final String ENV_CONFIG_EDGE_PORT = "EDGE_PORT";
     public static final String INIT_SCRIPTS_PATH = "/docker-entrypoint-initaws.d";
-    public static final String TMP_PATH = "/tmp/localstack";
     public static final int DEFAULT_EDGE_PORT = 4566;
 
     private static final Logger LOG = Logger.getLogger(Localstack.class.getName());

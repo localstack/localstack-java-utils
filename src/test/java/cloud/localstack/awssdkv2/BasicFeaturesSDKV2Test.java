@@ -352,7 +352,7 @@ public class BasicFeaturesSDKV2Test {
         // Test integration of ssm parameter with LocalStack using SDK v2
 
         final String paramName = "param-"+UUID.randomUUID().toString();
-        putAction.apply(PutParameterRequest.builder().name(paramName).value("testvalue").build());
+        putAction.apply(PutParameterRequest.builder().name(paramName).type("String").value("testvalue").build());
         GetParameterResponse getParameterResponse = getAction.apply(
             GetParameterRequest.builder().name(paramName).build());
         String parameterValue = getParameterResponse.parameter().value();

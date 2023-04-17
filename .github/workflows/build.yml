@@ -23,13 +23,13 @@ jobs:
       - name: Pull Docker containers
         run: |
           set -e
-          nohup docker pull localstack/localstack-light > /dev/null &
-          nohup docker pull lambci/lambda:java8 > /dev/null &
-          nohup docker pull localstack/localstack > /dev/null &
+          nohup docker pull localstack/localstack-ext > /dev/null &
       - name: Compile Tests
         run: |
           set -e
           make compile
           MVN_TEST_ARGS="-q -DskipTests" make test
       - name: Run Tests
+        env:
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         run: make test

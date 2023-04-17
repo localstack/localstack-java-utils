@@ -1,5 +1,6 @@
 package cloud.localstack.docker;
 
+import cloud.localstack.Constants;
 import cloud.localstack.Localstack;
 import cloud.localstack.docker.command.*;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +22,9 @@ public class Container {
 
     private static final Logger LOG = Logger.getLogger(Container.class.getName());
 
-    private static final String LOCALSTACK_NAME = "localstack/localstack";
-    private static final String LOCALSTACK_TAG = "latest";
+    private static final String LOCALSTACK_IMAGE = "localstack/localstack";
+    private static final String LOCALSTACK_PRO_IMAGE = "localstack/localstack-pro";
+    private static final String LOCALSTACK_IMAGE_TAG = "latest";
     private static final String LOCALSTACK_PORT_EDGE = "4566";
     private static final String LOCALSTACK_PORT_ELASTICSEARCH = "4571";
 
@@ -49,10 +51,10 @@ public class Container {
      * @param pullNewImage determines if docker pull should be run to update to the latest image of the container
      * @param randomizePorts determines if the container should expose the default local stack ports or if it should expose randomized ports
      *                       in order to prevent conflicts with other localstack containers running on the same machine
-     * @param imageName the name of the image defaults to {@value LOCALSTACK_NAME} if null
-     * @param imageTag the tag of the image to pull, defaults to {@value LOCALSTACK_TAG} if null
+     * @param imageName the name of the image defaults to {@value LOCALSTACK_IMAGE} if null
+     * @param imageTag the tag of the image to pull, defaults to {@value LOCALSTACK_IMAGE_TAG} if null
      * @param environmentVariables map of environment variables to be passed to the docker container
-     * @param portMappings
+     * @param portMappings port mappings
      * @param bindMounts  Docker host to container volume mapping like /host/dir:/container/dir, be aware that the host
      * directory must be an absolute path
      * @param platform target platform for the localstack docker image
@@ -66,8 +68,12 @@ public class Container {
         bindMounts = bindMounts == null ? Collections.emptyMap() : bindMounts;
         portMappings = portMappings == null ? Collections.emptyMap() : portMappings;
 
-        String imageNameOrDefault = (imageName == null ? LOCALSTACK_NAME : imageName);
-        String fullImageName = imageNameOrDefault + ":" + (imageTag == null ? LOCALSTACK_TAG : imageTag);
+        String imageNameOrDefault = imageName;
+        if (StringUtils.isEmpty(imageName)) {
+            String apiKeyEnv = System.getenv(Constants.ENV_LOCALSTACK_API_KEY);
+            imageNameOrDefault = !StringUtils.isEmpty(apiKeyEnv) ? LOCALSTACK_PRO_IMAGE : LOCALSTACK_IMAGE;
+        }
+        String fullImageName = imageNameOrDefault + ":" + (imageTag == null ? LOCALSTACK_IMAGE_TAG : imageTag);
         boolean imageExists = new ListImagesCommand().execute().contains(fullImageName);
 
         String fullPortEdge = (portEdge == null ? LOCALSTACK_PORT_EDGE : portEdge) + ":" + LOCALSTACK_PORT_EDGE;

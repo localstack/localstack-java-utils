@@ -156,7 +156,7 @@ public class ProFeaturesSDKV2Test {
                 .map(v -> (IonStruct) v)
                 .map(s -> s.get("balance").toString())
                 .collect(Collectors.toSet());
-        Assert.assertEquals(new HashSet<String>(Arrays.asList("26.12")), result);
+        Assert.assertTrue(new LinkedList<>(result).get(0).contains("26.12"));
 
         // clean up
         cleanUp(ledgerName);

@@ -352,7 +352,7 @@ public class BasicFeaturesSDKV2Test {
         // Test integration of ssm parameter with LocalStack using SDK v2
 
         final String paramName = "param-"+UUID.randomUUID().toString();
-        putAction.apply(PutParameterRequest.builder().name(paramName).value("testvalue").build());
+        putAction.apply(PutParameterRequest.builder().name(paramName).type("String").value("testvalue").build());
         GetParameterResponse getParameterResponse = getAction.apply(
             GetParameterRequest.builder().name(paramName).build());
         String parameterValue = getParameterResponse.parameter().value();
@@ -563,7 +563,7 @@ public class BasicFeaturesSDKV2Test {
         val functionName = "test-f-"+UUID.randomUUID().toString();
         val createFunctionRequest = CreateFunctionRequest.builder().functionName(functionName)
                 .runtime(Runtime.JAVA8)
-                .role("r1")
+                .role("arn:aws:iam::000000000000:role/r1")
                 .code(LocalTestUtilSDKV2.createFunctionCode(LambdaHandler.class))
                 .handler(LambdaHandler.class.getName()).build();
         val response = createAction.apply(createFunctionRequest);

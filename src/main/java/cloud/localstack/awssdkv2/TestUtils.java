@@ -33,6 +33,7 @@ import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.ssm.SsmAsyncClient;
 import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.emr.EmrClient;
 import software.amazon.awssdk.utils.AttributeMap;
 
 import java.net.URI;
@@ -105,6 +106,10 @@ public class TestUtils {
 
     public static S3Client getClientS3V2() {
         return wrapApiSyncClientV2(S3Client.builder(), Localstack.INSTANCE.getEndpointS3()).build();
+    }
+
+    public static EmrClient getClientEMRV2() {
+        return wrapApiSyncClientV2(EmrClient.builder(), Localstack.INSTANCE.endpointForService("emr")).build();
     }
 
     public static CloudWatchAsyncClient getClientCloudWatchAsyncV2() {

@@ -32,8 +32,6 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
-import io.thundra.jexter.junit4.core.envvar.EnvironmentVariableSandboxRule;
-import io.thundra.jexter.junit5.core.envvar.EnvironmentVariableSandbox;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -59,8 +57,6 @@ import static cloud.localstack.awssdkv1.TestUtils.TEST_CREDENTIALS;
 @ExtendWith(LocalstackExtension.class)
 @org.junit.Ignore
 @org.junit.jupiter.api.Disabled
-// [JUnit5] Revert environment variables to the back after the test suite (class)
-@EnvironmentVariableSandbox
 public class BasicFunctionalityTest {
 
     static {
@@ -69,10 +65,6 @@ public class BasicFunctionalityTest {
             CommonUtils.disableSslCertChecking();
         }
     }
-
-    // [JUnit4] Revert environment variables to the back after the test suite (class)
-    @ClassRule
-    public static EnvironmentVariableSandboxRule environmentVariableSandboxRule = new EnvironmentVariableSandboxRule();
 
     @org.junit.BeforeClass
     @org.junit.jupiter.api.BeforeAll

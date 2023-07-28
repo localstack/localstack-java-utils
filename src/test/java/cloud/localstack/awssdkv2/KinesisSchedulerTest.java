@@ -3,7 +3,6 @@ package cloud.localstack.awssdkv2;
 import cloud.localstack.awssdkv2.consumer.DeliveryStatusRecordProcessorFactory;
 import cloud.localstack.awssdkv2.consumer.EventProcessor;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,10 +32,6 @@ public class KinesisSchedulerTest extends PowerMockLocalStack {
     String workerId = UUID.randomUUID().toString();
     String testMessage = "hello, world";
     Integer consumerCreationTime = 15; //35 for real AWS
-
-    // Revert system properties to the back after the test
-    @Rule
-    public SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
 
     @Before
     public void mockServicesForScheduler() {

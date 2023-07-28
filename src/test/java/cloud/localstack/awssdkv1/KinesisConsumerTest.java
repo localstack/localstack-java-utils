@@ -10,7 +10,6 @@ import com.amazonaws.services.kinesis.model.GetRecordsResult;
 import com.amazonaws.services.kinesis.model.GetShardIteratorRequest;
 import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.amazonaws.services.kinesis.model.ResourceInUseException;
-import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,10 +24,6 @@ import java.util.stream.Collectors;
 @RunWith(LocalstackTestRunner.class)
 @LocalstackDockerProperties(ignoreDockerRunErrors=true)
 public class KinesisConsumerTest {
-
-    // Revert system properties to the back after the test
-    @Rule
-    public SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
 
     @Test
     public void testGetRecordCBOR() throws Exception {

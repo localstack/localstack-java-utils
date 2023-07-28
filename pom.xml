@@ -317,19 +317,6 @@
             <version>2.12.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.thundra</groupId>
-            <artifactId>jexter-junit4-core</artifactId>
-            <version>${jexter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.thundra</groupId>
-            <artifactId>jexter-junit5-core</artifactId>
-            <version>${jexter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <profiles>

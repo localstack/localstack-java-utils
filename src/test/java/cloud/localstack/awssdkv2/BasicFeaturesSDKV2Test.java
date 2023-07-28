@@ -7,7 +7,6 @@ import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import cloud.localstack.sample.LambdaHandler;
 import cloud.localstack.utils.LocalTestUtil;
 import com.amazonaws.services.s3.model.ObjectListing;
-import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.assertj.core.api.Assertions;
@@ -108,10 +107,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(LocalstackTestRunner.class)
 @LocalstackDockerProperties(ignoreDockerRunErrors=true)
 public class BasicFeaturesSDKV2Test {
-
-    // Revert system properties to the back after the test suite (class)
-    @ClassRule
-    public static SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
 
     @BeforeClass
     public static void beforeAll() {

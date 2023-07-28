@@ -2,7 +2,6 @@ package cloud.localstack.awssdkv2;
 
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-import io.thundra.jexter.junit4.core.sysprop.SystemPropertySandboxRule;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,10 +25,6 @@ import java.util.stream.Collectors;
 @RunWith(LocalstackTestRunner.class)
 @LocalstackDockerProperties(ignoreDockerRunErrors = true)
 public class KinesisV2ConsumerTest {
-
-  // Revert system properties to the back after the test suite (class)
-  @Rule
-  public SystemPropertySandboxRule systemPropertySandboxRule = new SystemPropertySandboxRule();
 
   @Test
   public void testGetRecordCBOR() throws Exception {

@@ -38,7 +38,7 @@ public class Container {
     private static final String ENV_DEBUG_DEFAULT = "1";
     public static final String LOCALSTACK_EXTERNAL_HOSTNAME = "HOSTNAME_EXTERNAL";
 
-    private static final String DEFAULT_CONTAINER_ID = "localstack_main";
+    private static final String DEFAULT_CONTAINER_ID = "localstack-main";
 
     private final String containerId;
     private final List<PortMapping> ports;

@@ -23,7 +23,7 @@ jobs:
       - name: Pull Docker containers
         run: |
           set -e
-          nohup docker pull localstack/localstack-ext > /dev/null &
+          nohup docker pull localstack/localstack-pro > /dev/null &
       - name: Compile Tests
         run: |
           set -e

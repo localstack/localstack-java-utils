@@ -36,7 +36,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
  */
 public class TestContainersSqsTest {
 
-    private static final String DOCKER_IMAGE_NAME = "localstack/localstack:latest";
+    private static final String DOCKER_IMAGE_NAME = "localstack/localstack-pro:latest";
 
     private AmazonSQS amazonSQS;
 

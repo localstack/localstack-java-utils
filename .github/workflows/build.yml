@@ -20,10 +20,6 @@ jobs:
         with:
           distribution: "adopt"
           java-version: "8"
-      - name: Pull Docker containers
-        run: |
-          set -e
-          nohup docker pull localstack/localstack-ext > /dev/null &
       - name: Compile Tests
         run: |
           set -e

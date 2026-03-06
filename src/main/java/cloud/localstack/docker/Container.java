@@ -22,7 +22,6 @@ public class Container {
 
     private static final Logger LOG = Logger.getLogger(Container.class.getName());
 
-    private static final String LOCALSTACK_IMAGE = "localstack/localstack";
     private static final String LOCALSTACK_PRO_IMAGE = "localstack/localstack-pro";
     private static final String LOCALSTACK_IMAGE_TAG = "latest";
     private static final String LOCALSTACK_PORT_EDGE = "4566";
@@ -51,7 +50,7 @@ public class Container {
      * @param pullNewImage determines if docker pull should be run to update to the latest image of the container
      * @param randomizePorts determines if the container should expose the default local stack ports or if it should expose randomized ports
      *                       in order to prevent conflicts with other localstack containers running on the same machine
-     * @param imageName the name of the image defaults to {@value LOCALSTACK_IMAGE} if null
+     * @param imageName the name of the image defaults to {@value LOCALSTACK_PRO_IMAGE} if null
      * @param imageTag the tag of the image to pull, defaults to {@value LOCALSTACK_IMAGE_TAG} if null
      * @param environmentVariables map of environment variables to be passed to the docker container
      * @param portMappings port mappings
@@ -68,11 +67,7 @@ public class Container {
         bindMounts = bindMounts == null ? Collections.emptyMap() : bindMounts;
         portMappings = portMappings == null ? Collections.emptyMap() : portMappings;
 
-        String imageNameOrDefault = imageName;
-        if (StringUtils.isEmpty(imageName)) {
-            String apiKeyEnv = System.getenv(Constants.ENV_LOCALSTACK_API_KEY);
-            imageNameOrDefault = !StringUtils.isEmpty(apiKeyEnv) ? LOCALSTACK_PRO_IMAGE : LOCALSTACK_IMAGE;
-        }
+        String imageNameOrDefault = !StringUtils.isEmpty(imageName) ? imageName : LOCALSTACK_PRO_IMAGE;
         String fullImageName = imageNameOrDefault + ":" + (imageTag == null ? LOCALSTACK_IMAGE_TAG : imageTag);
         boolean imageExists = new ListImagesCommand().execute().contains(fullImageName);
 

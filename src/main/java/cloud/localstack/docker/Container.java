@@ -67,7 +67,7 @@ public class Container {
         bindMounts = bindMounts == null ? Collections.emptyMap() : bindMounts;
         portMappings = portMappings == null ? Collections.emptyMap() : portMappings;
 
-        String imageNameOrDefault = !StringUtils.isEmpty(imageName) ? imageName : LOCALSTACK_PRO_IMAGE
+        String imageNameOrDefault = !StringUtils.isEmpty(imageName) ? imageName : LOCALSTACK_PRO_IMAGE;
         String fullImageName = imageNameOrDefault + ":" + (imageTag == null ? LOCALSTACK_IMAGE_TAG : imageTag);
         boolean imageExists = new ListImagesCommand().execute().contains(fullImageName);
 

@@ -1,7 +1,8 @@
 [![CI](https://github.com/localstack/localstack-java-utils/actions/workflows/build.yml/badge.svg)](https://github.com/localstack/localstack-java-utils/actions/workflows/build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/cloud.localstack/localstack-utils)](https://mvnrepository.com/artifact/cloud.localstack/localstack-utils)
 
-⚠️ Note: This repo is not currently very actively maintained. Please consider using the [Testcontainers LocalStack Java module](https://java.testcontainers.org/modules/localstack/) as a potential alternative.
+> [!IMPORTANT]  
+> This utility is officially deprecated and official support is no longer provided. Please consider using the [Testcontainers LocalStack Java module](https://java.testcontainers.org/modules/localstack/) as a potential alternative.
 
 # LocalStack Java Utils
 
